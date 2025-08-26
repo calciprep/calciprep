@@ -94,19 +94,17 @@
                 <a href="#contact" class="nav-link">Contact</a>
             </div>
             <!-- Auth Buttons (Desktop) -->
-            <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
-                <!-- Logged out state (desktop visible) -->
-                <div id="logged-out-view" class="flex items-center space-x-2">
-                    <button id="login-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Login</button>
-                    <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
-                </div>
-                <!-- Logged in state -->
-                <div id="logged-in-view" class="hidden items-center space-x-4">
-                    <a href="dashboard.html" class="font-semibold text-accent-orange hover:underline">Dashboard</a>
-                    <span id="user-email" class="text-sm text-gray-600"></span>
-                    <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
-                </div>
-            </div>
+           <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
+    <div id="logged-out-view" class="flex items-center space-x-2">
+        <button id="login-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Login</button>
+        <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
+    </div>
+    <div id="logged-in-view" class="hidden items-center space-x-4">
+        <a href="progress.html" class="font-semibold text-accent-orange hover:underline">My Progress</a>
+        <span id="user-email" class="text-sm text-gray-600"></span>
+        <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
+    </div>
+</div>
             <!-- Mobile Menu Button -->
             <div class="lg:hidden">
                 <button id="menu-btn" class="focus:outline-none p-2">
@@ -362,36 +360,36 @@
         </section>
 
         <!-- 6. Resources Section -->
-        <section id="resources" class="py-20 section-bg">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold">Your Resources</h2>
-                    <p class="text-gray-600 mt-4">Review your performance and plan your next steps.</p>
+       <section id="resources" class="py-20 section-bg">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold">Your Resources</h2>
+            <p class="text-gray-600 mt-4">Review your performance and plan your next steps.</p>
+        </div>
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-bold mb-6">Performance Review</h3>
+            <div class="space-y-6">
+                <div>
+                    <h4 class="text-xl font-semibold mb-2">Saved Results</h4>
+                    <p class="text-gray-600">Access detailed reports from your completed mock tests and quizzes. Review questions, see correct answers, and understand your mistakes.</p>
+                    <a href="progress.html" class="text-accent-orange font-semibold mt-2 inline-block">View Saved Results &rarr;</a>
                 </div>
-                <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-                    <h3 class="text-2xl font-bold mb-6">Performance Review</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <h4 class="text-xl font-semibold mb-2">Saved Results</h4>
-                            <p class="text-gray-600">Access detailed reports from your completed mock tests and quizzes. Review questions, see correct answers, and understand your mistakes.</p>
-                            <a href="dashboard.html" class="text-accent-orange font-semibold mt-2 inline-block">View Saved Results &rarr;</a>
-                        </div>
-                        <hr>
-                        <div>
-                            <h4 class="text-xl font-semibold mb-2">Past Practice History</h4>
-                            <p class="text-gray-600">A complete log of all your practice sessions. Filter by date, subject, or performance to easily find what you're looking for.</p>
-                             <a href="dashboard.html" class="font-semibold mt-2 inline-block" style="color: #be94f5;">Explore History &rarr;</a>
-                        </div>
-                        <hr>
-                        <div>
-                            <h4 class="text-xl font-semibold mb-2">Suggested Improvement Paths</h4>
-                            <p class="text-gray-600">Based on your performance, we provide personalized recommendations on topics you should focus on next to maximize your score.</p>
-                             <a href="#" class="font-semibold mt-2 inline-block" style="color: #fccc42;">Get Recommendations &rarr;</a>
-                        </div>
-                    </div>
+                <hr>
+                <div>
+                    <h4 class="text-xl font-semibold mb-2">Past Practice History</h4>
+                    <p class="text-gray-600">A complete log of all your practice sessions. Filter by date, subject, or performance to easily find what you're looking for.</p>
+                     <a href="progress.html" class="font-semibold mt-2 inline-block" style="color: #be94f5;">Explore History &rarr;</a>
+                </div>
+                <hr>
+                <div>
+                    <h4 class="text-xl font-semibold mb-2">Suggested Improvement Paths</h4>
+                    <p class="text-gray-600">Based on your performance, we provide personalized recommendations on topics you should focus on next to maximize your score.</p>
+                     <a href="#" class="font-semibold mt-2 inline-block" style="color: #fccc42;">Get Recommendations &rarr;</a>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
         
         <!-- 7. Contact Page Section -->
         <section id="contact" class="py-20 bg-white">

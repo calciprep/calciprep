@@ -200,151 +200,163 @@
     <script type="module" src="main.js"></script>
     
     <!-- Page-specific Functionality Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // This script handles the quiz logic for this page.
-            
-            const quizContainer = document.getElementById('quiz-container');
-            const scoreCard = document.getElementById('score-card');
-            const quizTitleEl = document.getElementById('quiz-title');
-            const questionCountEl = document.getElementById('question-count');
-            const timerEl = document.getElementById('timer');
-            const questionTextEl = document.getElementById('question-text');
-            const optionsContainer = document.getElementById('options-container');
-            const skipBtn = document.getElementById('skip-btn');
-            const submitTestBtn = document.getElementById('submit-test-btn');
-            
-            const attemptedCountEl = document.getElementById('attempted-count');
-            const correctCountEl = document.getElementById('correct-count');
-            const wrongCountEl = document.getElementById('wrong-count');
-            const totalTimeEl = document.getElementById('total-time');
+   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // This script handles the quiz logic for this page.
+        
+        const quizContainer = document.getElementById('quiz-container');
+        const scoreCard = document.getElementById('score-card');
+        const quizTitleEl = document.getElementById('quiz-title');
+        const questionCountEl = document.getElementById('question-count');
+        const timerEl = document.getElementById('timer');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const skipBtn = document.getElementById('skip-btn');
+        const submitTestBtn = document.getElementById('submit-test-btn');
+        
+        const attemptedCountEl = document.getElementById('attempted-count');
+        const correctCountEl = document.getElementById('correct-count');
+        const wrongCountEl = document.getElementById('wrong-count');
+        const totalTimeEl = document.getElementById('total-time');
 
-            let questions = [];
-            let currentQuestionIndex = 0;
-            let correctCount = 0;
-            let incorrectCount = 0;
-            let questionTimer;
-            let totalTime = 0;
-            let totalTimeTracker;
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let questionTimer;
+        let totalTime = 0;
+        let totalTimeTracker;
 
-            function startQuiz() {
-                totalTimeTracker = setInterval(() => totalTime++, 1000);
-                loadQuestion();
-            }
+        function startQuiz() {
+            totalTimeTracker = setInterval(() => totalTime++, 1000);
+            loadQuestion();
+        }
 
-            function startQuestionTimer() {
-                let timeLeft = 15;
+        function startQuestionTimer() {
+            let timeLeft = 15;
+            timerEl.textContent = timeLeft;
+            questionTimer = setInterval(() => {
+                timeLeft--;
                 timerEl.textContent = timeLeft;
-                questionTimer = setInterval(() => {
-                    timeLeft--;
-                    timerEl.textContent = timeLeft;
-                    if (timeLeft <= 0) {
-                        skipQuestion();
-                    }
-                }, 1000);
-            }
-
-            function loadQuestion() {
-                if (currentQuestionIndex >= questions.length) {
-                    showScore();
-                    return;
+                if (timeLeft <= 0) {
+                    skipQuestion();
                 }
-                
-                clearInterval(questionTimer);
-                startQuestionTimer();
-                
-                questionCountEl.textContent = currentQuestionIndex + 1;
-                const currentQuestion = questions[currentQuestionIndex];
-                questionTextEl.textContent = currentQuestion.question;
-                optionsContainer.innerHTML = '';
+            }, 1000);
+        }
 
-                const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
-
-                shuffledOptions.forEach(option => {
-                    const button = document.createElement('button');
-                    button.textContent = option;
-                    button.classList.add('option-btn', 'p-4', 'font-semibold', 'rounded-lg', 'w-full', 'text-lg');
-                    button.onclick = () => selectAnswer(button, option, currentQuestion.answer);
-                    optionsContainer.appendChild(button);
-                });
-            }
-
-            function selectAnswer(button, selectedOption, correctAnswer) {
-                clearInterval(questionTimer);
-                const allOptions = optionsContainer.querySelectorAll('.option-btn');
-                allOptions.forEach(btn => btn.disabled = true);
-
-                if (selectedOption === correctAnswer) {
-                    button.classList.add('correct');
-                    correctCount++;
-                } else {
-                    button.classList.add('incorrect');
-                    incorrectCount++;
-                }
-
-                setTimeout(nextQuestion, 1000);
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showScore();
+                return;
             }
             
-            function skipQuestion() {
-                clearInterval(questionTimer);
-                nextQuestion();
+            clearInterval(questionTimer);
+            startQuestionTimer();
+            
+            questionCountEl.textContent = currentQuestionIndex + 1;
+            const currentQuestion = questions[currentQuestionIndex];
+            questionTextEl.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = '';
+
+            const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'p-4', 'font-semibold', 'rounded-lg', 'w-full', 'text-lg');
+                button.onclick = () => selectAnswer(button, option, currentQuestion.answer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(button, selectedOption, correctAnswer) {
+            clearInterval(questionTimer);
+            const allOptions = optionsContainer.querySelectorAll('.option-btn');
+            allOptions.forEach(btn => btn.disabled = true);
+
+            if (selectedOption === correctAnswer) {
+                button.classList.add('correct');
+                correctCount++;
+            } else {
+                button.classList.add('incorrect');
+                incorrectCount++;
             }
 
-            function nextQuestion() {
-                currentQuestionIndex++;
-                loadQuestion();
-            }
+            setTimeout(nextQuestion, 1000);
+        }
+        
+        function skipQuestion() {
+            clearInterval(questionTimer);
+            nextQuestion();
+        }
 
-            function showScore() {
-                clearInterval(questionTimer);
-                clearInterval(totalTimeTracker);
-                quizContainer.classList.add('hidden');
-                scoreCard.classList.remove('hidden');
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
 
-                const urlParams = new URLSearchParams(window.location.search);
-                const category = urlParams.get('category');
-                const quizNumber = urlParams.get('quiz');
-                if (category && quizNumber) {
-                    const quizKey = `${category}-Quiz-${quizNumber}`;
-                    localStorage.setItem(quizKey, 'completed');
-                }
-
-                attemptedCountEl.textContent = correctCount + incorrectCount;
-                correctCountEl.textContent = correctCount;
-                wrongCountEl.textContent = incorrectCount;
-                totalTimeEl.textContent = totalTime;
-            }
+        function showScore() {
+            clearInterval(questionTimer);
+            clearInterval(totalTimeTracker);
+            quizContainer.classList.add('hidden');
+            scoreCard.classList.remove('hidden');
 
             const urlParams = new URLSearchParams(window.location.search);
-            const category = urlParams.get('category') || 'English';
-            const quizNumber = urlParams.get('quiz') || '1';
-
-            document.title = `${category} Quiz ${quizNumber} - CalciPrep`;
-            quizTitleEl.textContent = `${category} - Quiz ${quizNumber}`;
+            const category = urlParams.get('category');
+            const quizNumber = urlParams.get('quiz');
             
-            const backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
-            document.getElementById('back-link').href = backUrl;
-            document.getElementById('mobile-back-link').href = backUrl;
-            
-            if (typeof quizData !== 'undefined' && quizData[category] && quizData[category][quizNumber - 1]) {
-                questions = quizData[category][quizNumber - 1];
-            } else {
-                questionTextEl.textContent = "Quiz data not found. Please go back and select another quiz.";
-            }
-            
-            skipBtn.addEventListener('click', skipQuestion);
-            submitTestBtn.addEventListener('click', () => {
-                if(confirm('Are you sure you want to submit the test?')) {
-                    showScore();
-                }
-            });
-
-            if (questions.length > 0) {
-                startQuiz();
+            if (category && quizNumber) {
+                const quizKey = `${category}-Quiz-${quizNumber}`;
+                localStorage.setItem(quizKey, 'completed');
             }
 
-            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            // *** FIX STARTS HERE: Save the quiz result to the database ***
+            if (window.saveQuizResult) {
+                window.saveQuizResult({
+                    category: category,
+                    quizName: `${category} - Quiz ${quizNumber}`,
+                    correctCount: correctCount,
+                    incorrectCount: incorrectCount,
+                    totalTime: totalTime
+                });
+            }
+            // *** FIX ENDS HERE ***
+
+            attemptedCountEl.textContent = correctCount + incorrectCount;
+            correctCountEl.textContent = correctCount;
+            wrongCountEl.textContent = incorrectCount;
+            totalTimeEl.textContent = totalTime;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category') || 'English';
+        const quizNumber = urlParams.get('quiz') || '1';
+
+        document.title = `${category} Quiz ${quizNumber} - CalciPrep`;
+        quizTitleEl.textContent = `${category} - Quiz ${quizNumber}`;
+        
+        const backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
+        document.getElementById('back-link').href = backUrl;
+        document.getElementById('mobile-back-link').href = backUrl;
+        
+        if (typeof quizData !== 'undefined' && quizData[category] && quizData[category][quizNumber - 1]) {
+            questions = quizData[category][quizNumber - 1];
+        } else {
+            questionTextEl.textContent = "Quiz data not found. Please go back and select another quiz.";
+        }
+        
+        skipBtn.addEventListener('click', skipQuestion);
+        submitTestBtn.addEventListener('click', () => {
+            if(confirm('Are you sure you want to submit the test?')) {
+                showScore();
+            }
         });
-    </script>
-</body>
+
+        if (questions.length > 0) {
+            startQuiz();
+        }
+
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    });
+</script></body>
 </html>

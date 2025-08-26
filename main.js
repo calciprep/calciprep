@@ -51,13 +51,20 @@ let isLoginMode = true;
 function updateAuthUI(user) {
     if (user) {
         // User is signed in
-        if (dom.loggedInView) dom.loggedInView.classList.remove('hidden');
+        if (dom.loggedInView) {
+            dom.loggedInView.classList.remove('hidden');
+            const progressLink = dom.loggedInView.querySelector('a');
+            if(progressLink) {
+                progressLink.href = 'progress.html';
+                progressLink.textContent = 'My Progress';
+            }
+        }
         if (dom.loggedOutView) dom.loggedOutView.classList.add('hidden');
         if (dom.userEmailEl) dom.userEmailEl.textContent = user.email;
         
         if (dom.mobileAuthContainer) {
             dom.mobileAuthContainer.innerHTML = `
-                <a href="dashboard.html" class="block px-3 py-2 rounded-md text-base font-medium text-accent-orange hover:bg-gray-50">Dashboard</a>
+                <a href="progress.html" class="block px-3 py-2 rounded-md text-base font-medium text-accent-orange hover:bg-gray-50">My Progress</a>
                 <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
                 <button id="mobile-logout-btn" class="w-full text-left font-semibold text-red-600 px-3 py-2">Logout</button>`;
             const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
