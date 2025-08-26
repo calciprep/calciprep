@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-2382040431534049">
     <title>Maths Practice - CalciPrep</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -105,8 +106,9 @@
                         <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
                     </div>
                      <!-- Logged in state -->
-                     <div id="logged-in-view" class="hidden items-center">
-                         <span id="user-email" class="text-sm text-gray-600 mr-4"></span>
+                     <div id="logged-in-view" class="hidden items-center space-x-4">
+                         <a href="dashboard.html" class="font-semibold text-accent-orange hover:underline">Dashboard</a>
+                         <span id="user-email" class="text-sm text-gray-600"></span>
                          <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
                      </div>
                  </div>
@@ -127,8 +129,7 @@
                   </a>
                    <!-- Mobile Auth Buttons Appear Here -->
                   <div id="mobile-auth-container" class="px-3 pt-4 pb-2 border-t border-gray-200">
-                      <button id="login-btn-mobile" class="w-full text-left font-semibold text-gray-700 py-2">Login</button>
-                      <button id="signup-btn-mobile" class="w-full mt-2 btn-primary text-center py-2">Sign Up</button>
+                      <!-- JS will populate this -->
                   </div>
               </div>
           </div>
@@ -477,6 +478,18 @@
             mathAnswerEl.disabled = true;
             submitAnswerBtn.classList.add('hidden');
             const finalTime = document.getElementById('math-timer').textContent;
+
+            // Save the result to Firestore
+            if (window.saveQuizResult) {
+                const quizName = gameTitle.textContent;
+                window.saveQuizResult({
+                    category: "Maths",
+                    quizName: quizName,
+                    correctCount: correctCount,
+                    incorrectCount: incorrectCount,
+                    totalTime: parseInt(finalTime)
+                });
+            }
             
             mathProblemEl.innerHTML = `
                 <div class="text-3xl font-bold">${message}</div>

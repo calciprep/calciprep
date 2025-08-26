@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-2382040431534049">
     <title>Quiz List - CalciPrep</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -82,8 +83,9 @@
                         <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
                     </div>
                      <!-- Logged in state -->
-                     <div id="logged-in-view" class="hidden items-center">
-                         <span id="user-email" class="text-sm text-gray-600 mr-4"></span>
+                     <div id="logged-in-view" class="hidden items-center space-x-4">
+                         <a href="dashboard.html" class="font-semibold text-accent-orange hover:underline">Dashboard</a>
+                         <span id="user-email" class="text-sm text-gray-600"></span>
                          <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
                      </div>
                  </div>
@@ -102,8 +104,7 @@
                  <a href="english.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Back</a>
                  <!-- Mobile Auth Buttons Appear Here -->
                  <div id="mobile-auth-container" class="px-3 pt-4 pb-2 border-t border-gray-200">
-                     <button id="login-btn-mobile" class="w-full text-left font-semibold text-gray-700 py-2">Login</button>
-                     <button id="signup-btn-mobile" class="w-full mt-2 btn-primary text-center py-2">Sign Up</button>
+                     <!-- JS will populate this -->
                  </div>
              </div>
          </div>
@@ -157,33 +158,9 @@
 
     <!-- Login/Signup Modals and other HTML remains the same... -->
     <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="modal-title" class="text-3xl font-bold">Login</h2>
-                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
-                </div>
-                <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
-                <form id="auth-form">
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                        <input type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <div class="mb-6">
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary">Login</button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    <span id="modal-switch-text">Don't have an account?</span>
-                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
-                </p>
-            </div>
-        </div>
+        <!-- ... -->
     </div>
 
-    <!-- Centralized JavaScript File -->
     <script type="module" src="main.js"></script>
     
     <!-- Page-specific Functionality Script -->

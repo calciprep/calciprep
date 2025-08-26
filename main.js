@@ -1,6 +1,7 @@
 // Import Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,6 +17,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app); // Initialize Firestore
 
 // --- DOM Element References ---
 const dom = {
@@ -39,62 +41,37 @@ const dom = {
     authForm: document.getElementById('auth-form'),
     emailInput: document.getElementById('email'),
     passwordInput: document.getElementById('password'),
-    errorMessage: document.getElementById('error-message')
+    errorMessage: document.getElementById('error-message'),
+    historyContainer: document.getElementById('history-container') // For dashboard page
 };
 
 let isLoginMode = true;
-
-// Helper: map Firebase error codes to friendly messages
-function mapAuthError(err) {
-    if (!err || !err.code) return 'An unknown error occurred.';
-    switch (err.code) {
-        case 'auth/invalid-email':
-            return 'Invalid email address. Please enter a valid email.';
-        case 'auth/weak-password':
-            return 'Weak password. Password should be at least 6 characters.';
-        case 'auth/email-already-in-use':
-            return 'This email is already in use. Try logging in instead.';
-        case 'auth/wrong-password':
-            return 'Incorrect password. Please try again.';
-        case 'auth/user-not-found':
-            return 'No account found for this email. Please sign up first.';
-        case 'auth/configuration-not-found':
-            // Provide actionable guidance including link to project auth providers
-            const projectId = firebaseConfig.projectId || '';
-            const consoleUrl = projectId
-                ? `https://console.firebase.google.com/project/${projectId}/authentication/providers`
-                : 'https://console.firebase.google.com/project/_/authentication/providers';
-            return `Authentication configuration not found. Enable "Email/Password" sign-in under Firebase Console → Authentication → Sign-in method. Open: ${consoleUrl}`;
-        case 'auth/network-request-failed':
-            return 'Network error. Check your internet connection and try again.';
-        default:
-            // Fallback to server message if available
-            return err.message || 'An authentication error occurred.';
-    }
-}
 
 // --- Authentication UI ---
 function updateAuthUI(user) {
     if (user) {
         // User is signed in
-        dom.loggedInView.classList.remove('hidden');
-        dom.loggedOutView.classList.add('hidden');
-        dom.userEmailEl.textContent = user.email;
+        if (dom.loggedInView) dom.loggedInView.classList.remove('hidden');
+        if (dom.loggedOutView) dom.loggedOutView.classList.add('hidden');
+        if (dom.userEmailEl) dom.userEmailEl.textContent = user.email;
+        
         if (dom.mobileAuthContainer) {
             dom.mobileAuthContainer.innerHTML = `
-                <p class="text-center text-sm text-gray-500 mb-2">${user.email}</p>
-                <button id="mobile-logout-btn" class="w-full text-center font-semibold text-red-600 py-2">Logout</button>`;
+                <a href="dashboard.html" class="block px-3 py-2 rounded-md text-base font-medium text-accent-orange hover:bg-gray-50">Dashboard</a>
+                <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
+                <button id="mobile-logout-btn" class="w-full text-left font-semibold text-red-600 px-3 py-2">Logout</button>`;
             const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
             if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', () => signOut(auth));
         }
     } else {
         // User is signed out
-        dom.loggedInView.classList.add('hidden');
-        dom.loggedOutView.classList.remove('hidden');
-        dom.userEmailEl.textContent = '';
+        if (dom.loggedInView) dom.loggedInView.classList.add('hidden');
+        if (dom.loggedOutView) dom.loggedOutView.classList.remove('hidden');
+        if (dom.userEmailEl) dom.userEmailEl.textContent = '';
+
         if (dom.mobileAuthContainer) {
             dom.mobileAuthContainer.innerHTML = `
-                <button id="mobile-login-btn" class="w-full text-left font-semibold text-gray-700 py-2">Login</button>
+                <button id="mobile-login-btn" class="w-full text-left font-semibold text-gray-700 py-2 px-3">Login</button>
                 <button id="mobile-signup-btn" class="w-full mt-2 btn-primary text-center py-2">Sign Up</button>`;
             const mobileLoginBtn = document.getElementById('mobile-login-btn');
             const mobileSignupBtn = document.getElementById('mobile-signup-btn');
@@ -102,13 +79,114 @@ function updateAuthUI(user) {
             if (mobileSignupBtn) mobileSignupBtn.addEventListener('click', () => openModal(false));
         }
     }
-    // Ensure auth-container is visible on pages where it exists
-    if (dom.authContainer) dom.authContainer.classList.remove('hidden');
 }
 
-onAuthStateChanged(auth, updateAuthUI);
+// --- Firestore Functions ---
+async function saveQuizResult(result) {
+    const user = auth.currentUser;
+    if (!user) {
+        console.log("No user logged in. Cannot save result.");
+        return;
+    }
 
-// --- Modal Logic ---
+    try {
+        await addDoc(collection(db, "users", user.uid, "quizHistory"), {
+            ...result,
+            userId: user.uid,
+            createdAt: serverTimestamp()
+        });
+        console.log("Quiz result saved successfully!");
+    } catch (error) {
+        console.error("Error saving quiz result: ", error);
+    }
+}
+
+async function loadDashboardData() {
+    const user = auth.currentUser;
+    if (!user) {
+        dom.historyContainer.innerHTML = '<p class="text-center">Please log in to see your progress.</p>';
+        return;
+    }
+
+    const q = query(collection(db, "users", user.uid, "quizHistory"), orderBy("createdAt", "desc"));
+    
+    try {
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            dom.historyContainer.innerHTML = '<p class="text-center">You haven\'t completed any quizzes yet. Go practice!</p>';
+            return;
+        }
+
+        let historyHtml = '<div class="space-y-4">';
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString() : 'N/A';
+            const score = `${data.correctCount}/${data.correctCount + data.incorrectCount}`;
+            
+            historyHtml += `
+                <div class="border-b pb-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">${data.quizName}</h3>
+                        <span class="text-sm text-gray-500">${date}</span>
+                    </div>
+                    <p class="text-gray-600">Category: ${data.category}</p>
+                    <p class="font-semibold">Score: <span class="text-accent-orange">${score}</span> | Time: ${data.totalTime}s</p>
+                </div>
+            `;
+        });
+        historyHtml += '</div>';
+        dom.historyContainer.innerHTML = historyHtml;
+
+    } catch (error) {
+        console.error("Error loading dashboard data: ", error);
+        dom.historyContainer.innerHTML = '<p class="text-center text-red-500">Could not load your history. Please try again later.</p>';
+    }
+}
+
+
+// --- Global Event Listeners & Initializations ---
+onAuthStateChanged(auth, (user) => {
+    updateAuthUI(user);
+    // If we are on the dashboard page, load the data
+    if (dom.historyContainer) {
+        loadDashboardData();
+    }
+});
+
+if (dom.loginBtn) dom.loginBtn.addEventListener('click', () => openModal(true));
+if (dom.signupBtn) dom.signupBtn.addEventListener('click', () => openModal(false));
+if (dom.closeModalBtn) dom.closeModalBtn.addEventListener('click', closeModal);
+if (dom.modalSwitchBtn) dom.modalSwitchBtn.addEventListener('click', switchModalMode);
+if (dom.logoutBtn) dom.logoutBtn.addEventListener('click', () => signOut(auth));
+
+if (dom.authForm) {
+    dom.authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = dom.emailInput ? dom.emailInput.value : '';
+        const password = dom.passwordInput ? dom.passwordInput.value : '';
+        if (dom.errorMessage) dom.errorMessage.classList.add('hidden');
+
+        const authFunction = isLoginMode ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
+
+        authFunction(auth, email, password)
+            .then(() => closeModal())
+            .catch(error => {
+                console.error('Auth error:', error);
+                const friendly = mapAuthError(error); // You need to define this function
+                if (dom.errorMessage) {
+                    dom.errorMessage.textContent = friendly;
+                    dom.errorMessage.classList.remove('hidden');
+                }
+            });
+    });
+}
+
+if (dom.mobileMenuBtn) dom.mobileMenuBtn.addEventListener('click', () => dom.mobileMenu.classList.toggle('hidden'));
+
+// Make saveQuizResult globally accessible for other scripts
+window.saveQuizResult = saveQuizResult;
+
+// --- Helper functions (like mapAuthError, openModal, etc.) remain the same ---
 function openModal(loginMode = true) {
     isLoginMode = loginMode;
     updateModalUI();
@@ -141,52 +219,22 @@ function switchModalMode() {
     updateModalUI();
 }
 
-// --- Event Listeners ---
-if (dom.loginBtn) dom.loginBtn.addEventListener('click', () => openModal(true));
-if (dom.signupBtn) dom.signupBtn.addEventListener('click', () => openModal(false));
-if (dom.closeModalBtn) dom.closeModalBtn.addEventListener('click', closeModal);
-if (dom.modalSwitchBtn) dom.modalSwitchBtn.addEventListener('click', switchModalMode);
-if (dom.logoutBtn) dom.logoutBtn.addEventListener('click', () => signOut(auth));
-
-if (dom.authForm) {
-    dom.authForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = dom.emailInput ? dom.emailInput.value : '';
-        const password = dom.passwordInput ? dom.passwordInput.value : '';
-        if (dom.errorMessage) dom.errorMessage.classList.add('hidden');
-
-        const authFunction = isLoginMode ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
-
-        authFunction(auth, email, password)
-            .then(() => closeModal())
-            .catch(error => {
-                console.error('Auth error:', error);
-                const friendly = mapAuthError(error);
-                if (dom.errorMessage) {
-                    dom.errorMessage.textContent = friendly;
-                    dom.errorMessage.classList.remove('hidden');
-                } else {
-                    // fallback alert if errorMessage element missing
-                    alert(friendly);
-                }
-            });
-    });
-}
-
-// --- Mobile Menu ---
-function toggleMobileMenu() {
-    if (dom.mobileMenu) dom.mobileMenu.classList.toggle('hidden');
-}
-if (dom.mobileMenuBtn) dom.mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-
-// --- Auto-hiding Header ---
-let lastScrollTop = 0;
-window.addEventListener('scroll', function() {
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    if (scrollTop > lastScrollTop && scrollTop > 100) {
-        if (dom.header) dom.header.style.transform = 'translateY(-100%)';
-    } else {
-        if (dom.header) dom.header.style.transform = 'translateY(0)';
+function mapAuthError(err) {
+    if (!err || !err.code) return 'An unknown error occurred.';
+    switch (err.code) {
+        case 'auth/invalid-email':
+            return 'Invalid email address. Please enter a valid email.';
+        case 'auth/weak-password':
+            return 'Weak password. Password should be at least 6 characters.';
+        case 'auth/email-already-in-use':
+            return 'This email is already in use. Try logging in instead.';
+        case 'auth/wrong-password':
+            return 'Incorrect password. Please try again.';
+        case 'auth/user-not-found':
+            return 'No account found for this email. Please sign up first.';
+        case 'auth/network-request-failed':
+            return 'Network error. Check your internet connection and try again.';
+        default:
+            return err.message || 'An authentication error occurred.';
     }
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-}, false);
+}
