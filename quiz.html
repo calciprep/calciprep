@@ -74,50 +74,8 @@
 </head>
 <body class="text-main">
 
-    <!-- Header -->
-    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html">
-                <img src="New-logo.svg" alt="CalciPrep Logo" class="h-10">
-            </a>
-            <div class="flex items-center space-x-4">
-                <a id="back-link" href="#" class="p-2 rounded-full hover:bg-gray-100 transition-colors hidden lg:block" title="Go Back">
-                    <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
-                </a>
-                 <!-- Auth Buttons (Desktop) -->
-                <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
-                    <!-- Logged out state (desktop visible) -->
-                    <div id="logged-out-view" class="flex items-center space-x-2">
-                        <button id="login-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Login</button>
-                        <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
-                    </div>
-                     <!-- Logged in state -->
-                     <div id="logged-in-view" class="hidden items-center">
-                         <span id="user-email" class="text-sm text-gray-600 mr-4"></span>
-                         <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
-                     </div>
-                 </div>
-                 <!-- Mobile Menu Button -->
-                 <div class="lg:hidden">
-                     <button id="menu-btn" class="focus:outline-none p-2">
-                         <i data-lucide="menu" class="w-6 h-6"></i>
-                     </button>
-                 </div>
-             </div>
-         </nav>
-         <!-- Mobile Menu -->
-         <div id="mobile-menu" class="hidden lg:hidden">
-             <div class="px-2 pt-2 pb-3 space-y-1">
-                  <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
-                  <a id="mobile-back-link" href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Back</a>
-                 <!-- Mobile Auth Buttons Appear Here -->
-                 <div id="mobile-auth-container" class="px-3 pt-4 pb-2 border-t border-gray-200">
-                     <button id="login-btn-mobile" class="w-full text-left font-semibold text-gray-700 py-2">Login</button>
-                     <button id="signup-btn-mobile" class="w-full mt-2 btn-primary text-center py-2">Sign Up</button>
-                 </div>
-             </div>
-         </div>
-    </header>
+    <!-- Header will be loaded here -->
+    <div id="header-placeholder"></div>
 
     <main class="container mx-auto px-6 py-12">
         <div class="max-w-3xl mx-auto">
@@ -131,7 +89,7 @@
                     </div>
                 </div>
                 
-                <h2 id="question-text" class="text-2xl font-bold text-center my-8 min-h-[6rem]"></h2>
+                <h2 id="question-text" class="text-2xl font-bold text-center my-8 min-h-[6rem]">Loading questions...</h2>
 
                 <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
@@ -167,35 +125,12 @@
         </div>
     </main>
 
-    <!-- Login/Signup Modals -->
-    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="modal-title" class="text-3xl font-bold">Login</h2>
-                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
-                </div>
-                <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
-                <form id="auth-form">
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                        <input type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <div class="mb-6">
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary">Login</button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    <span id="modal-switch-text">Don't have an account?</span>
-                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
-                </p>
-            </div>
-        </div>
-    </div>
+    <!-- Footer will be loaded here -->
+    <div id="footer-placeholder"></div>
 
-    <script src="questions.js"></script>
+    <!-- Load templates first for better live server compatibility -->
+    <script src="templates-inline.html"></script>
+    
     <!-- Centralized JavaScript File -->
     <script type="module" src="main.js"></script>
     
@@ -226,6 +161,23 @@
         let questionTimer;
         let totalTime = 0;
         let totalTimeTracker;
+
+        // --- NEW: Function to fetch quiz data ---
+        async function fetchQuizData(category) {
+            // Convert category name to a filename-friendly format (e.g., "One Word Substitution" -> "one_word_substitution")
+            const fileName = category.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '.json';
+            try {
+                const response = await fetch(`data/${fileName}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("Could not fetch quiz data:", error);
+                questionTextEl.textContent = "Failed to load quiz data. Please check the category and try again.";
+                return null;
+            }
+        }
 
         function startQuiz() {
             totalTimeTracker = setInterval(() => totalTime++, 1000);
@@ -310,7 +262,6 @@
                 localStorage.setItem(quizKey, 'completed');
             }
 
-            // *** FIX STARTS HERE: Save the quiz result to the database ***
             if (window.saveQuizResult) {
                 window.saveQuizResult({
                     category: category,
@@ -320,7 +271,6 @@
                     totalTime: totalTime
                 });
             }
-            // *** FIX ENDS HERE ***
 
             attemptedCountEl.textContent = correctCount + incorrectCount;
             correctCountEl.textContent = correctCount;
@@ -328,35 +278,41 @@
             totalTimeEl.textContent = totalTime;
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category') || 'English';
-        const quizNumber = urlParams.get('quiz') || '1';
+        // --- MODIFIED: Main logic to initialize the quiz ---
+        async function initializeQuiz() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+            const quizNumber = urlParams.get('quiz');
 
-        document.title = `${category} Quiz ${quizNumber} - CalciPrep`;
-        quizTitleEl.textContent = `${category} - Quiz ${quizNumber}`;
-        
-        const backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
-        document.getElementById('back-link').href = backUrl;
-        document.getElementById('mobile-back-link').href = backUrl;
-        
-        if (typeof quizData !== 'undefined' && quizData[category] && quizData[category][quizNumber - 1]) {
-            questions = quizData[category][quizNumber - 1];
-        } else {
-            questionTextEl.textContent = "Quiz data not found. Please go back and select another quiz.";
+            if (!category || !quizNumber) {
+                questionTextEl.textContent = "Invalid quiz URL. Please go back and select a quiz.";
+                return;
+            }
+
+            document.title = `${category} Quiz ${quizNumber} - CalciPrep`;
+            quizTitleEl.textContent = `${category} - Quiz ${quizNumber}`;
+            
+            const allQuizzesForCategory = await fetchQuizData(category);
+
+            if (allQuizzesForCategory && allQuizzesForCategory[quizNumber - 1]) {
+                questions = allQuizzesForCategory[quizNumber - 1];
+                startQuiz();
+            } else {
+                questionTextEl.textContent = "Quiz data not found. Please go back and select another quiz.";
+            }
         }
         
         skipBtn.addEventListener('click', skipQuestion);
         submitTestBtn.addEventListener('click', () => {
-            if(confirm('Are you sure you want to submit the test?')) {
-                showScore();
-            }
+            // Replaced the native confirm() with a simple check for now.
+            // A custom modal would be a good future improvement.
+            showScore();
         });
 
-        if (questions.length > 0) {
-            startQuiz();
-        }
+        initializeQuiz();
 
         if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     });
-</script></body>
+</script>
+</body>
 </html>

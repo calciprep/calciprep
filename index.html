@@ -79,54 +79,8 @@
 </head>
 <body class="text-main">
 
-    <!-- Header & Navigation -->
-    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#home">
-                <img src="New-logo.svg" alt="CalciPrep Logo" class="h-10">
-            </a>
-            <div class="hidden lg:flex items-center space-x-8">
-                <a href="#home" class="nav-link">Home</a>
-                <a href="#subjects" class="nav-link">Subjects</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#features" class="nav-link">Features</a>
-                <a href="#resources" class="nav-link">Resources</a>
-                <a href="#contact" class="nav-link">Contact</a>
-            </div>
-            <!-- Auth Buttons (Desktop) -->
-           <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
-    <div id="logged-out-view" class="flex items-center space-x-2">
-        <button id="login-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Login</button>
-        <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
-    </div>
-    <div id="logged-in-view" class="hidden items-center space-x-4">
-        <span id="user-email" class="text-sm text-gray-600"></span>
-        <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
-    </div>
-</div>
-            <!-- Mobile Menu Button -->
-            <div class="lg:hidden">
-                <button id="menu-btn" class="focus:outline-none p-2">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-            </div>
-        </nav>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden lg:hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                 <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
-                 <a href="#subjects" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Subjects</a>
-                 <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About</a>
-                 <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Features</a>
-                 <a href="#resources" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Resources</a>
-                 <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Contact</a>
-                 <!-- Mobile Auth Buttons (kept here so login/signup are shown only in menu) -->
-                 <div id="mobile-auth-container" class="px-3 pt-4 pb-2 border-t border-gray-200">
-                     <!-- JS will populate this -->
-                 </div>
-            </div>
-        </div>
-    </header>
+    <!-- Header will be loaded here -->
+    <div id="header-placeholder"></div>
 
     <main>
         <!-- 1. Home Page / Hero Section -->
@@ -360,33 +314,33 @@
 
         <!-- 6. Resources Section -->
        <section id="resources" class="py-20 section-bg">
-    <div class="container mx-auto px-6">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold">Your Resources</h2>
-            <p class="text-gray-600 mt-4">Review your performance and plan your next steps.</p>
-        </div>
-        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-            <h3 class="text-2xl font-bold mb-6">Performance Review</h3>
-            <div class="space-y-6">
-                <div>
-                    <h4 class="text-xl font-semibold mb-2">Saved Results</h4>
-                    <p class="text-gray-600">Access detailed reports from your completed mock tests and quizzes. Review questions, see correct answers, and understand your mistakes.</p>
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">Your Resources</h2>
+                    <p class="text-gray-600 mt-4">Review your performance and plan your next steps.</p>
                 </div>
-                <hr>
-                <div>
-                    <h4 class="text-xl font-semibold mb-2">Past Practice History</h4>
-                    <p class="text-gray-600">A complete log of all your practice sessions. Filter by date, subject, or performance to easily find what you're looking for.</p>
-                </div>
-                <hr>
-                <div>
-                    <h4 class="text-xl font-semibold mb-2">Suggested Improvement Paths</h4>
-                    <p class="text-gray-600">Based on your performance, we provide personalized recommendations on topics you should focus on next to maximize your score.</p>
-                     <a href="#" class="font-semibold mt-2 inline-block" style="color: #fccc42;">Get Recommendations &rarr;</a>
+                <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-6">Performance Review</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-xl font-semibold mb-2">Saved Results</h4>
+                            <p class="text-gray-600">Access detailed reports from your completed mock tests and quizzes. Review questions, see correct answers, and understand your mistakes.</p>
+                        </div>
+                        <hr>
+                        <div>
+                            <h4 class="text-xl font-semibold mb-2">Past Practice History</h4>
+                            <p class="text-gray-600">A complete log of all your practice sessions. Filter by date, subject, or performance to easily find what you're looking for.</p>
+                        </div>
+                        <hr>
+                        <div>
+                            <h4 class="text-xl font-semibold mb-2">Suggested Improvement Paths</h4>
+                            <p class="text-gray-600">Based on your performance, we provide personalized recommendations on topics you should focus on next to maximize your score.</p>
+                             <a href="#" class="font-semibold mt-2 inline-block" style="color: #fccc42;">Get Recommendations &rarr;</a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
         
         <!-- 7. Contact Page Section -->
         <section id="contact" class="py-20 bg-white">
@@ -430,53 +384,16 @@
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12" style="background-color: #151313;">
-        <div class="container mx-auto px-6 text-center">
-            <a href="#home">
-                <img src="New-logo.svg" alt="CalciPrep Logo" class="h-10 mx-auto">
-            </a>
-            <div class="flex justify-center space-x-6 my-6">
-                <a href="#about" class="hover:text-accent-orange text-gray-300">About</a>
-                <a href="#subjects" class="hover:text-accent-orange text-gray-300">Subjects</a>
-                <a href="#features" class="hover:text-accent-orange text-gray-300">Features</a>
-                <a href="#contact" class="hover:text-accent-orange text-gray-300">Contact</a>
-            </div>
-            <p class="text-gray-400">&copy; 2024 CalciPrep. All Rights Reserved.</p>
-        </div>
-    </footer>
+    <!-- Footer will be loaded here -->
+    <div id="footer-placeholder"></div>
 
-    <!-- Login/Signup Modals -->
-    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="modal-title" class="text-3xl font-bold">Login</h2>
-                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
-                </div>
-                <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
-                <form id="auth-form">
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                        <input type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <div class="mb-6">
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary">Login</button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    <span id="modal-switch-text">Don't have an account?</span>
-                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
-                </p>
-            </div>
-        </div>
-    </div>
-
+    <!-- Load templates first for better live server compatibility -->
+    <script src="templates-inline.html"></script>
+    
     <script type="module" src="main.js"></script>
     <script>
-        // This script is only for rendering icons on this page
+        // This script ensures icons on the main page content are rendered.
+        // main.js will handle icons inside the loaded header and footer.
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         });
