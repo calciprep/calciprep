@@ -41,8 +41,7 @@ const dom = {
     authForm: document.getElementById('auth-form'),
     emailInput: document.getElementById('email'),
     passwordInput: document.getElementById('password'),
-    errorMessage: document.getElementById('error-message'),
-    historyContainer: document.getElementById('history-container') // For dashboard page
+    errorMessage: document.getElementById('error-message')
 };
 
 let isLoginMode = true;
@@ -53,18 +52,13 @@ function updateAuthUI(user) {
         // User is signed in
         if (dom.loggedInView) {
             dom.loggedInView.classList.remove('hidden');
-            const progressLink = dom.loggedInView.querySelector('a');
-            if(progressLink) {
-                progressLink.href = 'progress.html';
-                progressLink.textContent = 'My Progress';
-            }
+            // Logic for progress link removed
         }
         if (dom.loggedOutView) dom.loggedOutView.classList.add('hidden');
         if (dom.userEmailEl) dom.userEmailEl.textContent = user.email;
         
         if (dom.mobileAuthContainer) {
             dom.mobileAuthContainer.innerHTML = `
-                <a href="progress.html" class="block px-3 py-2 rounded-md text-base font-medium text-accent-orange hover:bg-gray-50">My Progress</a>
                 <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
                 <button id="mobile-logout-btn" class="w-full text-left font-semibold text-red-600 px-3 py-2">Logout</button>`;
             const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
@@ -108,56 +102,9 @@ async function saveQuizResult(result) {
     }
 }
 
-async function loadDashboardData() {
-    const user = auth.currentUser;
-    if (!user) {
-        dom.historyContainer.innerHTML = '<p class="text-center">Please log in to see your progress.</p>';
-        return;
-    }
-
-    const q = query(collection(db, "users", user.uid, "quizHistory"), orderBy("createdAt", "desc"));
-    
-    try {
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-            dom.historyContainer.innerHTML = '<p class="text-center">You haven\'t completed any quizzes yet. Go practice!</p>';
-            return;
-        }
-
-        let historyHtml = '<div class="space-y-4">';
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString() : 'N/A';
-            const score = `${data.correctCount}/${data.correctCount + data.incorrectCount}`;
-            
-            historyHtml += `
-                <div class="border-b pb-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold">${data.quizName}</h3>
-                        <span class="text-sm text-gray-500">${date}</span>
-                    </div>
-                    <p class="text-gray-600">Category: ${data.category}</p>
-                    <p class="font-semibold">Score: <span class="text-accent-orange">${score}</span> | Time: ${data.totalTime}s</p>
-                </div>
-            `;
-        });
-        historyHtml += '</div>';
-        dom.historyContainer.innerHTML = historyHtml;
-
-    } catch (error) {
-        console.error("Error loading dashboard data: ", error);
-        dom.historyContainer.innerHTML = '<p class="text-center text-red-500">Could not load your history. Please try again later.</p>';
-    }
-}
-
-
 // --- Global Event Listeners & Initializations ---
 onAuthStateChanged(auth, (user) => {
     updateAuthUI(user);
-    // If we are on the dashboard page, load the data
-    if (dom.historyContainer) {
-        loadDashboardData();
-    }
 });
 
 if (dom.loginBtn) dom.loginBtn.addEventListener('click', () => openModal(true));
@@ -245,3 +192,18 @@ function mapAuthError(err) {
             return err.message || 'An authentication error occurred.';
     }
 }
+
+// --- NEW CODE: Header hide on scroll ---
+let lastScrollTop = 0;
+window.addEventListener("scroll", function() {
+    if (!dom.header) return;
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollTop > lastScrollTop && scrollTop > 100) {
+        // Scrolling Down
+        dom.header.style.transform = 'translateY(-100%)';
+    } else {
+        // Scrolling Up
+        dom.header.style.transform = 'translateY(0)';
+    }
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+}, false);
