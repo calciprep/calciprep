@@ -2,9 +2,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-// Use global templates loaded from templates-inline.html
-const headerHTML = window.headerHTML || '';
-const footerHTML = window.footerHTML || '';
+// Use global templates loaded from templates.js
+let headerHTML = '';
+let footerHTML = '';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -29,14 +29,35 @@ let isLoginMode = true;
 
 // Function to load HTML templates from the imported strings
 function loadTemplates() {
+    // Get templates from window object
+    headerHTML = window.headerHTML || '';
+    footerHTML = window.footerHTML || '';
+    
+    console.log('Loading templates:', { headerHTML: !!headerHTML, footerHTML: !!footerHTML });
+    
     const headerPlaceholder = document.getElementById('header-placeholder');
     const footerPlaceholder = document.getElementById('footer-placeholder');
 
-    if (headerPlaceholder) {
+    if (headerPlaceholder && headerHTML) {
         headerPlaceholder.innerHTML = headerHTML;
+        console.log('Header loaded successfully');
+    } else {
+        console.log('Header not loaded:', { headerPlaceholder: !!headerPlaceholder, headerHTML: !!headerHTML });
     }
-    if (footerPlaceholder) {
+    
+    // Only load footer on the main index page
+    const currentPage = window.location.pathname;
+    const isIndexPage = currentPage.includes('index.html') || currentPage === '/' || currentPage === '';
+    
+    if (footerPlaceholder && footerHTML && isIndexPage) {
         footerPlaceholder.innerHTML = footerHTML;
+        console.log('Footer loaded successfully (index page only)');
+    } else if (footerPlaceholder && !isIndexPage) {
+        // Hide footer on non-index pages
+        footerPlaceholder.style.display = 'none';
+        console.log('Footer hidden (not index page)');
+    } else {
+        console.log('Footer not loaded:', { footerPlaceholder: !!footerPlaceholder, footerHTML: !!footerHTML, isIndexPage });
     }
     
     // Check if we're on a quiz page and show back button if needed
@@ -46,10 +67,17 @@ function loadTemplates() {
 // Function to setup back button on quiz pages
 function setupBackButton() {
     const currentPage = window.location.pathname;
+    const isIndexPage = currentPage.includes('index.html') || currentPage === '/' || currentPage === '';
     const isQuizPage = currentPage.includes('quiz.html');
     const isQuizListPage = currentPage.includes('quiz-list.html');
     const isEnglishPage = currentPage.includes('english.html');
     const isMathsPage = currentPage.includes('maths.html');
+    
+    // Don't show back button on the main index page
+    if (isIndexPage) {
+        console.log('On index page - no back button needed');
+        return;
+    }
     
     if (isQuizPage) {
         const backButtonContainer = document.getElementById('back-button-container');
@@ -57,6 +85,7 @@ function setupBackButton() {
         
         if (backButtonContainer) {
             backButtonContainer.classList.remove('hidden');
+            console.log('Back button shown on quiz page');
         }
         if (mobileBackLink) {
             mobileBackLink.classList.remove('hidden');
@@ -70,6 +99,7 @@ function setupBackButton() {
         
         if (backButtonContainer) {
             backButtonContainer.classList.remove('hidden');
+            console.log('Back button shown on content page');
         }
         if (mobileBackLink) {
             mobileBackLink.classList.remove('hidden');
@@ -77,6 +107,8 @@ function setupBackButton() {
         
         // Set up back button functionality for other pages
         setupPageBackButton();
+    } else {
+        console.log('On unknown page - no back button needed');
     }
 }
 
@@ -93,9 +125,14 @@ function setupQuizBackButton() {
         
         if (backLink) {
             backLink.href = backUrl;
+            console.log('Quiz back button links to:', backUrl);
         }
         if (mobileBackLink) {
-            mobileBackLink.href = backUrl;
+            // Find the anchor tag inside the mobile back link container
+            const mobileBackAnchor = mobileBackLink.querySelector('a');
+            if (mobileBackAnchor) {
+                mobileBackAnchor.href = backUrl;
+            }
         }
     }
 }
@@ -124,14 +161,19 @@ function setupPageBackButton() {
     
     if (backLink) {
         backLink.href = backUrl;
+        console.log('Back button links to:', backUrl);
     }
     if (mobileBackLink) {
-        mobileBackLink.href = backUrl;
+        // Find the anchor tag inside the mobile back link container
+        const mobileBackAnchor = mobileBackLink.querySelector('a');
+        if (mobileBackAnchor) {
+            mobileBackAnchor.href = backUrl;
+        }
     }
 }
 
 // Function to initialize all event listeners and dynamic content
-function initializeApp() {
+function initializeCalciPrepApp() {
     // --- DOM Element References ---
     const dom = {
         header: document.getElementById('header'),
@@ -292,7 +334,39 @@ async function saveQuizResult(result) {
 window.saveQuizResult = saveQuizResult;
 
 // --- App Initialization ---
+function initializeWhenReady() {
+    // Check if templates are loaded
+    console.log('Checking templates:', { 
+        headerHTML: !!window.headerHTML, 
+        footerHTML: !!window.footerHTML,
+        headerLength: window.headerHTML?.length || 0,
+        footerLength: window.footerHTML?.length || 0
+    });
+    
+    if (window.headerHTML && window.footerHTML) {
+        console.log('Templates ready, initializing...');
+        loadTemplates();      // First, inject the HTML from our templates.js file
+        initializeCalciPrepApp();      // Then, initialize all the logic and event listeners
+    } else {
+        // If templates aren't ready yet, wait a bit more
+        console.log('Templates not ready, waiting...');
+        setTimeout(initializeWhenReady, 50);
+        
+        // Fallback: if templates don't load after 5 seconds, try to load them anyway
+        if (window.templateLoadAttempts === undefined) {
+            window.templateLoadAttempts = 0;
+        }
+        window.templateLoadAttempts++;
+        
+        if (window.templateLoadAttempts > 100) { // 5 seconds
+            console.warn('Templates failed to load, proceeding without them');
+            loadTemplates(); // This will load empty templates
+            initializeCalciPrepApp();
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadTemplates();      // First, inject the HTML from our templates.js file
-    initializeApp();      // Then, initialize all the logic and event listeners
+    // Start checking for templates to be ready
+    initializeWhenReady();
 });

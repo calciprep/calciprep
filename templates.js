@@ -1,6 +1,9 @@
-// This file centralizes the HTML templates for the header and footer.
-
-export const headerHTML = `
+// Centralized HTML templates for CalciPrep
+(function() {
+    'use strict';
+    
+    // Define templates
+    const headerHTML = `
 <!-- Header & Navigation -->
 <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
     <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -15,14 +18,16 @@ export const headerHTML = `
             <a href="index.html#resources" class="nav-link">Resources</a>
             <a href="index.html#contact" class="nav-link">Contact</a>
         </div>
-        <!-- Back Button (hidden by default, shown on quiz pages) -->
-        <div id="back-button-container" class="hidden">
-            <a id="back-link" href="#" class="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Go Back">
-                <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
-            </a>
-        </div>
-        <!-- Auth Buttons (Desktop) -->
-       <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
+                 <!-- Right side: Back button and Auth buttons grouped together -->
+         <div class="flex items-center space-x-2">
+             <!-- Back Button (hidden by default, shown on quiz pages, hidden on mobile) -->
+             <div id="back-button-container" class="hidden max-lg:hidden">
+                 <a id="back-link" href="#" class="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Go Back">
+                     <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
+                 </a>
+             </div>
+            <!-- Auth Buttons (Desktop) -->
+            <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
             <div id="logged-out-view" class="flex items-center space-x-2">
                 <button id="login-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Login</button>
                 <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
@@ -31,6 +36,7 @@ export const headerHTML = `
                 <span id="user-email" class="text-sm text-gray-600"></span>
                 <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
             </div>
+        </div>
         </div>
         <!-- Mobile Menu Button -->
         <div class="lg:hidden">
@@ -48,11 +54,19 @@ export const headerHTML = `
              <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Features</a>
              <a href="index.html#resources" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Resources</a>
              <a href="index.html#contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Contact</a>
-             <!-- Mobile Back Button (hidden by default, shown on quiz pages) -->
-             <a id="mobile-back-link" href="#" class="hidden block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Back</a>
-             <!-- Mobile Auth Buttons -->
-             <div id="mobile-auth-container" class="px-3 pt-4 pb-2 border-t border-gray-200">
-                 <!-- JS will populate this -->
+             <!-- Mobile Back Button and Auth Buttons grouped together -->
+             <div class="px-3 pt-4 pb-2 border-t border-gray-200">
+                 <!-- Mobile Back Button (hidden by default, shown on quiz pages) -->
+                 <div id="mobile-back-link" class="hidden mb-3">
+                     <a href="#" class="flex items-center text-base font-medium text-gray-700 hover:bg-gray-50 px-3 py-2 rounded-md">
+                         <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
+                         Back
+                     </a>
+                 </div>
+                 <!-- Mobile Auth Buttons -->
+                 <div id="mobile-auth-container">
+                     <!-- JS will populate this -->
+                 </div>
              </div>
         </div>
     </div>
@@ -87,7 +101,7 @@ export const headerHTML = `
 </div>
 `;
 
-export const footerHTML = `
+    const footerHTML = `
 <!-- Footer -->
 <footer class="bg-gray-800 text-white py-12" style="background-color: #151313;">
     <div class="container mx-auto px-6 text-center">
@@ -103,10 +117,16 @@ export const footerHTML = `
         <p class="text-gray-400">&copy; 2024 CalciPrep. All Rights Reserved.</p>
     </div>
 </footer>
-`;
-
-// Fallback for live servers that don't support ES6 modules
-if (typeof window !== 'undefined') {
+    `;
+    
+    // Make templates globally accessible
     window.headerHTML = headerHTML;
     window.footerHTML = footerHTML;
-}
+    
+    console.log('Templates loaded:', { 
+        headerHTML: !!headerHTML, 
+        footerHTML: !!footerHTML,
+        headerLength: headerHTML.length,
+        footerLength: footerHTML.length
+    });
+})();
