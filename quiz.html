@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Quiz - CalciPrep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
+     crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Kodchasan', sans-serif;
+            background-color: #f7f7f7;
+            color: #151313;
+        }
+        header {
+            transition: transform 0.3s ease-in-out;
+        }
+        .accent-purple { color: #be94f5; }
+        .bg-accent-purple { background-color: #be94f5; }
+        .btn-primary {
+            padding: 0.75rem 2rem;
+            background-color: #ff5734;
+            color: white;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #e64a2e;
+            transform: scale(1.05);
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            border-color: #be94f5;
+            color: #be94f5;
+        }
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+        }
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        /* CLS-safe ad container */
+        .ad-container {
+            min-height: 250px; /* Adjust for in-article ad */
+            width: 100%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body class="text-main">
+
+    <!-- Header -->
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html">
+                <img src="https://i.postimg.cc/x8BP0Dkb/300-dpi-logo-removebg-preview.png" alt="CalciPrep Logo" class="h-14">
+            </a>
+            <div class="flex items-center space-x-4">
+                <a id="back-link" href="#" class="p-2 rounded-full hover:bg-gray-100 transition-colors hidden lg:block" title="Go Back">
+                    <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
+                </a>
+                 <!-- Auth Buttons (Desktop) -->
+                <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
+                    <!-- Logged out state (desktop visible) -->
+                    <div id="logged-out-view" class="flex items-center space-x-2">
+                        <button id="login-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Login</button>
+                        <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
+                    </div>
+                     <!-- Logged in state -->
+                     <div id="logged-in-view" class="hidden items-center">
+                         <span id="user-email" class="text-sm text-gray-600 mr-4"></span>
+                         <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
+                     </div>
+                 </div>
+                 <!-- Mobile Menu Button -->
+                 <div class="lg:hidden">
+                     <button id="menu-btn" class="focus:outline-none p-2">
+                         <i data-lucide="menu" class="w-6 h-6"></i>
+                     </button>
+                 </div>
+             </div>
+         </nav>
+         <!-- Mobile Menu -->
+         <div id="mobile-menu" class="hidden lg:hidden">
+             <div class="px-2 pt-2 pb-3 space-y-1">
+                  <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                  <a id="mobile-back-link" href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Back</a>
+                 <!-- Mobile Auth Buttons Appear Here -->
+                 <div id="mobile-auth-container" class="px-3 pt-4 pb-2 border-t border-gray-200">
+                     <button id="login-btn-mobile" class="w-full text-left font-semibold text-gray-700 py-2">Login</button>
+                     <button id="signup-btn-mobile" class="w-full mt-2 btn-primary text-center py-2">Sign Up</button>
+                 </div>
+             </div>
+         </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-3xl mx-auto">
+            <!-- Quiz Interface -->
+            <div id="quiz-container" class="bg-white p-8 rounded-xl shadow-2xl">
+                <div id="quiz-header" class="mb-6">
+                    <h1 id="quiz-title" class="text-3xl font-bold text-center"></h1>
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-lg font-semibold">Question <span id="question-count">1</span>/30</div>
+                        <div class="text-lg font-semibold accent-purple">Time: <span id="timer">15</span>s</div>
+                    </div>
+                </div>
+                
+                <h2 id="question-text" class="text-2xl font-bold text-center my-8 min-h-[6rem]"></h2>
+
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button id="skip-btn" class="font-semibold text-gray-600 hover:text-accent-orange">Skip</button>
+                    <button id="submit-test-btn" class="bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-700">Submit Test</button>
+                </div>
+            </div>
+
+            <!-- Final Score Card (Hidden by default) -->
+            <div id="score-card" class="hidden text-center bg-white p-8 rounded-xl shadow-2xl">
+                 <h2 class="text-4xl font-bold mb-4">Quiz Complete!</h2>
+                 <div class="text-xl mt-6 space-y-2">
+                    <p>Questions Attempted: <span id="attempted-count" class="font-bold"></span></p>
+                    <p>Correct Answers: <span id="correct-count" class="text-green-500 font-bold"></span></p>
+                    <p>Wrong Answers: <span id="wrong-count" class="text-red-500 font-bold"></span></p>
+                    <p>Total Time Taken: <span id="total-time" class="font-bold"></span>s</p>
+                 </div>
+                 <div class="ad-container rounded-lg">
+                    <!-- Ad Unit: Quiz-End -->
+                    <ins class="adsbygoogle"
+                         style="display:block; text-align:center;"
+                         data-ad-layout="in-article"
+                         data-ad-format="fluid"
+                         data-ad-client="ca-pub-2382040431534049"
+                         data-ad-slot="EEEEEEEEEE"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                 </div>
+                 <button onclick="window.location.reload()" class="btn-primary mt-8">Play Again</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login/Signup Modals -->
+    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="modal-title" class="text-3xl font-bold">Login</h2>
+                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+                </div>
+                <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
+                <form id="auth-form">
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                    </div>
+                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary">Login</button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    <span id="modal-switch-text">Don't have an account?</span>
+                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <!-- Centralized JavaScript File -->
+    <script type="module" src="main.js"></script>
+    
+    <!-- Page-specific Functionality Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // This script handles the quiz logic for this page.
+            
+            const quizContainer = document.getElementById('quiz-container');
+            const scoreCard = document.getElementById('score-card');
+            const quizTitleEl = document.getElementById('quiz-title');
+            const questionCountEl = document.getElementById('question-count');
+            const timerEl = document.getElementById('timer');
+            const questionTextEl = document.getElementById('question-text');
+            const optionsContainer = document.getElementById('options-container');
+            const skipBtn = document.getElementById('skip-btn');
+            const submitTestBtn = document.getElementById('submit-test-btn');
+            
+            const attemptedCountEl = document.getElementById('attempted-count');
+            const correctCountEl = document.getElementById('correct-count');
+            const wrongCountEl = document.getElementById('wrong-count');
+            const totalTimeEl = document.getElementById('total-time');
+
+            let questions = [];
+            let currentQuestionIndex = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let questionTimer;
+            let totalTime = 0;
+            let totalTimeTracker;
+
+            function startQuiz() {
+                totalTimeTracker = setInterval(() => totalTime++, 1000);
+                loadQuestion();
+            }
+
+            function startQuestionTimer() {
+                let timeLeft = 15;
+                timerEl.textContent = timeLeft;
+                questionTimer = setInterval(() => {
+                    timeLeft--;
+                    timerEl.textContent = timeLeft;
+                    if (timeLeft <= 0) {
+                        skipQuestion();
+                    }
+                }, 1000);
+            }
+
+            function loadQuestion() {
+                if (currentQuestionIndex >= questions.length) {
+                    showScore();
+                    return;
+                }
+                
+                clearInterval(questionTimer);
+                startQuestionTimer();
+                
+                questionCountEl.textContent = currentQuestionIndex + 1;
+                const currentQuestion = questions[currentQuestionIndex];
+                questionTextEl.textContent = currentQuestion.question;
+                optionsContainer.innerHTML = '';
+
+                const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+
+                shuffledOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.classList.add('option-btn', 'p-4', 'font-semibold', 'rounded-lg', 'w-full', 'text-lg');
+                    button.onclick = () => selectAnswer(button, option, currentQuestion.answer);
+                    optionsContainer.appendChild(button);
+                });
+            }
+
+            function selectAnswer(button, selectedOption, correctAnswer) {
+                clearInterval(questionTimer);
+                const allOptions = optionsContainer.querySelectorAll('.option-btn');
+                allOptions.forEach(btn => btn.disabled = true);
+
+                if (selectedOption === correctAnswer) {
+                    button.classList.add('correct');
+                    correctCount++;
+                } else {
+                    button.classList.add('incorrect');
+                    incorrectCount++;
+                }
+
+                setTimeout(nextQuestion, 1000);
+            }
+            
+            function skipQuestion() {
+                clearInterval(questionTimer);
+                nextQuestion();
+            }
+
+            function nextQuestion() {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+
+            function showScore() {
+                clearInterval(questionTimer);
+                clearInterval(totalTimeTracker);
+                quizContainer.classList.add('hidden');
+                scoreCard.classList.remove('hidden');
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const category = urlParams.get('category');
+                const quizNumber = urlParams.get('quiz');
+                if (category && quizNumber) {
+                    const quizKey = `${category}-Quiz-${quizNumber}`;
+                    localStorage.setItem(quizKey, 'completed');
+                }
+
+                attemptedCountEl.textContent = correctCount + incorrectCount;
+                correctCountEl.textContent = correctCount;
+                wrongCountEl.textContent = incorrectCount;
+                totalTimeEl.textContent = totalTime;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'English';
+            const quizNumber = urlParams.get('quiz') || '1';
+
+            document.title = `${category} Quiz ${quizNumber} - CalciPrep`;
+            quizTitleEl.textContent = `${category} - Quiz ${quizNumber}`;
+            
+            const backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
+            document.getElementById('back-link').href = backUrl;
+            document.getElementById('mobile-back-link').href = backUrl;
+            
+            if (typeof quizData !== 'undefined' && quizData[category] && quizData[category][quizNumber - 1]) {
+                questions = quizData[category][quizNumber - 1];
+            } else {
+                questionTextEl.textContent = "Quiz data not found. Please go back and select another quiz.";
+            }
+            
+            skipBtn.addEventListener('click', skipQuestion);
+            submitTestBtn.addEventListener('click', () => {
+                if(confirm('Are you sure you want to submit the test?')) {
+                    showScore();
+                }
+            });
+
+            if (questions.length > 0) {
+                startQuiz();
+            }
+
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

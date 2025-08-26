@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz List - CalciPrep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
+     crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Kodchasan', sans-serif;
+            background-color: #f7f7f7;
+            color: #151313;
+        }
+        header {
+            transition: transform 0.3s ease-in-out;
+        }
+        .accent-purple { color: #be94f5; }
+        .bg-accent-purple { background-color: #be94f5; }
+        .btn-primary {
+            padding: 0.75rem 2rem;
+            background-color: #ff5734;
+            color: white;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #e64a2e;
+            transform: scale(1.05);
+        }
+        .quiz-card {
+            background-color: white;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            border-color: #be94f5;
+        }
+        .quiz-card.completed {
+            background-color: #f0fdf4; /* green-50 */
+            border-color: #22c55e; /* green-500 */
+        }
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        /* CLS-safe ad container */
+        .ad-container {
+            min-height: 120px; /* Adjust for in-feed ad */
+            width: 100%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body class="text-main">
+
+    <!-- Header -->
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html">
+                <img src="https://i.postimg.cc/x8BP0Dkb/300-dpi-logo-removebg-preview.png" alt="CalciPrep Logo" class="h-14">
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="english.html" class="p-2 rounded-full hover:bg-gray-100 transition-colors hidden lg:block" title="Go Back">
+                    <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
+                </a>
+                 <!-- Auth Buttons (Desktop) -->
+                <div id="auth-container" class="max-lg:hidden lg:flex items-center space-x-2">
+                    <!-- Logged out state (desktop visible) -->
+                    <div id="logged-out-view" class="flex items-center space-x-2">
+                        <button id="login-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Login</button>
+                        <button id="signup-btn" class="ml-2 btn-primary" style="padding: 0.5rem 1rem;">Sign Up</button>
+                    </div>
+                     <!-- Logged in state -->
+                     <div id="logged-in-view" class="hidden items-center">
+                         <span id="user-email" class="text-sm text-gray-600 mr-4"></span>
+                         <button id="logout-btn" class="font-semibold text-gray-700 hover:text-accent-orange transition-colors">Logout</button>
+                     </div>
+                 </div>
+                  <!-- Mobile Menu Button -->
+                 <div class="lg:hidden">
+                     <button id="menu-btn" class="focus:outline-none p-2">
+                         <i data-lucide="menu" class="w-6 h-6"></i>
+                     </button>
+                 </div>
+             </div>
+         </nav>
+         <!-- Mobile Menu -->
+         <div id="mobile-menu" class="hidden lg:hidden">
+             <div class="px-2 pt-2 pb-3 space-y-1">
+                  <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                 <a href="english.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Back</a>
+                 <!-- Mobile Auth Buttons Appear Here -->
+                 <div id="mobile-auth-container" class="px-3 pt-4 pb-2 border-t border-gray-200">
+                     <button id="login-btn-mobile" class="w-full text-left font-semibold text-gray-700 py-2">Login</button>
+                     <button id="signup-btn-mobile" class="w-full mt-2 btn-primary text-center py-2">Sign Up</button>
+                 </div>
+             </div>
+         </div>
+    </header>
+
+    <div class="flex justify-center">
+        <!-- Left Ad -->
+        <aside class="hidden xl:block w-40 mx-4">
+            <div class="sticky top-28 ad-container" style="min-height: 600px;">
+                <!-- Ad Unit: Vertical-Left -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2382040431534049"
+                     data-ad-slot="YYYYYYYYYY"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </aside>
+
+        <main class="container mx-auto px-6 flex-grow max-w-7xl">
+            <div class="text-center py-12 md:py-16 rounded-xl bg-accent-purple">
+                <h1 id="category-title" class="text-4xl md:text-5xl font-bold text-white"></h1>
+                <p class="text-purple-100 mt-4 text-lg">Select a quiz to begin your practice.</p>
+            </div>
+
+            <!-- Quiz List -->
+            <div id="quiz-list-container" class="flex flex-col items-center max-w-6xl mx-auto mt-12">
+                <!-- Quiz cards and ads will be dynamically inserted here -->
+            </div>
+        </main>
+
+        <!-- Right Ad -->
+        <aside class="hidden xl:block w-40 mx-4">
+            <div class="sticky top-28 ad-container" style="min-height: 600px;">
+                <!-- Ad Unit: Vertical-Right -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2382040431534049"
+                     data-ad-slot="ZZZZZZZZZZ"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Login/Signup Modals and other HTML remains the same... -->
+    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="modal-title" class="text-3xl font-bold">Login</h2>
+                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+                </div>
+                <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
+                <form id="auth-form">
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                    </div>
+                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary">Login</button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    <span id="modal-switch-text">Don't have an account?</span>
+                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Centralized JavaScript File -->
+    <script type="module" src="main.js"></script>
+    
+    <!-- Page-specific Functionality Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryTitle = document.getElementById('category-title');
+            const quizListContainer = document.getElementById('quiz-list-container');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'English Quizzes';
+
+            categoryTitle.textContent = category;
+            document.title = `${category} - CalciPrep`;
+
+            // Function to create an ad card
+            const createAdCard = () => {
+                const adWrapper = document.createElement('div');
+                adWrapper.className = 'ad-container w-full rounded-xl shadow-lg'; 
+                adWrapper.innerHTML = `
+                    <!-- In-feed Ad Unit -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-format="fluid"
+                         data-ad-layout-key="-fb+5w+4e-db+86"
+                         data-ad-client="ca-pub-2382040431534049"
+                         data-ad-slot="DDDDDDDDDD"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    <\/script>
+                `;
+                return adWrapper;
+            };
+
+            // Create rows dynamically to group quiz cards
+            let currentRow;
+            const createRow = () => {
+                const row = document.createElement('div');
+                row.className = 'w-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6';
+                quizListContainer.appendChild(row);
+                return row;
+            };
+
+            for (let i = 1; i <= 50; i++) {
+                // Create a new row for the first item
+                if (i === 1) {
+                    currentRow = createRow();
+                }
+
+                // Insert an ad unit *between* rows
+                if (i > 1 && (i - 1) % 12 === 0) {
+                    quizListContainer.appendChild(createAdCard());
+                    currentRow = createRow(); // Start a new row after the ad
+                }
+
+                const quizKey = `${category}-Quiz-${i}`;
+                const isCompleted = localStorage.getItem(quizKey);
+
+                const quizCard = document.createElement('a');
+                quizCard.href = `quiz.html?category=${encodeURIComponent(category)}&quiz=${i}`;
+                quizCard.className = 'quiz-card p-4 rounded-xl shadow-lg text-center flex flex-col justify-between'; 
+                
+                let cardContent = `
+                    <div class="flex-grow flex flex-col justify-center">
+                        <h2 class="text-xl font-bold mb-2">Quiz ${i}</h2>
+                        <p class="text-gray-500 text-sm">30 Questions</p>
+                    </div>
+                `;
+
+                if (isCompleted) {
+                    cardContent += `
+                        <div class="mt-4 flex items-center justify-center text-green-600 font-semibold">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 mr-1"></i>
+                            <span>Re-attempt</span>
+                        </div>
+                    `;
+                }
+
+                quizCard.innerHTML = cardContent;
+                currentRow.appendChild(quizCard); // Add card to the current row
+            }
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>
