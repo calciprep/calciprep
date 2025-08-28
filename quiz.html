@@ -3,18 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-2382040431534049">
     <title>English Quiz - CalciPrep</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- AdSense Script -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
     <style>
         body {
             font-family: 'Kodchasan', sans-serif;
-            background-color: #f7f7f7;
-            color: #151313;
+            background-color: #000000;
+            color: #f7f7f7;
+        }
+        .glassmorphism {
+            background: rgba(8, 8, 8, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(65, 64, 64, 0.448);
         }
         header {
             transition: transform 0.3s ease-in-out;
@@ -35,8 +42,9 @@
             transform: scale(1.05);
         }
         .option-btn {
-            background-color: white;
-            border: 2px solid #e5e7eb;
+            background-color: #2a2a2a;
+            border: 2px solid #4a4a4a;
+            color: #f7f7f7;
             transition: all 0.2s ease;
         }
         .option-btn:hover {
@@ -44,14 +52,14 @@
             color: #be94f5;
         }
         .option-btn.correct {
-            background-color: #dcfce7;
+            background-color: #1a3b2a;
             border-color: #22c55e;
-            color: #166534;
+            color: #86efac;
         }
         .option-btn.incorrect {
-            background-color: #fee2e2;
+            background-color: #450a0a;
             border-color: #ef4444;
-            color: #991b1b;
+            color: #fca5a5;
         }
         .option-btn:disabled {
             cursor: not-allowed;
@@ -59,11 +67,10 @@
         .modal {
             transition: opacity 0.3s ease;
         }
-        /* CLS-safe ad container */
         .ad-container {
-            min-height: 250px; /* Adjust for in-article ad */
+            min-height: 250px;
             width: 100%;
-            background-color: #f0f0f0;
+            background-color: #2a2a2a;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -74,39 +81,36 @@
 </head>
 <body class="text-main">
 
-    <!-- Header will be loaded here -->
     <div id="header-placeholder"></div>
 
     <main class="container mx-auto px-6 py-12">
         <div class="max-w-3xl mx-auto">
-            <!-- Quiz Interface -->
-            <div id="quiz-container" class="bg-white p-8 rounded-xl shadow-2xl">
+            <div id="quiz-container" class="p-8 rounded-xl shadow-2xl glassmorphism">
                 <div id="quiz-header" class="mb-6">
-                    <h1 id="quiz-title" class="text-3xl font-bold text-center"></h1>
-                    <div class="flex justify-between items-center mt-4">
+                    <h1 id="quiz-title" class="text-3xl font-bold text-center text-white"></h1>
+                    <div class="flex justify-between items-center mt-4 text-gray-300">
                         <div class="text-lg font-semibold">Question <span id="question-count">1</span>/30</div>
                         <div class="text-lg font-semibold accent-purple">Time: <span id="timer">15</span>s</div>
                     </div>
                 </div>
                 
-                <h2 id="question-text" class="text-2xl font-bold text-center my-8 min-h-[6rem]">Loading questions...</h2>
+                <h2 id="question-text" class="text-2xl font-bold text-center my-8 min-h-[6rem] text-white">Loading questions...</h2>
 
                 <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
                 <div class="flex justify-between items-center mt-8">
-                    <button id="skip-btn" class="font-semibold text-gray-600 hover:text-accent-orange">Skip</button>
+                    <button id="skip-btn" class="font-semibold text-gray-400 hover:text-accent-orange">Skip</button>
                     <button id="submit-test-btn" class="bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-700">Submit Test</button>
                 </div>
             </div>
 
-            <!-- Final Score Card (Hidden by default) -->
-            <div id="score-card" class="hidden text-center bg-white p-8 rounded-xl shadow-2xl">
-                 <h2 class="text-4xl font-bold mb-4">Quiz Complete!</h2>
-                 <div class="text-xl mt-6 space-y-2">
-                    <p>Questions Attempted: <span id="attempted-count" class="font-bold"></span></p>
-                    <p>Correct Answers: <span id="correct-count" class="text-green-500 font-bold"></span></p>
-                    <p>Wrong Answers: <span id="wrong-count" class="text-red-500 font-bold"></span></p>
-                    <p>Total Time Taken: <span id="total-time" class="font-bold"></span>s</p>
+            <div id="score-card" class="hidden text-center p-8 rounded-xl shadow-2xl glassmorphism">
+                 <h2 class="text-4xl font-bold mb-4 text-white">Quiz Complete!</h2>
+                 <div class="text-xl mt-6 space-y-2 text-gray-300">
+                    <p>Questions Attempted: <span id="attempted-count" class="font-bold text-white"></span></p>
+                    <p>Correct Answers: <span id="correct-count" class="text-green-400 font-bold"></span></p>
+                    <p>Wrong Answers: <span id="wrong-count" class="text-red-400 font-bold"></span></p>
+                    <p>Total Time Taken: <span id="total-time" class="font-bold text-white"></span>s</p>
                  </div>
                  <div class="ad-container rounded-lg">
                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
@@ -126,20 +130,14 @@
         </div>
     </main>
 
-    <!-- Footer will be loaded here -->
     <div id="footer-placeholder"></div>
 
-    <!-- Load templates first for better live server compatibility -->
     <script src="templates.js"></script>
     
-    <!-- Centralized JavaScript File -->
     <script type="module" src="main.js"></script>
     
-    <!-- Page-specific Functionality Script -->
-   <script>
+    <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // This script handles the quiz logic for this page.
-        
         const quizContainer = document.getElementById('quiz-container');
         const scoreCard = document.getElementById('score-card');
         const quizTitleEl = document.getElementById('quiz-title');
@@ -163,9 +161,7 @@
         let totalTime = 0;
         let totalTimeTracker;
 
-        // --- NEW: Function to fetch quiz data ---
         async function fetchQuizData(category) {
-            // Convert category name to a filename-friendly format (e.g., "One Word Substitution" -> "one_word_substitution")
             const fileName = category.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '.json';
             try {
                 const response = await fetch(`data/${fileName}`);
@@ -279,7 +275,6 @@
             totalTimeEl.textContent = totalTime;
         }
 
-        // --- MODIFIED: Main logic to initialize the quiz ---
         async function initializeQuiz() {
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category');
@@ -305,8 +300,6 @@
         
         skipBtn.addEventListener('click', skipQuestion);
         submitTestBtn.addEventListener('click', () => {
-            // Replaced the native confirm() with a simple check for now.
-            // A custom modal would be a good future improvement.
             showScore();
         });
 

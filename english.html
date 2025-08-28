@@ -8,16 +8,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- AdSense Script -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
     <style>
         body {
             font-family: 'Kodchasan', sans-serif;
-            background-color: #f7f7f7;
-            color: #151313;
+            background-color: #000000;
+            color: #f7f7f7;
         }
-        header {
+        .glassmorphism {
+            background: rgba(8, 8, 8, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(242, 242, 242, 0.504);
+            box-shadow: 0 8px 32px 0 #b492e0;
+        }
+         header {
             transition: transform 0.3s ease-in-out;
         }
         .accent-orange { color: #ff5734; }
@@ -28,12 +34,11 @@
         .accent-blue { color: #3b82f6; }
 
         .category-card {
-            background-color: white;
             transition: all 0.3s ease;
         }
         .category-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(239, 236, 236, 0.848), 0 4px 6px -2px #b492e0;
         }
         .btn-primary {
             padding: 0.75rem 2rem;
@@ -54,32 +59,30 @@
     </style>
 </head>
 <body class="text-main">
-
-    <!-- Header will be loaded here -->
+    
     <div id="header-placeholder"></div>
 
-    <main class="container mx-auto px-6">
-        <div class="text-center py-12 md:py-16 rounded-xl bg-accent-purple">
+    <main class="container mx-auto px-6 py-12">
+        <div class="text-center py-12 md:py-16 rounded-xl glassmorphism border-2 border-purple-500">
             <h1 class="text-4xl md:text-5xl font-bold text-white">English Practice Arena</h1>
-            <p class="text-purple-100 mt-4 text-lg">Strengthen your vocabulary and grammar. Choose a category to begin.</p>
+            <p class="text-purple-200 mt-4 text-lg">Strengthen your vocabulary and grammar. Choose a category to begin.</p>
         </div>
 
-        <!-- Category Selection -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto mt-12">
             
-            <a href="quiz-list.html?category=Synonyms" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-purple">
+            <a href="quiz-list.html?category=Synonyms" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-purple glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-purple"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M9 7h6"></path><path d="M9 11h6"></path><path d="M9 15h4"></path></svg>
-                <h2 class="text-2xl font-bold mb-2">Synonyms Practice</h2>
-                <p class="text-gray-600">Find words with similar meanings.</p>
+                <h2 class="text-2xl font-bold mb-2 text-white">Synonyms Practice</h2>
+                <p class="text-gray-400">Find words with similar meanings.</p>
             </a>
 
-            <a href="quiz-list.html?category=Antonyms" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-yellow">
+            <a href="quiz-list.html?category=Antonyms" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-yellow glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-yellow"><path d="M12 18V6"/><path d="m15 9-3-3-3 3"/><path d="m9 15 3 3 3-3"/><path d="M21 6h-6"/><path d="M3 18h6"/></svg>
-                <h2 class="text-2xl font-bold mb-2">Antonyms Practice</h2>
-                <p class="text-gray-600">Find words with opposite meanings.</p>
+                <h2 class="text-2xl font-bold mb-2 text-white">Antonyms Practice</h2>
+                <p class="text-gray-400">Find words with opposite meanings.</p>
             </a>
 
-            <div class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent bg-white">
+            <div class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent glassmorphism">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
                 <ins class="adsbygoogle"
@@ -93,31 +96,29 @@
 </script>
             </div>
 
-            <a href="quiz-list.html?category=One Word Substitution" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-orange">
+            <a href="quiz-list.html?category=One Word Substitution" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-orange glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-orange"><path d="M8 18H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/><path d="m12 12 4 4 4-4"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M20 12h-8"/></svg>
-                <h2 class="text-2xl font-bold mb-2">One Word Substitution</h2>
-                <p class="text-gray-600">Replace a phrase with a single word.</p>
+                <h2 class="text-2xl font-bold mb-2 text-white">One Word Substitution</h2>
+                <p class="text-gray-400">Replace a phrase with a single word.</p>
             </a>
 
-            <a href="quiz-list.html?category=Idioms and Phrases" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-blue">
+            <a href="quiz-list.html?category=Idioms and Phrases" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-blue glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-blue"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
-                <h2 class="text-2xl font-bold mb-2">Idioms & Phrases</h2>
-                <p class="text-gray-600">Understand the meaning of common idioms.</p>
+                <h2 class="text-2xl font-bold mb-2 text-white">Idioms & Phrases</h2>
+                <p class="text-gray-400">Understand the meaning of common idioms.</p>
             </a>
 
-            <a href="quiz-list.html?category=SSC PYQs" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-green">
+            <a href="quiz-list.html?category=SSC PYQs" class="category-card p-8 rounded-xl shadow-lg text-center border-2 border-transparent hover:border-accent-green glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-green"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-                <h2 class="text-2xl font-bold mb-2">SSC PYQ's Practice</h2>
-                <p class="text-gray-600">Practice with previous year questions.</p>
+                <h2 class="text-2xl font-bold mb-2 text-white">SSC PYQ's Practice</h2>
+                <p class="text-gray-400">Practice with previous year questions.</p>
             </a>
 
         </div>
     </main>
     
-    <!-- Footer will be loaded here -->
     <div id="footer-placeholder"></div>
 
-    <!-- Load templates first for better live server compatibility -->
     <script src="templates.js"></script>
     
     <script type="module" src="main.js"></script>

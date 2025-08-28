@@ -8,20 +8,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- AdSense Script -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
     <style>
         body {
             font-family: 'Kodchasan', sans-serif;
-            background-color: #ffffff;
-            color: #151313;
+            background-color: #000000;
+            color: #f7f7f7;
+        }
+        .glassmorphism {
+            background: rgba(8, 8, 8, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
         header {
             transition: transform 0.3s ease-in-out;
         }
         .section-bg {
-            background-color: #f7f7f7;
+            background-color: #000000;
+        }
+        .section-bg-light {
+             background-color: #000000;
         }
         .accent-orange { color: #ff5734; }
         .bg-accent-orange { background-color: #ff5734; }
@@ -30,15 +39,16 @@
         .accent-yellow { color: #fccc42; }
         .bg-accent-yellow { background-color: #fccc42; }
         
-        .bg-accent-yellow-light { background-color: #fff9e7; }
-        .bg-accent-orange-light { background-color: #ffeee9; }
+        .bg-accent-yellow-light { background-color: #44402f; }
+        .bg-accent-orange-light { background-color: #4d322a; }
 
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 15px -3px rgba(239, 236, 236, 0.848), 0 4px 6px -2px #e95032;
         }
         .subject-card:hover {
              transform: scale(1.05);
+             box-shadow: 0 10px 15px -3px rgba(239, 236, 236, 0.848), 0 4px 6px -2px #e95032;
         }
         .btn-primary {
             padding: 0.75rem 2rem;
@@ -54,22 +64,13 @@
             background-color: #e64a2e;
             transform: scale(1.05);
         }
-        .nav-link {
-            color: #374151; /* text-gray-700 */
-            transition: color 0.3s ease;
-            font-weight: 500;
-        }
-        .nav-link:hover {
-            color: #ff5734;
-        }
         .modal {
             transition: opacity 0.3s ease;
         }
-        /* CLS-safe ad container */
         .ad-container {
-            min-height: 90px; /* Adjust based on expected ad height */
+            min-height: 90px;
             width: 100%;
-            background-color: #f0f0f0;
+            background-color: #2a2a2a;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -78,56 +79,51 @@
     </style>
 </head>
 <body class="text-main">
-
-    <!-- Header will be loaded here -->
+    
     <div id="header-placeholder"></div>
 
     <main>
-        <!-- 1. Home Page / Hero Section -->
         <section id="home" class="section-bg pt-20 lg:pt-32 pb-12">
             <div class="container mx-auto px-6 text-center">
                 <div class="max-w-3xl mx-auto">
-                    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
+                    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4 text-white">
                         Welcome to Calci<span class="text-accent-orange">Prep</span>
                     </h1>
-                    <p class="text-lg md:text-xl text-gray-600 mb-8">
+                    <p class="text-lg md:text-xl text-gray-300 mb-8">
                         Practice smarter. Solve faster. Achieve more.
                     </p>
                     <a href="#subjects" class="btn-primary inline-block">Start Practicing</a>
                 </div>
-                <!-- Highlights -->
                 <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
-                    <div class="bg-white p-6 rounded-xl shadow-lg feature-card transition-all duration-300">
+                    <div class="p-6 rounded-xl shadow-lg feature-card transition-all duration-300 glassmorphism">
                         <i data-lucide="trending-up" class="w-12 h-12 mx-auto mb-4 text-accent-orange"></i>
-                        <h3 class="text-xl font-semibold mb-2">Progress Tracking</h3>
-                        <p class="text-gray-500">Monitor your growth and identify weak spots.</p>
+                        <h3 class="text-xl font-semibold mb-2 text-white">Progress Tracking</h3>
+                        <p class="text-gray-400">Monitor your growth and identify weak spots.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-lg feature-card transition-all duration-300">
+                    <div class="p-6 rounded-xl shadow-lg feature-card transition-all duration-300 glassmorphism">
                         <i data-lucide="trophy" class="w-12 h-12 mx-auto mb-4" style="color: #be94f5;"></i>
-                        <h3 class="text-xl font-semibold mb-2">Leaderboards</h3>
-                        <p class="text-gray-500">Compete with peers and stay motivated.</p>
+                        <h3 class="text-xl font-semibold mb-2 text-white">Leaderboards</h3>
+                        <p class="text-gray-400">Compete with peers and stay motivated.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-lg feature-card transition-all duration-300">
+                    <div class="p-6 rounded-xl shadow-lg feature-card transition-all duration-300 glassmorphism">
                         <i data-lucide="calendar-check" class="w-12 h-12 mx-auto mb-4" style="color: #fccc42;"></i>
-                        <h3 class="text-xl font-semibold mb-2">Daily Challenges</h3>
-                        <p class="text-gray-500">New questions every day to keep you sharp.</p>
+                        <h3 class="text-xl font-semibold mb-2 text-white">Daily Challenges</h3>
+                        <p class="text-gray-400">New questions every day to keep you sharp.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-lg feature-card transition-all duration-300">
+                    <div class="p-6 rounded-xl shadow-lg feature-card transition-all duration-300 glassmorphism">
                         <i data-lucide="lightbulb" class="w-12 h-12 mx-auto mb-4 text-green-500"></i>
-                        <h3 class="text-xl font-semibold mb-2">Personalized Tips</h3>
-                        <p class="text-gray-500">AI-powered recommendations to guide you.</p>
+                        <h3 class="text-xl font-semibold mb-2 text-white">Personalized Tips</h3>
+                        <p class="text-gray-400">AI-powered recommendations to guide you.</p>
                     </div>
                 </div>
             </div>
         </section>
         
-        <!-- Ad Placeholder -->
         <section class="py-10 section-bg">
              <div class="container mx-auto px-6">
                 <div class="ad-container rounded-lg">
                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
-<!-- Index horizontal ads -->
 <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-2382040431534049"
@@ -141,19 +137,16 @@
             </div>
         </section>
 
-        <!-- 3. Subjects/Topics Page Section -->
-        <section id="subjects" class="py-20 bg-white">
+        <section id="subjects" class="py-20 section-bg-light">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold">Explore Subjects & Practice</h2>
-                    <p class="text-gray-600 mt-4">Master every section of your exam with our gamified challenges.</p>
+                    <p class="text-gray-400 mt-4">Master every section of your exam with our gamified challenges.</p>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <!-- Left Ad Placeholder -->
                     <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 600px;">
                         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
-                        <!-- Index vertical ads -->
                         <ins class="adsbygoogle"
                              style="display:block"
                              data-ad-client="ca-pub-2382040431534049"
@@ -165,51 +158,48 @@
                         </script>
                     </div>
 
-                    <!-- Subject Cards -->
                     <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <a href="maths.html" class="bg-gray-50 p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col">
+                        <a href="maths.html" class="p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col glassmorphism">
                             <i data-lucide="calculator" class="w-16 h-16 mx-auto mb-4 text-accent-orange"></i>
-                            <h3 class="text-2xl font-bold text-center mb-4">Maths</h3>
-                            <p class="text-gray-600 text-center flex-grow">Boost your calculation speed with our gamified challenges.</p>
+                            <h3 class="text-2xl font-bold text-center mb-4 text-white">Maths</h3>
+                            <p class="text-gray-400 text-center flex-grow">Boost your calculation speed with our gamified challenges.</p>
                             <div class="mt-6 text-center font-semibold text-accent-orange">Practice Maths &rarr;</div>
                         </a>
-                        <a href="english.html" class="bg-gray-50 p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col">
+                        <a href="english.html" class="p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col glassmorphism">
                             <i data-lucide="book-open" class="w-16 h-16 mx-auto mb-4" style="color: #be94f5;"></i>
-                            <h3 class="text-2xl font-bold text-center mb-4">English</h3>
-                            <p class="text-gray-600 text-center flex-grow">Enhance your vocabulary and grammar with quizzes <span class="font-bold text-accent-orange">Based on Blackbook</span>.</p>
+                            <h3 class="text-2xl font-bold text-center mb-4 text-white">English</h3>
+                            <p class="text-gray-400 text-center flex-grow">Enhance your vocabulary and grammar with quizzes <span class="font-bold text-accent-orange">Based on Blackbook</span>.</p>
                             <div class="mt-6 text-center font-semibold" style="color: #be94f5;">Practice English &rarr;</div>
                         </a>
-                        <a href="#" class="bg-gray-50 p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed">
+                        <a href="#" class="p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed glassmorphism">
                             <i data-lucide="flask-conical" class="w-16 h-16 mx-auto mb-4 text-green-500"></i>
-                            <h3 class="text-2xl font-bold text-center mb-4">Science</h3>
-                            <p class="text-gray-600 text-center flex-grow">Test your knowledge of Physics, Chemistry, and Biology.</p>
+                            <h3 class="text-2xl font-bold text-center mb-4 text-white">Science</h3>
+                            <p class="text-gray-400 text-center flex-grow">Test your knowledge of Physics, Chemistry, and Biology.</p>
                             <div class="mt-6 text-center font-semibold text-green-500">Practice Science &rarr;</div>
                         </a>
-                        <a href="#" class="bg-gray-50 p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed">
+                        <a href="#" class="p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed glassmorphism">
                             <i data-lucide="globe" class="w-16 h-16 mx-auto mb-4 text-blue-500"></i>
-                            <h3 class="text-2xl font-bold text-center mb-4">General Knowledge</h3>
-                            <p class="text-gray-600 text-center flex-grow">Stay updated with a wide range of topics.</p>
+                            <h3 class="text-2xl font-bold text-center mb-4 text-white">General Knowledge</h3>
+                            <p class="text-gray-400 text-center flex-grow">Stay updated with a wide range of topics.</p>
                             <div class="mt-6 text-center font-semibold text-blue-500">Practice GK &rarr;</div>
                         </a>
-                        <a href="#" class="bg-gray-50 p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed">
+                        <a href="#" class="p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed glassmorphism">
                             <i data-lucide="puzzle" class="w-16 h-16 mx-auto mb-4" style="color: #fccc42;"></i>
-                            <h3 class="text-2xl font-bold text-center mb-4">Reasoning</h3>
-                            <p class="text-gray-600 text-center flex-grow">Sharpen your logical and analytical skills.</p>
+                            <h3 class="text-2xl font-bold text-center mb-4 text-white">Reasoning</h3>
+                            <p class="text-gray-400 text-center flex-grow">Sharpen your logical and analytical skills.</p>
                             <div class="mt-6 text-center font-semibold" style="color: #fccc42;">Practice Reasoning &rarr;</div>
                         </a>
-                        <a href="#" class="bg-gray-50 p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed">
+                        <a href="#" class="p-6 rounded-xl shadow-lg subject-card transition-all duration-300 flex flex-col opacity-50 cursor-not-allowed glassmorphism">
                             <i data-lucide="newspaper" class="w-16 h-16 mx-auto mb-4 text-red-500"></i>
-                            <h3 class="text-2xl font-bold text-center mb-4">Current Affairs</h3>
-                            <p class="text-gray-600 text-center flex-grow">Keep pace with the latest events.</p>
+                            <h3 class="text-2xl font-bold text-center mb-4 text-white">Current Affairs</h3>
+                            <p class="text-gray-400 text-center flex-grow">Keep pace with the latest events.</p>
                             <div class="mt-6 text-center font-semibold text-red-500">Practice Current Affairs &rarr;</div>
                         </a>
                     </div>
 
-                     <!-- Right Ad Placeholder -->
-                    <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 600px;">
+                     <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 600px;">
                         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
-                        <!-- Index vertical ads -->
                         <ins class="adsbygoogle"
                              style="display:block"
                              data-ad-client="ca-pub-2382040431534049"
@@ -224,33 +214,30 @@
             </div>
         </section>
 
-        <!-- 2. About Page Section -->
         <section id="about" class="py-20 section-bg">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold">About CalciPrep</h2>
-                    <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Our goal is to empower competitive exam aspirants with the tools they need to succeed.</p>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Our goal is to empower competitive exam aspirants with the tools they need to succeed.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div class="bg-white p-8 rounded-xl">
+                    <div class="p-8 rounded-xl glassmorphism">
                         <h3 class="text-2xl font-semibold mb-4 text-accent-orange">Our Mission</h3>
-                        <p class="text-gray-700 leading-relaxed">To provide a comprehensive, all-in-one practice platform for competitive exam aspirants. We aim to make high-quality preparation accessible, engaging, and effective for everyone, breaking down complex topics into manageable practice sessions.</p>
+                        <p class="text-gray-300 leading-relaxed">To provide a comprehensive, all-in-one practice platform for competitive exam aspirants. We aim to make high-quality preparation accessible, engaging, and effective for everyone, breaking down complex topics into manageable practice sessions.</p>
                     </div>
-                    <div class="bg-white p-8 rounded-xl">
+                    <div class="p-8 rounded-xl glassmorphism">
                         <h3 class="text-2xl font-semibold mb-4" style="color: #be94f5;">Our Vision</h3>
-                        <p class="text-gray-700 leading-relaxed">We envision a world where every learner can approach their exams with confidence and speed. Through consistent practice and data-driven insights, we help students not only master their subjects but also develop the critical thinking and time management skills needed to excel.</p>
+                        <p class="text-gray-300 leading-relaxed">We envision a world where every learner can approach their exams with confidence and speed. Through consistent practice and data-driven insights, we help students not only master their subjects but also develop the critical thinking and time management skills needed to excel.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Ad Placeholder -->
         <section class="py-10">
              <div class="container mx-auto px-6">
                 <div class="ad-container rounded-lg">
                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
-<!-- Index horizontal ads -->
 <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-2382040431534049"
@@ -264,45 +251,40 @@
             </div>
         </section>
 
-        <!-- 5. Features Section -->
-        <section id="features" class="py-20 bg-white">
+        <section id="features" class="py-20 section-bg-light">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold">Powerful Features</h2>
-                    <p class="text-gray-600 mt-4">Tools designed to accelerate your learning.</p>
+                    <p class="text-gray-400 mt-4">Tools designed to accelerate your learning.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-10">
-                    <!-- Progress Tracking -->
-                    <div class="section-bg p-8 rounded-xl shadow-lg">
-                        <h3 class="text-2xl font-bold mb-4">Personal Dashboard</h3>
-                        <p class="text-gray-600 mb-6">Visualize your progress with intuitive charts and stats. Track your accuracy, speed, and practice history over time.</p>
-                        <!-- Mockup Chart -->
-                        <div class="bg-white p-4 rounded-lg">
-                            <h4 class="font-semibold mb-2">Accuracy Over Time</h4>
+                    <div class="p-8 rounded-xl shadow-lg glassmorphism">
+                        <h3 class="text-2xl font-bold mb-4 text-white">Personal Dashboard</h3>
+                        <p class="text-gray-400 mb-6">Visualize your progress with intuitive charts and stats. Track your accuracy, speed, and practice history over time.</p>
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2 text-white">Accuracy Over Time</h4>
                             <div class="relative h-40">
                                 <div class="absolute bottom-0 left-0 w-full h-full flex items-end justify-between px-2">
-                                    <div class="w-6 bg-green-300 rounded-t-md" style="height: 60%;"></div>
-                                    <div class="w-6 bg-green-400 rounded-t-md" style="height: 75%;"></div>
-                                    <div class="w-6 bg-green-300 rounded-t-md" style="height: 70%;"></div>
+                                    <div class="w-6 bg-green-700 rounded-t-md" style="height: 60%;"></div>
+                                    <div class="w-6 bg-green-600 rounded-t-md" style="height: 75%;"></div>
+                                    <div class="w-6 bg-green-700 rounded-t-md" style="height: 70%;"></div>
                                     <div class="w-6 bg-green-500 rounded-t-md" style="height: 85%;"></div>
-                                    <div class="w-6 bg-green-400 rounded-t-md" style="height: 80%;"></div>
+                                    <div class="w-6 bg-green-600 rounded-t-md" style="height: 80%;"></div>
                                     <div class="w-6 bg-green-500 rounded-t-md" style="height: 90%;"></div>
                                 </div>
                             </div>
                             <div class="text-xs text-center text-gray-500 mt-2">Weekly Progress</div>
                         </div>
                     </div>
-                    <!-- Leaderboards -->
-                    <div class="section-bg p-8 rounded-xl shadow-lg">
-                        <h3 class="text-2xl font-bold mb-4">Leaderboards</h3>
-                        <p class="text-gray-600 mb-6">See how you stack up against other aspirants. Compete in daily, weekly, and monthly rankings.</p>
-                        <!-- Mockup Leaderboard -->
-                        <ul class="space-y-3">
+                    <div class="p-8 rounded-xl shadow-lg glassmorphism">
+                        <h3 class="text-2xl font-bold mb-4 text-white">Leaderboards</h3>
+                        <p class="text-gray-400 mb-6">See how you stack up against other aspirants. Compete in daily, weekly, and monthly rankings.</p>
+                        <ul class="space-y-3 text-white">
                             <li class="flex items-center justify-between bg-accent-yellow-light p-3 rounded-lg">
                                 <span class="font-bold">1. Alex Ray</span>
                                 <span>12,500 pts</span>
                             </li>
-                            <li class="flex items-center justify-between bg-white p-3 rounded-lg">
+                            <li class="flex items-center justify-between bg-gray-700 p-3 rounded-lg">
                                 <span class="font-bold">2. Sarah Doe</span>
                                 <span>11,800 pts</span>
                             </li>
@@ -310,7 +292,7 @@
                                 <span class="font-bold">3. Mike Chan</span>
                                 <span>11,200 pts</span>
                             </li>
-                             <li class="flex items-center justify-between bg-white p-3 rounded-lg">
+                             <li class="flex items-center justify-between bg-gray-700 p-3 rounded-lg">
                                 <span class="font-bold text-accent-orange">15. You</span>
                                 <span>8,900 pts</span>
                             </li>
@@ -320,29 +302,28 @@
             </div>
         </section>
 
-        <!-- 6. Resources Section -->
-       <section id="resources" class="py-20 section-bg">
+        <section id="resources" class="py-20 section-bg">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold">Your Resources</h2>
-                    <p class="text-gray-600 mt-4">Review your performance and plan your next steps.</p>
+                    <p class="text-gray-400 mt-4">Review your performance and plan your next steps.</p>
                 </div>
-                <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-                    <h3 class="text-2xl font-bold mb-6">Performance Review</h3>
+                <div class="max-w-4xl mx-auto p-8 rounded-xl shadow-lg glassmorphism">
+                    <h3 class="text-2xl font-bold mb-6 text-white">Performance Review</h3>
                     <div class="space-y-6">
                         <div>
-                            <h4 class="text-xl font-semibold mb-2">Saved Results</h4>
-                            <p class="text-gray-600">Access detailed reports from your completed mock tests and quizzes. Review questions, see correct answers, and understand your mistakes.</p>
+                            <h4 class="text-xl font-semibold mb-2 text-white">Saved Results</h4>
+                            <p class="text-gray-400">Access detailed reports from your completed mock tests and quizzes. Review questions, see correct answers, and understand your mistakes.</p>
                         </div>
-                        <hr>
+                        <hr class="border-gray-700">
                         <div>
-                            <h4 class="text-xl font-semibold mb-2">Past Practice History</h4>
-                            <p class="text-gray-600">A complete log of all your practice sessions. Filter by date, subject, or performance to easily find what you're looking for.</p>
+                            <h4 class="text-xl font-semibold mb-2 text-white">Past Practice History</h4>
+                            <p class="text-gray-400">A complete log of all your practice sessions. Filter by date, subject, or performance to easily find what you're looking for.</p>
                         </div>
-                        <hr>
+                        <hr class="border-gray-700">
                         <div>
-                            <h4 class="text-xl font-semibold mb-2">Suggested Improvement Paths</h4>
-                            <p class="text-gray-600">Based on your performance, we provide personalized recommendations on topics you should focus on next to maximize your score.</p>
+                            <h4 class="text-xl font-semibold mb-2 text-white">Suggested Improvement Paths</h4>
+                            <p class="text-gray-400">Based on your performance, we provide personalized recommendations on topics you should focus on next to maximize your score.</p>
                              <a href="#" class="font-semibold mt-2 inline-block" style="color: #fccc42;">Get Recommendations &rarr;</a>
                         </div>
                     </div>
@@ -350,19 +331,16 @@
             </div>
         </section>
         
-        <!-- 7. Contact Page Section -->
-        <section id="contact" class="py-20 bg-white">
+        <section id="contact" class="py-20 section-bg-light">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold">Get In Touch</h2>
-                    <p class="text-gray-600 mt-4">Have questions or feedback? We'd love to hear from you.</p>
+                    <p class="text-gray-400 mt-4">Have questions or feedback? We'd love to hear from you.</p>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <!-- Left Ad Placeholder -->
                     <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 300px;">
                         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
-                        <!-- Index vertical ads -->
                         <ins class="adsbygoogle"
                              style="display:block"
                              data-ad-client="ca-pub-2382040431534049"
@@ -373,18 +351,17 @@
                              (adsbygoogle = window.adsbygoogle || []).push({});
                         </script>
                     </div>
-                     <!-- Contact Form -->
-                    <div class="lg:col-span-8 max-w-2xl mx-auto section-bg p-8 rounded-xl shadow-lg">
+                     <div class="lg:col-span-8 max-w-2xl mx-auto p-8 rounded-xl shadow-lg glassmorphism">
                         <form action="https://formspree.io/f/mandwjpj" method="POST">
                             <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                <input type="text" name="name" placeholder="Your Name" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-accent-orange" required>
-                                <input type="email" name="email" placeholder="Your Email" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-accent-orange" required>
+                                <input type="text" name="name" placeholder="Your Name" class="w-full p-3 rounded-lg border-2 bg-gray-800 border-gray-700 focus:outline-none focus:border-accent-orange text-white" required>
+                                <input type="email" name="email" placeholder="Your Email" class="w-full p-3 rounded-lg border-2 bg-gray-800 border-gray-700 focus:outline-none focus:border-accent-orange text-white" required>
                             </div>
                             <div class="mb-6">
-                                <input type="text" name="subject" placeholder="Subject" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-accent-orange" required>
+                                <input type="text" name="subject" placeholder="Subject" class="w-full p-3 rounded-lg border-2 bg-gray-800 border-gray-700 focus:outline-none focus:border-accent-orange text-white" required>
                             </div>
                             <div class="mb-6">
-                                <textarea name="message" placeholder="Your Message" rows="5" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-accent-orange" required></textarea>
+                                <textarea name="message" placeholder="Your Message" rows="5" class="w-full p-3 rounded-lg border-2 bg-gray-800 border-gray-700 focus:outline-none focus:border-accent-orange text-white" required></textarea>
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn-primary">Send Message</button>
@@ -394,11 +371,9 @@
                             You can also email us at: <a href="mailto:calciprep@gmail.com" class="text-accent-orange hover:underline">calciprep@gmail.com</a>
                         </p>
                     </div>
-                      <!-- Right Ad Placeholder -->
-                    <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 300px;">
+                      <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 300px;">
                         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
-                        <!-- Index vertical ads -->
                         <ins class="adsbygoogle"
                              style="display:block"
                              data-ad-client="ca-pub-2382040431534049"
@@ -414,16 +389,12 @@
         </section>
     </main>
 
-    <!-- Footer will be loaded here -->
     <div id="footer-placeholder"></div>
 
-    <!-- Load templates first for better live server compatibility -->
     <script src="templates.js"></script>
     
     <script type="module" src="main.js"></script>
     <script>
-        // This script ensures icons on the main page content are rendered.
-        // main.js will handle icons inside the loaded header and footer.
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         });
