@@ -13,17 +13,17 @@
     <style>
         body {
             font-family: 'Kodchasan', sans-serif;
-            background-color: #000000;
-            color: #f7f7f7;
+            background-color: #f7f7f7;
+            color: #151313;
         }
         .glassmorphism {
-            background: rgba(8, 8, 8, 0.5);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(242, 242, 242, 0.504);
-            box-shadow: 0 8px 32px 0 #b492e0;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
-         header {
+        header {
             transition: transform 0.3s ease-in-out;
         }
         .accent-purple { color: #be94f5; }
@@ -42,25 +42,26 @@
             transform: scale(1.05);
         }
         .quiz-card {
+            background-color: white;
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
         .quiz-card:hover {
             transform: translateY(-5px);
             border-color: #be94f5;
-            box-shadow: 0 10px 15px -3px rgba(239, 236, 236, 0.848), 0 4px 6px -2px #b492e0;
         }
         .quiz-card.completed {
-            background-color: #1a3b2a; 
-            border-color: #22c55e; 
+            background-color: #f0fdf4; /* green-50 */
+            border-color: #22c55e; /* green-500 */
         }
         .modal {
             transition: opacity 0.3s ease;
         }
+        /* CLS-safe ad container */
         .ad-container {
-            min-height: 120px;
+            min-height: 120px; /* Adjust for in-feed ad */
             width: 100%;
-            background-color: #2a2a2a;
+            background-color: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -72,7 +73,7 @@
 
     <div id="header-placeholder"></div>
 
-    <div class="flex justify-center py-12">
+    <div class="flex justify-center">
         <aside class="hidden xl:block w-40 mx-4">
             <div class="sticky top-28 ad-container" style="min-height: 600px;">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
@@ -90,9 +91,9 @@
         </aside>
 
         <main class="container mx-auto px-6 flex-grow max-w-7xl">
-            <div class="text-center py-12 md:py-16 rounded-xl glassmorphism border-2 border-purple-500">
+            <div class="text-center py-12 md:py-16 rounded-xl bg-accent-purple">
                 <h1 id="category-title" class="text-4xl md:text-5xl font-bold text-white"></h1>
-                <p class="text-purple-200 mt-4 text-lg">Select a quiz to begin your practice.</p>
+                <p class="text-purple-100 mt-4 text-lg">Select a quiz to begin your practice.</p>
             </div>
 
             <div id="quiz-list-container" class="flex flex-col items-center max-w-6xl mx-auto mt-12">
@@ -133,6 +134,7 @@
             categoryTitle.textContent = category;
             document.title = `${category} - CalciPrep`;
 
+            // Function to create an ad card
             const createAdCard = () => {
                 const adWrapper = document.createElement('div');
                 adWrapper.className = 'ad-container w-full rounded-xl shadow-lg'; 
@@ -152,6 +154,7 @@
                 return adWrapper;
             };
 
+            // Create rows dynamically to group quiz cards
             let currentRow;
             const createRow = () => {
                 const row = document.createElement('div');
@@ -161,13 +164,15 @@
             };
 
             for (let i = 1; i <= 50; i++) {
+                // Create a new row for the first item
                 if (i === 1) {
                     currentRow = createRow();
                 }
 
+                // Insert an ad unit *between* rows
                 if (i > 1 && (i - 1) % 24 === 0) {
                     quizListContainer.appendChild(createAdCard());
-                    currentRow = createRow();
+                    currentRow = createRow(); // Start a new row after the ad
                 }
 
                 const quizKey = `${category}-Quiz-${i}`;
@@ -177,20 +182,16 @@
                 quizCard.href = `quiz.html?category=${encodeURIComponent(category)}&quiz=${i}`;
                 quizCard.className = 'quiz-card p-4 rounded-xl shadow-lg text-center flex flex-col justify-between glassmorphism'; 
                 
-                if(isCompleted) {
-                    quizCard.classList.add('completed');
-                }
-
                 let cardContent = `
                     <div class="flex-grow flex flex-col justify-center">
-                        <h2 class="text-xl font-bold mb-2 text-white">Quiz ${i}</h2>
-                        <p class="text-gray-400 text-sm">30 Questions</p>
+                        <h2 class="text-xl font-bold mb-2">Quiz ${i}</h2>
+                        <p class="text-gray-500 text-sm">30 Questions</p>
                     </div>
                 `;
 
                 if (isCompleted) {
                     cardContent += `
-                        <div class="mt-4 flex items-center justify-center text-green-400 font-semibold">
+                        <div class="mt-4 flex items-center justify-center text-green-600 font-semibold">
                             <i data-lucide="check-circle-2" class="w-4 h-4 mr-1"></i>
                             <span>Re-attempt</span>
                         </div>
@@ -198,7 +199,7 @@
                 }
 
                 quizCard.innerHTML = cardContent;
-                currentRow.appendChild(quizCard);
+                currentRow.appendChild(quizCard); // Add card to the current row
             }
 
             if (typeof lucide !== 'undefined') {

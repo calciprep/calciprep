@@ -13,17 +13,17 @@
     <style>
         body {
             font-family: 'Kodchasan', sans-serif;
-            background-color: #000000;
-            color: #f7f7f7;
+            background-color: #f7f7f7;
+            color: #151313;
         }
         .glassmorphism {
-            background: rgba(8, 8, 8, 0.5);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(174, 73, 36, 0.57);
-            box-shadow: 0 8px 32px 0 #d06d5a;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
-         header {
+        header {
             transition: transform 0.3s ease-in-out;
         }
         .accent-orange { color: #ff5734; }
@@ -48,11 +48,12 @@
             cursor: not-allowed;
         }
         .game-mode-card {
+            background-color: white;
             transition: all 0.3s ease;
         }
         .game-mode-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(239, 236, 236, 0.848), 0 4px 6px -2px #b492e0;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .custom-checkbox:checked {
             background-color: #ff5734;
@@ -79,10 +80,11 @@
         .modal {
             transition: opacity 0.3s ease;
         }
+        /* CLS-safe ad container */
         .ad-container {
-            min-height: 90px;
+            min-height: 90px; /* Adjust based on expected ad height */
             width: 100%;
-            background-color: #2a2a2a;
+            background-color: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -94,32 +96,32 @@
 
     <div id="header-placeholder"></div>
 
-    <main class="container mx-auto px-6 py-12">
-        <div class="text-center py-12 md:py-16 rounded-xl glassmorphism border-2 border-orange-500">
+    <main class="container mx-auto px-6">
+        <div class="text-center py-12 md:py-16 rounded-xl bg-accent-orange">
             <h1 class="text-4xl md:text-5xl font-bold text-white">Maths Practice Arena</h1>
-            <p class="text-orange-200 mt-4 text-lg">Sharpen your calculation speed. Choose your challenge below.</p>
+            <p class="text-orange-100 mt-4 text-lg">Sharpen your calculation speed. Choose your challenge below.</p>
         </div>
 
         <div id="game-selection" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-12">
             <div onclick="openSettingsModal('1-minute')" class="game-mode-card p-8 rounded-xl shadow-lg text-center cursor-pointer border-2 border-transparent hover:border-accent-orange glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 text-accent-orange"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <h2 class="text-2xl font-bold mb-2 text-white">1-Minute Challenge</h2>
-                <p class="text-gray-400">Solve as many problems as you can in 60 seconds. Go!</p>
+                <h2 class="text-2xl font-bold mb-2">1-Minute Challenge</h2>
+                <p class="text-gray-600">Solve as many problems as you can in 60 seconds. Go!</p>
             </div>
             <div onclick="openSettingsModal('bitter-end')" class="game-mode-card p-8 rounded-xl shadow-lg text-center cursor-pointer border-2 border-transparent hover:border-accent-purple glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-purple"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                <h2 class="text-2xl font-bold mb-2 text-white">To the Bitter End</h2>
-                <p class="text-gray-400">One wrong answer ends the game.</p>
+                <h2 class="text-2xl font-bold mb-2">To the Bitter End</h2>
+                <p class="text-gray-600">One wrong answer ends the game.</p>
             </div>
             <div onclick="openSettingsModal('speed-challenge')" class="game-mode-card p-8 rounded-xl shadow-lg text-center cursor-pointer border-2 border-transparent hover:border-accent-yellow glassmorphism">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-yellow"><path d="M12 12c-2 0-4.5 1-5 4.5s2.5 4.5 5 4.5 5-2 5-4.5-2.5-4.5-5-4.5z"/><path d="M12 12v-2"/><path d="M18.3 7.7l-1.4-1.4"/><path d="M5.7 7.7l1.4-1.4"/><circle cx="12" cy="12" r="10"/></svg>
-                <h2 class="text-2xl font-bold mb-2 text-white">Speed Challenge</h2>
-                <p class="text-gray-400">Solve 20 problems as fast as you can.</p>
+                <h2 class="text-2xl font-bold mb-2">Speed Challenge</h2>
+                <p class="text-gray-600">Solve 20 problems as fast as you can.</p>
             </div>
         </div>
 
         <section class="max-w-4xl mx-auto mt-8 px-4">
-            <div class="ad-container rounded-lg p-4 shadow-sm">
+            <div class="ad-container rounded-lg bg-white p-4 shadow-sm">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
                 <ins class="adsbygoogle"
@@ -134,17 +136,17 @@
             </div>
         </section>
 
-        <div id="game-interface" class="hidden max-w-2xl mx-auto my-12 p-8 rounded-xl shadow-2xl border border-gray-700 glassmorphism">
-            <h2 id="game-title" class="text-3xl font-bold text-center mb-6 text-white"></h2>
+        <div id="game-interface" class="hidden max-w-2xl mx-auto my-12 bg-white p-8 rounded-xl shadow-2xl border border-gray-100 glassmorphism">
+            <h2 id="game-title" class="text-3xl font-bold text-center mb-6"></h2>
             <div id="math-game">
-                <div class="text-5xl font-mono text-center my-8 p-6 bg-gray-800 rounded-lg shadow-inner text-white" id="math-problem">Get Ready...</div>
+                <div class="text-5xl font-mono text-center my-8 p-6 bg-gray-100 rounded-lg shadow-inner" id="math-problem">Get Ready...</div>
                 <div class="flex items-center space-x-2">
-                    <input type="text" id="math-answer" class="w-full p-4 text-3xl text-center rounded-lg border-2 bg-gray-800 border-gray-700 focus:outline-none focus:border-accent-orange transition-all duration-300 text-white" placeholder="Your Answer..." disabled>
+                    <input type="text" id="math-answer" class="w-full p-4 text-3xl text-center rounded-lg border-2 focus:outline-none focus:border-accent-orange transition-all duration-300" placeholder="Your Answer..." disabled>
                     <button id="submit-answer-btn" class="hidden p-4 bg-accent-orange text-white rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
-                <div class="flex justify-between items-center mt-8 text-xl text-gray-300">
+                <div class="flex justify-between items-center mt-8 text-xl">
                     <div id="timer-container" class="font-semibold"></div>
                     <div id="question-counter-container" class="font-semibold"></div>
                     <div class="font-semibold">Score: <span id="math-score" class="font-bold text-accent-orange">0</span></div>
@@ -172,15 +174,15 @@
         </div>
     </main>
 
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-        <div class="rounded-xl shadow-2xl w-full max-w-lg overflow-hidden glassmorphism">
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden glassmorphism">
             <div class="bg-accent-orange p-6">
                 <h2 class="text-3xl font-bold text-center text-white">Challenge Settings</h2>
             </div>
             <div class="p-8">
                 <div class="mb-6">
-                    <h3 class="text-xl font-semibold mb-4 text-white">Challenge Type (Select at least one)</h3>
-                    <div class="grid grid-cols-2 gap-4 text-gray-300">
+                    <h3 class="text-xl font-semibold mb-4">Challenge Type (Select at least one)</h3>
+                    <div class="grid grid-cols-2 gap-4">
                         <div class="flex items-center">
                             <input id="type-add" type="checkbox" value="add" class="custom-checkbox w-5 h-5 mr-3 rounded text-accent-orange focus:ring-0">
                             <label for="type-add" class="text-lg">Addition</label>
@@ -209,36 +211,59 @@
                 </div>
 
                 <div class="mb-8">
-                    <h3 class="text-xl font-semibold mb-4 text-white">Difficulty Level</h3>
-                    <div class="flex justify-around text-gray-300">
+                    <h3 class="text-xl font-semibold mb-4">Difficulty Level</h3>
+                    <div class="flex justify-around">
                         <div class="flex items-center">
-                            <input id="level-easy" type="radio" name="difficulty" value="easy" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-500 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative" checked>
+                            <input id="level-easy" type="radio" name="difficulty" value="easy" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative" checked>
                             <label for="level-easy" class="text-lg">Easy</label>
                         </div>
                         <div class="flex items-center">
-                            <input id="level-intermediate" type="radio" name="difficulty" value="intermediate" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-500 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative">
+                            <input id="level-intermediate" type="radio" name="difficulty" value="intermediate" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative">
                             <label for="level-intermediate" class="text-lg">Intermediate</label>
                         </div>
                          <div class="flex items-center">
-                            <input id="level-advanced" type="radio" name="difficulty" value="advanced" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-500 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative">
+                            <input id="level-advanced" type="radio" name="difficulty" value="advanced" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative">
                             <label for="level-advanced" class="text-lg">Advanced</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center border-t border-gray-700 pt-6 mt-6">
-                    <button onclick="closeSettingsModal()" class="font-semibold text-gray-400 hover:text-white">Cancel</button>
+                <div class="flex justify-between items-center border-t pt-6 mt-6">
+                    <button onclick="closeSettingsModal()" class="font-semibold text-gray-600 hover:text-gray-800">Cancel</button>
                     <button id="start-challenge-btn" class="btn-primary">Start Challenge</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <div id="footer-placeholder"></div>
-     
-     <script src="templates.js"></script>
-     
-     <script type="module" src="main.js"></script>
+    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md glassmorphism">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="modal-title" class="text-3xl font-bold">Login</h2>
+                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+                </div>
+                <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
+                <form id="auth-form">
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                    </div>
+                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary">Login</button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    <span id="modal-switch-text">Don't have an account?</span>
+                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
     
     <script>
         // This script contains only the logic specific to the maths game page.
@@ -488,8 +513,15 @@
                 checkAnswer();
             }
         });
+// Ensure Lucide replaces data-lucide icons after DOM changes
 if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
  
      </script>
+     
+     <div id="footer-placeholder"></div>
+     
+     <script src="templates.js"></script>
+     
+     <script type="module" src="main.js"></script>
 </body>
 </html>

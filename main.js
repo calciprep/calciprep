@@ -2,6 +2,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// Use global templates loaded from templates.js
+let headerHTML = '';
+let footerHTML = '';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -24,74 +27,148 @@ let isLoginMode = true;
 
 // --- Core App Logic ---
 
-/**
- * @function setupBackButton
- * @description Checks the current page and, if it's not the homepage,
- * it makes the back button visible and sets its href to the correct parent page.
- */
-function setupBackButton() {
-    const backButtonContainer = document.getElementById('back-button-container');
-    const backLink = document.getElementById('back-link');
-    const mobileBackLinkContainer = document.getElementById('mobile-back-link');
-    const mobileBackLink = mobileBackLinkContainer ? mobileBackLinkContainer.querySelector('a') : null;
-
-    const currentPage = window.location.pathname;
-    // Check if the current path ends with the root, index.html, or is empty.
-    const isIndexPage = currentPage.endsWith('/') || currentPage.endsWith('index.html') || currentPage === '';
-
-    if (isIndexPage || !backButtonContainer || !mobileBackLinkContainer) {
-        return; // Don't show on homepage or if elements don't exist
-    }
-
-    // Determine the correct "back" URL based on the current page
-    let backUrl = 'index.html'; // Default fallback
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category');
-
-    if (currentPage.includes('quiz.html')) {
-        // If on a quiz page, link back to the list for that category
-        if (category) {
-            backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
-        }
-    } else if (currentPage.includes('quiz-list.html')) {
-        // If on a quiz list, link back to the parent subject page
-        const englishCategories = ['Synonyms', 'Antonyms', 'One Word Substitution', 'Idioms and Phrases', 'SSC PYQs'];
-        if (englishCategories.includes(category)) {
-            backUrl = 'english.html';
-        } else {
-            // Add logic for other subjects if necessary, e.g., maths
-            backUrl = 'maths.html';
-        }
-    } else if (currentPage.includes('english.html') || currentPage.includes('maths.html')) {
-        // If on a subject page, link back to the main subjects section on the homepage
-        backUrl = 'index.html#subjects';
-    }
-
-    // Apply the URL and make the buttons visible
-    if (backLink) backLink.href = backUrl;
-    if (mobileBackLink) mobileBackLink.href = backUrl;
-
-    backButtonContainer.classList.remove('hidden');
-    mobileBackLinkContainer.classList.remove('hidden');
-}
-
-
-// Function to load HTML templates from the imported strings in templates.js
+// Function to load HTML templates from the imported strings
 function loadTemplates() {
+    // Get templates from window object
+    headerHTML = window.headerHTML || '';
+    footerHTML = window.footerHTML || '';
+    
+    console.log('Loading templates:', { headerHTML: !!headerHTML, footerHTML: !!footerHTML });
+    
     const headerPlaceholder = document.getElementById('header-placeholder');
     const footerPlaceholder = document.getElementById('footer-placeholder');
 
-    if (headerPlaceholder && window.headerHTML) {
-        headerPlaceholder.innerHTML = window.headerHTML;
+    if (headerPlaceholder && headerHTML) {
+        headerPlaceholder.innerHTML = headerHTML;
+        console.log('Header loaded successfully');
+    } else {
+        console.log('Header not loaded:', { headerPlaceholder: !!headerPlaceholder, headerHTML: !!headerHTML });
     }
     
+    // Only load footer on the main index page
     const currentPage = window.location.pathname;
     const isIndexPage = currentPage.includes('index.html') || currentPage === '/' || currentPage === '';
     
-    if (footerPlaceholder && window.footerHTML && isIndexPage) {
-        footerPlaceholder.innerHTML = window.footerHTML;
-    } else if (footerPlaceholder) {
+    if (footerPlaceholder && footerHTML && isIndexPage) {
+        footerPlaceholder.innerHTML = footerHTML;
+        console.log('Footer loaded successfully (index page only)');
+    } else if (footerPlaceholder && !isIndexPage) {
+        // Hide footer on non-index pages
         footerPlaceholder.style.display = 'none';
+        console.log('Footer hidden (not index page)');
+    } else {
+        console.log('Footer not loaded:', { footerPlaceholder: !!footerPlaceholder, footerHTML: !!footerHTML, isIndexPage });
+    }
+    
+    // Check if we're on a quiz page and show back button if needed
+    setupBackButton();
+}
+
+// Function to setup back button on quiz pages
+function setupBackButton() {
+    const currentPage = window.location.pathname;
+    const isIndexPage = currentPage.includes('index.html') || currentPage === '/' || currentPage === '';
+    const isQuizPage = currentPage.includes('quiz.html');
+    const isQuizListPage = currentPage.includes('quiz-list.html');
+    const isEnglishPage = currentPage.includes('english.html');
+    const isMathsPage = currentPage.includes('maths.html');
+    
+    // Don't show back button on the main index page
+    if (isIndexPage) {
+        console.log('On index page - no back button needed');
+        return;
+    }
+    
+    if (isQuizPage) {
+        const backButtonContainer = document.getElementById('back-button-container');
+        const mobileBackLink = document.getElementById('mobile-back-link');
+        
+        if (backButtonContainer) {
+            backButtonContainer.classList.remove('hidden');
+            console.log('Back button shown on quiz page');
+        }
+        if (mobileBackLink) {
+            mobileBackLink.classList.remove('hidden');
+        }
+        
+        // Set up back button functionality
+        setupQuizBackButton();
+    } else if (isQuizListPage || isEnglishPage || isMathsPage) {
+        const backButtonContainer = document.getElementById('back-button-container');
+        const mobileBackLink = document.getElementById('mobile-back-link');
+        
+        if (backButtonContainer) {
+            backButtonContainer.classList.remove('hidden');
+            console.log('Back button shown on content page');
+        }
+        if (mobileBackLink) {
+            mobileBackLink.classList.remove('hidden');
+        }
+        
+        // Set up back button functionality for other pages
+        setupPageBackButton();
+    } else {
+        console.log('On unknown page - no back button needed');
+    }
+}
+
+// Function to setup quiz back button functionality
+function setupQuizBackButton() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    
+    if (category) {
+        const backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
+        
+        const backLink = document.getElementById('back-link');
+        const mobileBackLink = document.getElementById('mobile-back-link');
+        
+        if (backLink) {
+            backLink.href = backUrl;
+            console.log('Quiz back button links to:', backUrl);
+        }
+        if (mobileBackLink) {
+            // Find the anchor tag inside the mobile back link container
+            const mobileBackAnchor = mobileBackLink.querySelector('a');
+            if (mobileBackAnchor) {
+                mobileBackAnchor.href = backUrl;
+            }
+        }
+    }
+}
+
+// Function to setup page back button functionality
+function setupPageBackButton() {
+    const currentPage = window.location.pathname;
+    let backUrl = 'index.html';
+    
+    if (currentPage.includes('quiz-list.html')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+        if (category === 'Synonyms' || category === 'Antonyms' || category === 'One Word Substitution' || category === 'Idioms and Phrases' || category === 'SSC PYQs') {
+            backUrl = 'english.html';
+        } else {
+            backUrl = 'index.html';
+        }
+    } else if (currentPage.includes('english.html')) {
+        backUrl = 'index.html';
+    } else if (currentPage.includes('maths.html')) {
+        backUrl = 'index.html';
+    }
+    
+    const backLink = document.getElementById('back-link');
+    const mobileBackLink = document.getElementById('mobile-back-link');
+    
+    if (backLink) {
+        backLink.href = backUrl;
+        console.log('Back button links to:', backUrl);
+    }
+    if (mobileBackLink) {
+        // Find the anchor tag inside the mobile back link container
+        const mobileBackAnchor = mobileBackLink.querySelector('a');
+        if (mobileBackAnchor) {
+            mobileBackAnchor.href = backUrl;
+        }
     }
 }
 
@@ -120,10 +197,6 @@ function initializeCalciPrepApp() {
         errorMessage: document.getElementById('error-message')
     };
 
-    // --- Back Button Logic ---
-    // This function will handle showing/hiding the back button.
-    setupBackButton();
-
     // --- Authentication UI ---
     function updateAuthUI(user) {
         if (user) {
@@ -133,8 +206,8 @@ function initializeCalciPrepApp() {
             
             if (dom.mobileAuthContainer) {
                 dom.mobileAuthContainer.innerHTML = `
-                    <p class="px-3 py-2 text-sm text-gray-400">${user.email}</p>
-                    <button id="mobile-logout-btn" class="w-full text-left font-semibold text-red-500 px-3 py-2">Logout</button>`;
+                    <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
+                    <button id="mobile-logout-btn" class="w-full text-left font-semibold text-red-600 px-3 py-2">Logout</button>`;
                 document.getElementById('mobile-logout-btn')?.addEventListener('click', () => signOut(auth));
             }
         } else {
@@ -144,8 +217,8 @@ function initializeCalciPrepApp() {
 
             if (dom.mobileAuthContainer) {
                 dom.mobileAuthContainer.innerHTML = `
-                    <button id="mobile-login-btn" class="w-full text-left font-semibold py-2 px-3">Login</button>
-                    <button id="mobile-signup-btn" class="w-full mt-2 action-btn-primary text-center py-2">Sign Up</button>`;
+                    <button id="mobile-login-btn" class="w-full text-left font-semibold text-gray-700 py-2 px-3">Login</button>
+                    <button id="mobile-signup-btn" class="w-full mt-2 btn-primary text-center py-2">Sign Up</button>`;
                 document.getElementById('mobile-login-btn')?.addEventListener('click', () => openModal(true));
                 document.getElementById('mobile-signup-btn')?.addEventListener('click', () => openModal(false));
             }
@@ -194,6 +267,7 @@ function initializeCalciPrepApp() {
     // --- Header Scroll Behavior ---
     let lastScrollTop = 0;
     window.addEventListener("scroll", function() {
+        // Use a try-catch block in case the header isn't on the page
         try {
             const header = document.getElementById('header');
             if (!header) return;
@@ -261,14 +335,38 @@ window.saveQuizResult = saveQuizResult;
 
 // --- App Initialization ---
 function initializeWhenReady() {
+    // Check if templates are loaded
+    console.log('Checking templates:', { 
+        headerHTML: !!window.headerHTML, 
+        footerHTML: !!window.footerHTML,
+        headerLength: window.headerHTML?.length || 0,
+        footerLength: window.footerHTML?.length || 0
+    });
+    
     if (window.headerHTML && window.footerHTML) {
-        loadTemplates();
-        initializeCalciPrepApp();
+        console.log('Templates ready, initializing...');
+        loadTemplates();      // First, inject the HTML from our templates.js file
+        initializeCalciPrepApp();      // Then, initialize all the logic and event listeners
     } else {
+        // If templates aren't ready yet, wait a bit more
+        console.log('Templates not ready, waiting...');
         setTimeout(initializeWhenReady, 50);
+        
+        // Fallback: if templates don't load after 5 seconds, try to load them anyway
+        if (window.templateLoadAttempts === undefined) {
+            window.templateLoadAttempts = 0;
+        }
+        window.templateLoadAttempts++;
+        
+        if (window.templateLoadAttempts > 100) { // 5 seconds
+            console.warn('Templates failed to load, proceeding without them');
+            loadTemplates(); // This will load empty templates
+            initializeCalciPrepApp();
+        }
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Start checking for templates to be ready
     initializeWhenReady();
 });
