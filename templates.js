@@ -49,9 +49,14 @@
                     <button id="login-btn" class="font-semibold text-gray-700 hover:bg-gray-200/50 px-4 py-2 rounded-full transition-colors">Login</button>
                     <button id="signup-btn" class="btn-primary" style="padding: 0.5rem 1rem;">Sign up</button>
                 </div>
-                <div id="logged-in-view" class="hidden items-center space-x-4">
-                    <span id="user-email" class="text-sm text-gray-600 font-medium"></span>
-                    <button id="logout-btn" class="font-semibold text-gray-700 hover:bg-gray-200/50 px-4 py-2 rounded-full transition-colors">Logout</button>
+                <div id="logged-in-view" class="hidden items-center space-x-4 relative">
+                     <button id="account-menu-btn" class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <i data-lucide="user" class="w-6 h-6 text-gray-600"></i>
+                    </button>
+                    <div id="account-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 top-full">
+                        <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Account</a>
+                        <button id="logout-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,74 +92,47 @@
 
 <style>
     body {
-      padding-top: 80px; /* Add padding to body to prevent content from being hidden behind the fixed header */
+      padding-top: 80px;
     }
     .glassmorphism-nav {
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        border-radius: 9999px; /* full pill shape */
+        border-radius: 9999px;
         border: 1px solid rgba(255, 255, 255, 0.9);
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
     }
-
     .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem; /* 8px */
-        padding: 0.5rem 1rem; /* 8px 16px */
-        border-radius: 9999px;
-        font-weight: 500;
-        color: #374151; /* text-gray-700 */
-        transition: color 0.3s ease;
-        position: relative;
-        z-index: 1;
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+        border-radius: 9999px; font-weight: 500; color: #374151;
+        transition: color 0.3s ease; position: relative; z-index: 1;
     }
-
-    .nav-link.active, .nav-link:hover {
-        color: #111827; /* text-gray-900 */
-    }
-
+    .nav-link.active, .nav-link:hover { color: #111827; }
     .nav-highlight {
-        position: absolute;
-        top: 6px; /* Corresponds to p-1.5 */
-        bottom: 6px;
-        background-color: #ffffff;
-        border-radius: 9999px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        z-index: 0;
+        position: absolute; top: 6px; bottom: 6px; background-color: #ffffff;
+        border-radius: 9999px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); z-index: 0;
     }
-    
     .btn-primary {
-        background-color: #ff5734;
-        color: white;
-        font-weight: 600;
+        background-color: #ff5734; color: white; font-weight: 600;
         border-radius: 9999px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        transition: all 0.3s ease;
-        transform: scale(1);
+        transition: all 0.3s ease; transform: scale(1);
     }
     .btn-primary:hover {
-        background-color: #e64a2e;
-        transform: scale(1.05);
+        background-color: #e64a2e; transform: scale(1.05);
     }
-    
-    /* New Auth Modal Styles */
     .auth-modal-grid {
         display: grid;
-        grid-template-columns: 4fr 5fr;
-        min-height: 550px;
+        grid-template-columns: 480px 1fr;
     }
     .auth-left-panel {
-        background: linear-gradient(rgba(255, 87, 52, 0.8), rgba(255, 87, 52, 0.6)), url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-        background-size: cover;
-        background-position: center;
-        font-family: 'Inter', sans-serif;
+       /* No background needed as it's an img now */
     }
     @media (max-width: 768px) {
         .auth-modal-grid {
             grid-template-columns: 1fr;
+            font-family: 'Inter', sans-serif;
         }
         .auth-left-panel {
             display: none;
@@ -162,53 +140,80 @@
     }
 </style>
 
-<div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden auth-modal-grid">
+<div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden auth-modal-grid relative" style="height: 650px;">
+        <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 z-20 text-3xl leading-none">&times;</button>
+        
         <!-- Left Panel -->
-        <div class="auth-left-panel p-10 flex flex-col justify-center text-white">
-            <h2 class="text-3xl font-bold mb-4">Prepare for your next SSC exam.</h2>
-            <p class="text-lg text-white/90 mb-6">Practice all your SSC subjects in one place.</p>
-            <ul class="space-y-4 text-lg">
-                <li class="flex items-center">
-                    <i data-lucide="check-circle" class="w-6 h-6 mr-3 text-white/80"></i>
-                    <span>Practice thousands of questions.</span>
-                </li>
-                <li class="flex items-center">
-                    <i data-lucide="check-circle" class="w-6 h-6 mr-3 text-white/80"></i>
-                    <span>Level up your skills in Maths & English.</span>
-                </li>
-                 <li class="flex items-center">
-                    <i data-lucide="check-circle" class="w-6 h-6 mr-3 text-white/80"></i>
-                    <span>Join a community of aspirants.</span>
-                </li>
-            </ul>
+        <div class="auth-left-panel">
+            <img src="Registration-left-panel.svg" alt="CalciPrep Welcome" class="w-full h-full object-cover">
         </div>
+
         <!-- Right Panel (Form) -->
-        <div class="p-10 relative flex flex-col justify-center">
-            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-3xl leading-none">&times;</button>
-            <div class="w-full max-w-sm mx-auto">
-                 <h2 id="modal-title" class="text-3xl font-bold text-gray-900 mb-2">Welcome</h2>
-                 <p class="text-gray-900 mb-6">Create an account to save your progress.</p>
+        <div class="p-12 flex flex-col justify-center" style="font-family: 'Inter', sans-serif;">
+            <div class="w-full max-w-md mx-auto">
+                <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-6">
+                
+                <div class="flex border-b mb-6">
+                    <button id="signup-tab" class="flex-1 pb-2 font-semibold text-sm border-b-2 border-indigo-600 text-indigo-600">Sign Up</button>
+                    <button id="signin-tab" class="flex-1 pb-2 font-semibold text-sm text-gray-500 border-b-2 border-transparent">Sign In</button>
+                </div>
+
                 <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
+
                 <form id="auth-form">
                     <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-black mb-1">Email Address</label>
-                        <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Id</label>
+                        <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <div class="mb-6">
-                        <label for="password" class="block text-sm font-medium text-black mb-1">Password</label>
-                        <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:underline hidden">Forgot Password?</a>
+                        </div>
+                        <input type="password" id="password" placeholder="Enter Password" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary rounded-md py-3 text-base">Login</button>
+                    
+                    <div id="password-strength-container" class="text-sm text-gray-600 space-y-2 mb-6">
+                        <div class="flex items-center justify-between">
+                            <p>Password Strength: <span id="password-strength-text" class="font-semibold text-gray-800">Weak</span></p>
+                        </div>
+                        <ul id="password-criteria" class="text-xs text-gray-500 space-y-1.5">
+                            <li id="crit-case" class="flex items-center transition-colors"><i data-lucide="x-circle" class="w-4 h-4 mr-2"></i>Should contain mix of Capital and small letters</li>
+                            <li id="crit-length" class="flex items-center transition-colors"><i data-lucide="x-circle" class="w-4 h-4 mr-2"></i>At least 8 characters</li>
+                            <li id="crit-char" class="flex items-center transition-colors"><i data-lucide="x-circle" class="w-4 h-4 mr-2"></i>Contains a number or symbol</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" id="modal-submit-btn" class="w-full bg-indigo-600 text-white rounded-md py-3 text-base font-semibold hover:bg-indigo-700 transition-colors shadow-sm">Create Account</button>
                 </form>
-                <p class="text-center text-sm text-black mt-6">
-                    <span id="modal-switch-text">Don't have an account?</span>
-                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
+                <p class="text-center text-xs text-gray-500 mt-6">
+                    By signing up to create an account I accept Company's <a href="#" class="underline">Terms of use & Privacy Policy</a>.
                 </p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- NEW: Account Created Success Modal -->
+<div id="success-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="font-family: 'Kodchasan', sans-serif;">
+    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-2xl w-full max-w-lg text-center p-12 transform transition-all scale-95 opacity-0">
+        <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8 mx-auto mb-8">
+
+        <div class="w-28 h-28 mx-auto mb-6">
+             <svg viewBox="0 0 100 100">
+                <path fill="#4F46E5" d="M 50.000,0.000 L 59.511,10.207 L 72.361,6.738 L 74.216,19.549 L 88.292,20.784 L 84.146,32.880 L 98.995,38.995 L 90.489,47.119 L 98.995,55.005 L 84.146,61.120 L 88.292,73.216 L 74.216,74.451 L 72.361,87.262 L 59.511,83.793 L 50.000,94.000 L 40.489,83.793 L 27.639,87.262 L 25.784,74.451 L 11.708,73.216 L 15.854,61.120 L 1.005,55.005 L 9.511,47.119 L 1.005,38.995 L 15.854,32.880 L 11.708,20.784 L 25.784,19.549 L 27.639,6.738 L 40.489,10.207 Z"/>
+                <circle cx="50" cy="50" r="35" fill="#6366F1"/>
+                <path d="M 32,51 L 45,64 L 68,39" stroke="white" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <h2 class="text-3xl font-bold text-gray-900 mb-3">Account created successfully!</h2>
+        <p class="text-gray-600 mb-8 text-base" style="font-family: 'Inter', sans-serif;">Welcome aboard! Start your success journey with CalciPrep!</p>
+        <button id="close-success-modal-btn" class="w-full sm:w-auto bg-indigo-600 text-white rounded-lg py-3 px-10 text-base font-semibold hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Let's Start!</button>
+    </div>
+</div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -224,25 +229,9 @@
             highlight.style.width = \`\${element.offsetWidth}px\`;
             highlight.style.left = \`\${element.offsetLeft}px\`;
         }
-
-        // Use a small timeout to ensure all elements are rendered before calculating position
-        setTimeout(() => {
-            if (activeLink) {
-                positionHighlight(activeLink);
-            }
-        }, 50);
-
-
-        links.forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                positionHighlight(link);
-            });
-        });
-
-        nav.addEventListener('mouseleave', () => {
-            const currentActive = nav.querySelector('.nav-link.active');
-            positionHighlight(currentActive);
-        });
+        setTimeout(() => { if (activeLink) positionHighlight(activeLink); }, 50);
+        links.forEach(link => { link.addEventListener('mouseenter', () => positionHighlight(link)); });
+        nav.addEventListener('mouseleave', () => { positionHighlight(nav.querySelector('.nav-link.active')); });
     });
 </script>
 `;
@@ -268,11 +257,5 @@
     window.headerHTML = headerHTML;
     window.footerHTML = footerHTML;
     
-    console.log('Templates loaded:', { 
-        headerHTML: !!headerHTML, 
-        footerHTML: !!footerHTML,
-        headerLength: headerHTML.length,
-        footerLength: footerHTML.length
-    });
 })();
 

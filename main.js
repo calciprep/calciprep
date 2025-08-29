@@ -1,7 +1,7 @@
 // Import Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 // Use global templates loaded from templates.js
 let headerHTML = '';
 let footerHTML = '';
@@ -23,163 +23,85 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // --- Global State ---
-let isLoginMode = true;
+let isLoginMode = false; // Default to Sign Up
 
 // --- Core App Logic ---
 
-// Function to load HTML templates from the imported strings
 function loadTemplates() {
-    // Get templates from window object
     headerHTML = window.headerHTML || '';
     footerHTML = window.footerHTML || '';
-    
-    console.log('Loading templates:', { headerHTML: !!headerHTML, footerHTML: !!footerHTML });
     
     const headerPlaceholder = document.getElementById('header-placeholder');
     const footerPlaceholder = document.getElementById('footer-placeholder');
 
     if (headerPlaceholder && headerHTML) {
         headerPlaceholder.innerHTML = headerHTML;
-        console.log('Header loaded successfully');
-    } else {
-        console.log('Header not loaded:', { headerPlaceholder: !!headerPlaceholder, headerHTML: !!headerHTML });
     }
     
-    // Only load footer on the main index page
     const currentPage = window.location.pathname;
     const isIndexPage = currentPage.includes('index.html') || currentPage === '/' || currentPage === '';
     
     if (footerPlaceholder && footerHTML && isIndexPage) {
         footerPlaceholder.innerHTML = footerHTML;
-        console.log('Footer loaded successfully (index page only)');
     } else if (footerPlaceholder && !isIndexPage) {
-        // Hide footer on non-index pages
         footerPlaceholder.style.display = 'none';
-        console.log('Footer hidden (not index page)');
-    } else {
-        console.log('Footer not loaded:', { footerPlaceholder: !!footerPlaceholder, footerHTML: !!footerHTML, isIndexPage });
     }
     
-    // Check if we're on a quiz page and show back button if needed
     setupBackButton();
 }
 
-// Function to setup back button on quiz pages
 function setupBackButton() {
     const currentPage = window.location.pathname;
-    const isIndexPage = currentPage.includes('index.html') || currentPage === '/' || currentPage === '';
-    const isQuizPage = currentPage.includes('quiz.html');
-    const isQuizListPage = currentPage.includes('quiz-list.html');
-    const isEnglishPage = currentPage.includes('english.html');
-    const isMathsPage = currentPage.includes('maths.html');
+    if (currentPage.includes('index.html') || currentPage === '/' || currentPage === '') return;
     
-    // Don't show back button on the main index page
-    if (isIndexPage) {
-        console.log('On index page - no back button needed');
-        return;
-    }
-    
-    if (isQuizPage) {
-        const backButtonContainer = document.getElementById('back-button-container');
-        const mobileBackLink = document.getElementById('mobile-back-link');
-        
-        if (backButtonContainer) {
-            backButtonContainer.classList.remove('hidden');
-            console.log('Back button shown on quiz page');
-        }
-        if (mobileBackLink) {
-            mobileBackLink.classList.remove('hidden');
-        }
-        
-        // Set up back button functionality
+    const backButtonContainer = document.getElementById('back-button-container');
+    const mobileBackLink = document.getElementById('mobile-back-link');
+    if (backButtonContainer) backButtonContainer.classList.remove('hidden');
+    if (mobileBackLink) mobileBackLink.classList.remove('hidden');
+
+    if (currentPage.includes('quiz.html')) {
         setupQuizBackButton();
-    } else if (isQuizListPage || isEnglishPage || isMathsPage) {
-        const backButtonContainer = document.getElementById('back-button-container');
-        const mobileBackLink = document.getElementById('mobile-back-link');
-        
-        if (backButtonContainer) {
-            backButtonContainer.classList.remove('hidden');
-            console.log('Back button shown on content page');
-        }
-        if (mobileBackLink) {
-            mobileBackLink.classList.remove('hidden');
-        }
-        
-        // Set up back button functionality for other pages
-        setupPageBackButton();
     } else {
-        console.log('On unknown page - no back button needed');
+        setupPageBackButton();
     }
 }
 
-// Function to setup quiz back button functionality
 function setupQuizBackButton() {
     const urlParams = new URLSearchParams(window.location.search);
     const category = urlParams.get('category');
-    
     if (category) {
         const backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
-        
-        const backLink = document.getElementById('back-link');
-        const mobileBackLink = document.getElementById('mobile-back-link');
-        
-        if (backLink) {
-            backLink.href = backUrl;
-            console.log('Quiz back button links to:', backUrl);
-        }
-        if (mobileBackLink) {
-            // Find the anchor tag inside the mobile back link container
-            const mobileBackAnchor = mobileBackLink.querySelector('a');
-            if (mobileBackAnchor) {
-                mobileBackAnchor.href = backUrl;
-            }
-        }
+        document.getElementById('back-link')?.setAttribute('href', backUrl);
+        document.querySelector('#mobile-back-link a')?.setAttribute('href', backUrl);
     }
 }
 
-// Function to setup page back button functionality
 function setupPageBackButton() {
     const currentPage = window.location.pathname;
     let backUrl = 'index.html';
     
     if (currentPage.includes('quiz-list.html')) {
-        const urlParams = new URLSearchParams(window.location.search);
+         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category');
         if (category === 'Synonyms' || category === 'Antonyms' || category === 'One Word Substitution' || category === 'Idioms and Phrases' || category === 'SSC PYQs') {
             backUrl = 'english.html';
         } else {
             backUrl = 'index.html';
         }
-    } else if (currentPage.includes('english.html')) {
-        backUrl = 'index.html';
-    } else if (currentPage.includes('maths.html')) {
+    } else if (currentPage.includes('english.html') || currentPage.includes('maths.html') || currentPage.includes('account.html')) {
         backUrl = 'index.html';
     }
     
-    const backLink = document.getElementById('back-link');
-    const mobileBackLink = document.getElementById('mobile-back-link');
-    
-    if (backLink) {
-        backLink.href = backUrl;
-        console.log('Back button links to:', backUrl);
-    }
-    if (mobileBackLink) {
-        // Find the anchor tag inside the mobile back link container
-        const mobileBackAnchor = mobileBackLink.querySelector('a');
-        if (mobileBackAnchor) {
-            mobileBackAnchor.href = backUrl;
-        }
-    }
+    document.getElementById('back-link')?.setAttribute('href', backUrl);
+    document.querySelector('#mobile-back-link a')?.setAttribute('href', backUrl);
 }
 
-// Function to initialize all event listeners and dynamic content
 function initializeCalciPrepApp() {
-    // --- DOM Element References ---
     const dom = {
-        header: document.getElementById('header'),
         loggedOutView: document.getElementById('logged-out-view'),
         loggedInView: document.getElementById('logged-in-view'),
-        userEmailEl: document.getElementById('user-email'),
+        accountMenuBtn: document.getElementById('account-menu-btn'),
+        accountMenu: document.getElementById('account-menu'),
         logoutBtn: document.getElementById('logout-btn'),
         loginBtn: document.getElementById('login-btn'),
         signupBtn: document.getElementById('signup-btn'),
@@ -188,33 +110,40 @@ function initializeCalciPrepApp() {
         mobileAuthContainer: document.getElementById('mobile-auth-container'),
         authModal: document.getElementById('auth-modal'),
         closeModalBtn: document.getElementById('close-modal-btn'),
-        modalTitle: document.getElementById('modal-title'),
+        signupTab: document.getElementById('signup-tab'),
+        signinTab: document.getElementById('signin-tab'),
         modalSubmitBtn: document.getElementById('modal-submit-btn'),
-        modalSwitchBtn: document.getElementById('modal-switch-btn'),
         authForm: document.getElementById('auth-form'),
         emailInput: document.getElementById('email'),
         passwordInput: document.getElementById('password'),
-        errorMessage: document.getElementById('error-message')
+        errorMessage: document.getElementById('error-message'),
+        passwordStrengthContainer: document.getElementById('password-strength-container'),
+        passwordStrengthText: document.getElementById('password-strength-text'),
+        passwordCriteria: {
+            case: document.getElementById('crit-case'),
+            length: document.getElementById('crit-length'),
+            char: document.getElementById('crit-char'),
+        },
+        forgotPasswordLink: document.getElementById('forgot-password-link'),
+        // New success modal elements
+        successModal: document.getElementById('success-modal'),
+        closeSuccessModalBtn: document.getElementById('close-success-modal-btn'),
     };
 
-    // --- Authentication UI ---
     function updateAuthUI(user) {
         if (user) {
-            if (dom.loggedInView) dom.loggedInView.classList.remove('hidden');
-            if (dom.loggedOutView) dom.loggedOutView.classList.add('hidden');
-            if (dom.userEmailEl) dom.userEmailEl.textContent = user.email;
-            
+            dom.loggedInView?.classList.remove('hidden');
+            dom.loggedOutView?.classList.add('hidden');
             if (dom.mobileAuthContainer) {
                 dom.mobileAuthContainer.innerHTML = `
                     <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
+                    <a href="account.html" class="w-full text-left font-semibold text-gray-700 py-2 px-3">My Account</a>
                     <button id="mobile-logout-btn" class="w-full text-left font-semibold text-red-600 px-3 py-2">Logout</button>`;
                 document.getElementById('mobile-logout-btn')?.addEventListener('click', () => signOut(auth));
             }
         } else {
-            if (dom.loggedInView) dom.loggedInView.classList.add('hidden');
-            if (dom.loggedOutView) dom.loggedOutView.classList.remove('hidden');
-            if (dom.userEmailEl) dom.userEmailEl.textContent = '';
-
+            dom.loggedInView?.classList.add('hidden');
+            dom.loggedOutView?.classList.remove('hidden');
             if (dom.mobileAuthContainer) {
                 dom.mobileAuthContainer.innerHTML = `
                     <button id="mobile-login-btn" class="w-full text-left font-semibold text-gray-700 py-2 px-3">Login</button>
@@ -225,101 +154,201 @@ function initializeCalciPrepApp() {
         }
     }
 
-    // --- Modal Logic ---
-    function openModal(loginMode = true) {
-        isLoginMode = loginMode;
+    function openModal(login = false) {
+        isLoginMode = login;
         updateModalUI();
-        if (dom.authModal) dom.authModal.classList.remove('hidden');
+        dom.authModal?.classList.remove('hidden');
     }
 
     function closeModal() {
-        if (dom.authModal) dom.authModal.classList.add('hidden');
-        if (dom.errorMessage) dom.errorMessage.classList.add('hidden');
-        if (dom.authForm) dom.authForm.reset();
+        dom.authModal?.classList.add('hidden');
+        dom.errorMessage?.classList.add('hidden');
+        dom.authForm?.reset();
+    }
+    
+    // --- NEW Success Modal Functions ---
+    function openSuccessModal() {
+        const modal = dom.successModal;
+        const modalContent = modal.querySelector('.transform');
+        if (!modal || !modalContent) return;
+        
+        modal.classList.remove('hidden');
+        // Trigger the transition
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 50);
+
+        lucide.createIcons();
+    }
+
+    function closeSuccessModal() {
+        const modal = dom.successModal;
+        const modalContent = modal.querySelector('.transform');
+
+        if (!modal || !modalContent) return;
+
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300); // match transition duration
     }
 
     function updateModalUI() {
-        if (!dom.modalTitle || !dom.modalSubmitBtn || !dom.modalSwitchBtn) return;
-        dom.modalTitle.textContent = isLoginMode ? 'Login' : 'Sign Up';
-        dom.modalSubmitBtn.textContent = isLoginMode ? 'Login' : 'Sign Up';
-        document.getElementById('modal-switch-text').textContent = isLoginMode ? "Don't have an account?" : 'Already have an account?';
-        dom.modalSwitchBtn.textContent = isLoginMode ? 'Sign Up' : 'Login';
+        if (isLoginMode) {
+            dom.signinTab.classList.add('border-indigo-600', 'text-indigo-600');
+            dom.signinTab.classList.remove('text-gray-500', 'border-transparent');
+            dom.signupTab.classList.remove('border-indigo-600', 'text-indigo-600');
+            dom.signupTab.classList.add('text-gray-500', 'border-transparent');
+            dom.modalSubmitBtn.textContent = 'Sign In';
+            dom.passwordStrengthContainer.classList.add('hidden');
+            dom.forgotPasswordLink.classList.remove('hidden');
+        } else {
+            dom.signupTab.classList.add('border-indigo-600', 'text-indigo-600');
+            dom.signupTab.classList.remove('text-gray-500', 'border-transparent');
+            dom.signinTab.classList.remove('border-indigo-600', 'text-indigo-600');
+            dom.signinTab.classList.add('text-gray-500', 'border-transparent');
+            dom.modalSubmitBtn.textContent = 'Create Account';
+            dom.passwordStrengthContainer.classList.remove('hidden');
+            dom.forgotPasswordLink.classList.add('hidden');
+        }
+        checkPasswordStrength(); // Re-check on tab switch
     }
 
-    function switchModalMode() {
-        isLoginMode = !isLoginMode;
-        updateModalUI();
+    function checkPasswordStrength() {
+        if (isLoginMode || !dom.passwordInput) return;
+
+        const password = dom.passwordInput.value;
+        
+        const criteriaMet = {
+            length: password.length >= 8,
+            char: /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password),
+            case: /(?=.*[a-z])(?=.*[A-Z])/.test(password)
+        };
+
+        const strength = Object.values(criteriaMet).filter(Boolean).length;
+        
+        const updateCriterion = (el, isMet) => {
+            if (!el) return;
+
+            const newIconName = isMet ? 'check-circle' : 'x-circle';
+            const addClass = isMet ? 'text-green-600' : 'text-red-600';
+            const removeClass = isMet ? 'text-red-600' : 'text-green-600';
+            const initialClass = 'text-gray-500';
+
+            // 1. Update the color of the entire list item `<li>`
+            el.classList.remove(removeClass, initialClass);
+            el.classList.add(addClass);
+
+            // 2. Find the current icon, which could be an `<i>` or an `<svg>`
+            const currentIcon = el.querySelector('i, svg');
+
+            // 3. If an icon exists, replace it with a new `<i>` tag for Lucide to process.
+            if (currentIcon) {
+                const newIconEl = document.createElement('i');
+                newIconEl.setAttribute('data-lucide', newIconName);
+                newIconEl.className = 'w-4 h-4 mr-2'; 
+                currentIcon.parentNode.replaceChild(newIconEl, currentIcon);
+            }
+        };
+
+        updateCriterion(dom.passwordCriteria.case, criteriaMet.case);
+        updateCriterion(dom.passwordCriteria.length, criteriaMet.length);
+        updateCriterion(dom.passwordCriteria.char, criteriaMet.char);
+
+        const strengthTextMap = { 0: 'Weak', 1: 'Weak', 2: 'Medium', 3: 'Strong' };
+        const strengthColorMap = { 0: 'text-red-600', 1: 'text-red-600', 2: 'text-yellow-600', 3: 'text-green-600' };
+        dom.passwordStrengthText.textContent = strengthTextMap[strength];
+        dom.passwordStrengthText.className = `font-semibold ${strengthColorMap[strength]}`;
+        
+        lucide.createIcons();
     }
 
-    // --- Auth Error Mapping ---
+
     function mapAuthError(err) {
         switch (err.code) {
-            case 'auth/invalid-email': return 'Invalid email address.';
-            case 'auth/weak-password': return 'Password should be at least 6 characters.';
-            case 'auth/email-already-in-use': return 'This email is already in use. Try logging in.';
-            case 'auth/user-not-found': return 'No account found for this email. Please sign up.';
+            case 'auth/invalid-email': return 'Invalid email address format.';
+            case 'auth-weak-password': return 'Password does not meet the strength requirements.';
+            case 'auth/email-already-in-use': return 'This email is already registered. Please Sign In.';
+            case 'auth/user-not-found': return 'No account found for this email. Please Sign Up.';
             case 'auth/wrong-password': return 'Incorrect password. Please try again.';
-            case 'auth/network-request-failed': return 'Network error. Check your connection.';
-            default: return 'An authentication error occurred.';
+            default: return 'An authentication error occurred. Please try again.';
         }
     }
 
-    // --- Header Scroll Behavior ---
     let lastScrollTop = 0;
-    window.addEventListener("scroll", function() {
-        // Use a try-catch block in case the header isn't on the page
-        try {
-            const header = document.getElementById('header');
-            if (!header) return;
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                header.style.transform = 'translateY(-100%)';
-            } else {
-                header.style.transform = 'translateY(0)';
-            }
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        } catch (e) {}
+    window.addEventListener("scroll", () => {
+        const header = document.getElementById('header');
+        if (!header) return;
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        header.style.transform = (scrollTop > lastScrollTop && scrollTop > 100) ? 'translateY(-100%)' : 'translateY(0)';
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     }, false);
 
-    // --- Event Listeners ---
     onAuthStateChanged(auth, updateAuthUI);
 
     dom.loginBtn?.addEventListener('click', () => openModal(true));
     dom.signupBtn?.addEventListener('click', () => openModal(false));
     dom.closeModalBtn?.addEventListener('click', closeModal);
-    dom.modalSwitchBtn?.addEventListener('click', switchModalMode);
-    dom.logoutBtn?.addEventListener('click', () => signOut(auth));
+    dom.closeSuccessModalBtn?.addEventListener('click', closeSuccessModal); // New listener
+    dom.signinTab?.addEventListener('click', () => { isLoginMode = true; updateModalUI(); });
+    dom.signupTab?.addEventListener('click', () => { isLoginMode = false; updateModalUI(); });
+    dom.logoutBtn?.addEventListener('click', () => {
+        signOut(auth);
+        dom.accountMenu.classList.add('hidden');
+    });
     dom.mobileMenuBtn?.addEventListener('click', () => dom.mobileMenu.classList.toggle('hidden'));
+    dom.passwordInput?.addEventListener('input', checkPasswordStrength);
+    
+    dom.accountMenuBtn?.addEventListener('click', () => dom.accountMenu.classList.toggle('hidden'));
+    window.addEventListener('click', (e) => {
+        if (dom.accountMenu && dom.accountMenuBtn && !dom.accountMenu.contains(e.target) && !dom.accountMenuBtn.contains(e.target)) {
+            dom.accountMenu.classList.add('hidden');
+        }
+    });
 
     dom.authForm?.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = dom.emailInput.value;
         const password = dom.passwordInput.value;
-        if (dom.errorMessage) dom.errorMessage.classList.add('hidden');
+        dom.errorMessage.classList.add('hidden');
 
-        const authFunction = isLoginMode ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
-        authFunction(auth, email, password)
-            .then(() => closeModal())
-            .catch(error => {
-                if (dom.errorMessage) {
+        if (!isLoginMode) {
+            const isLengthValid = password.length >= 8;
+            const hasChar = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password);
+            const hasMixedCase = /(?=.*[a-z])(?=.*[A-Z])/.test(password);
+
+            if (!isLengthValid || !hasChar || !hasMixedCase) {
+                dom.errorMessage.textContent = mapAuthError({code: 'auth-weak-password'});
+                dom.errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async ({ user }) => {
+                    await setDoc(doc(db, "users", user.uid), { email: user.email, createdAt: serverTimestamp() });
+                    closeModal();
+                    openSuccessModal(); // <-- SHOW SUCCESS MODAL HERE
+                })
+                .catch(error => {
                     dom.errorMessage.textContent = mapAuthError(error);
                     dom.errorMessage.classList.remove('hidden');
-                }
-            });
+                });
+        } else {
+            signInWithEmailAndPassword(auth, email, password)
+                .then(closeModal)
+                .catch(error => {
+                    dom.errorMessage.textContent = mapAuthError(error);
+                    dom.errorMessage.classList.remove('hidden');
+                });
+        }
     });
     
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
+    lucide?.createIcons();
 }
 
-// --- Firestore Functions (Globally Accessible) ---
 async function saveQuizResult(result) {
     const user = auth.currentUser;
-    if (!user) {
-        console.log("No user logged in. Cannot save result.");
-        return;
-    }
+    if (!user) { console.log("No user logged in. Cannot save result."); return; }
     try {
         await addDoc(collection(db, "users", user.uid, "quizHistory"), {
             ...result,
@@ -333,40 +362,14 @@ async function saveQuizResult(result) {
 }
 window.saveQuizResult = saveQuizResult;
 
-// --- App Initialization ---
 function initializeWhenReady() {
-    // Check if templates are loaded
-    console.log('Checking templates:', { 
-        headerHTML: !!window.headerHTML, 
-        footerHTML: !!window.footerHTML,
-        headerLength: window.headerHTML?.length || 0,
-        footerLength: window.footerHTML?.length || 0
-    });
-    
     if (window.headerHTML && window.footerHTML) {
-        console.log('Templates ready, initializing...');
-        loadTemplates();      // First, inject the HTML from our templates.js file
-        initializeCalciPrepApp();      // Then, initialize all the logic and event listeners
+        loadTemplates();
+        initializeCalciPrepApp();
     } else {
-        // If templates aren't ready yet, wait a bit more
-        console.log('Templates not ready, waiting...');
         setTimeout(initializeWhenReady, 50);
-        
-        // Fallback: if templates don't load after 5 seconds, try to load them anyway
-        if (window.templateLoadAttempts === undefined) {
-            window.templateLoadAttempts = 0;
-        }
-        window.templateLoadAttempts++;
-        
-        if (window.templateLoadAttempts > 100) { // 5 seconds
-            console.warn('Templates failed to load, proceeding without them');
-            loadTemplates(); // This will load empty templates
-            initializeCalciPrepApp();
-        }
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Start checking for templates to be ready
-    initializeWhenReady();
-});
+document.addEventListener('DOMContentLoaded', initializeWhenReady);
+

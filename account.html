@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - CalciPrep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Kodchasan', sans-serif;
+            background-color: #f7f7f7;
+            color: #151313;
+        }
+        .btn-primary {
+            padding: 0.75rem 2rem;
+            background-color: #ff5734;
+            color: white;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #e64a2e;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="text-main">
+
+    <div id="header-placeholder"></div>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
+            <h1 class="text-3xl font-bold text-center mb-8">My Account</h1>
+
+            <!-- Profile Information Section -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-semibold mb-6">Profile Information</h2>
+                <form id="profile-form">
+                    <div class="flex items-center space-x-6 mb-6">
+                        <img id="profile-pic-preview" src="https://via.placeholder.com/150" alt="Profile Picture" class="w-24 h-24 rounded-full object-cover">
+                        <div>
+                            <label for="profile-pic" class="block text-sm font-medium text-gray-700">Profile Picture</label>
+                            <input type="file" id="profile-pic" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"/>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                            <input type="text" id="name" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                            <input type="tel" id="phone" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Change Password Section -->
+            <div>
+                <h2 class="text-2xl font-semibold mb-6">Change Password</h2>
+                <form id="password-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
+                            <input type="password" id="current-password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange" required>
+                        </div>
+                        <div>
+                            <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
+                            <input type="password" id="new-password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange" required>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+             <div id="message-container" class="mt-4"></div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="templates.js"></script>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="account.js"></script>
+</body>
+</html>
