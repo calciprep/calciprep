@@ -154,7 +154,10 @@
             <div class="w-full max-w-md mx-auto">
                 <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-6">
                 
-                <div class="flex border-b mb-6">
+                <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-2">Create your account</h2>
+                <p id="modal-subheading" class="text-sm text-gray-600 mb-6">Let's get started with your 30 day free trial.</p>
+                
+                <div id="auth-tabs" class="flex border-b mb-6">
                     <button id="signup-tab" class="flex-1 pb-2 font-semibold text-sm border-b-2 border-indigo-600 text-indigo-600">Sign Up</button>
                     <button id="signin-tab" class="flex-1 pb-2 font-semibold text-sm text-gray-500 border-b-2 border-transparent">Sign In</button>
                 </div>
@@ -164,14 +167,14 @@
                 <form id="auth-form">
                     <div class="mb-4">
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Id</label>
-                        <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="email" id="email" name="email" autocomplete="email" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-4" id="password-field-container">
                         <div class="flex justify-between items-center mb-1">
                             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                             <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:underline hidden">Forgot Password?</a>
                         </div>
-                        <input type="password" id="password" placeholder="Enter Password" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Enter Password" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     
                     <div id="password-strength-container" class="text-sm text-gray-600 space-y-2 mb-6">
@@ -186,31 +189,16 @@
                     </div>
 
                     <button type="submit" id="modal-submit-btn" class="w-full bg-indigo-600 text-white rounded-md py-3 text-base font-semibold hover:bg-indigo-700 transition-colors shadow-sm">Create Account</button>
+                    
+                    <div class="text-center mt-4">
+                        <a href="#" id="back-to-signin-link" class="text-sm text-indigo-600 hover:underline hidden">Back to Sign In</a>
+                    </div>
                 </form>
-                <p class="text-center text-xs text-gray-500 mt-6">
+                <p id="terms-text" class="text-center text-xs text-gray-500 mt-6">
                     By signing up to create an account I accept Company's <a href="#" class="underline">Terms of use & Privacy Policy</a>.
                 </p>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- NEW: Account Created Success Modal -->
-<div id="success-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="font-family: 'Kodchasan', sans-serif;">
-    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-2xl w-full max-w-lg text-center p-12 transform transition-all scale-95 opacity-0">
-        <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8 mx-auto mb-8">
-
-        <div class="w-28 h-28 mx-auto mb-6">
-             <svg viewBox="0 0 100 100">
-                <path fill="#4F46E5" d="M 50.000,0.000 L 59.511,10.207 L 72.361,6.738 L 74.216,19.549 L 88.292,20.784 L 84.146,32.880 L 98.995,38.995 L 90.489,47.119 L 98.995,55.005 L 84.146,61.120 L 88.292,73.216 L 74.216,74.451 L 72.361,87.262 L 59.511,83.793 L 50.000,94.000 L 40.489,83.793 L 27.639,87.262 L 25.784,74.451 L 11.708,73.216 L 15.854,61.120 L 1.005,55.005 L 9.511,47.119 L 1.005,38.995 L 15.854,32.880 L 11.708,20.784 L 25.784,19.549 L 27.639,6.738 L 40.489,10.207 Z"/>
-                <circle cx="50" cy="50" r="35" fill="#6366F1"/>
-                <path d="M 32,51 L 45,64 L 68,39" stroke="white" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </div>
-
-        <h2 class="text-3xl font-bold text-gray-900 mb-3">Account created successfully!</h2>
-        <p class="text-gray-600 mb-8 text-base" style="font-family: 'Inter', sans-serif;">Welcome aboard! Start your success journey with CalciPrep!</p>
-        <button id="close-success-modal-btn" class="w-full sm:w-auto bg-indigo-600 text-white rounded-lg py-3 px-10 text-base font-semibold hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Let's Start!</button>
     </div>
 </div>
 

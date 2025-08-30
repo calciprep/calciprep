@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>English Quiz List - SSC Vocabulary Practice | CalciPrep</title>
+    <meta name="description" content="Browse our list of English practice quizzes for SSC and other competitive exams. Select a quiz on synonyms, antonyms, and more to start improving your score.">
     <meta name="google-adsense-account" content="ca-pub-2382040431534049">
-    <title>Quiz List - CalciPrep</title>
+
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -132,7 +144,7 @@
             const category = urlParams.get('category') || 'English Quizzes';
 
             categoryTitle.textContent = category;
-            document.title = `${category} - CalciPrep`;
+            document.title = `${category} Quizzes - CalciPrep`; // Dynamically update title
 
             // Function to create an ad card
             const createAdCard = () => {

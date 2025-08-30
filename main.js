@@ -1,7 +1,8 @@
 // Import Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 // Use global templates loaded from templates.js
 let headerHTML = '';
 let footerHTML = '';
@@ -23,7 +24,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // --- Global State ---
-let isLoginMode = false; // Default to Sign Up
+let isLoginMode = true; // Default to Sign In now
+let isPasswordResetMode = false; // New state for password reset
 
 // --- Core App Logic ---
 
@@ -96,6 +98,24 @@ function setupPageBackButton() {
     document.querySelector('#mobile-back-link a')?.setAttribute('href', backUrl);
 }
 
+// --- New Subtle Success Message Function ---
+function showSuccessMessage(message) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed bottom-5 right-5 bg-green-500 text-white py-3 px-5 rounded-lg shadow-lg transform transition-all duration-300 translate-y-16 opacity-0';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.classList.remove('translate-y-16', 'opacity-0');
+        notification.classList.add('translate-y-0', 'opacity-100');
+    }, 100);
+
+    setTimeout(() => {
+        notification.classList.add('translate-y-16', 'opacity-0');
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
+}
+
 function initializeCalciPrepApp() {
     const dom = {
         loggedOutView: document.getElementById('logged-out-view'),
@@ -125,9 +145,13 @@ function initializeCalciPrepApp() {
             char: document.getElementById('crit-char'),
         },
         forgotPasswordLink: document.getElementById('forgot-password-link'),
-        // New success modal elements
-        successModal: document.getElementById('success-modal'),
-        closeSuccessModalBtn: document.getElementById('close-success-modal-btn'),
+        // New elements for modal state changes
+        modalHeading: document.getElementById('modal-heading'),
+        modalSubheading: document.getElementById('modal-subheading'),
+        authTabs: document.getElementById('auth-tabs'),
+        passwordFieldContainer: document.getElementById('password-field-container'),
+        termsText: document.getElementById('terms-text'),
+        backToSigninLink: document.getElementById('back-to-signin-link')
     };
 
     function updateAuthUI(user) {
@@ -154,8 +178,9 @@ function initializeCalciPrepApp() {
         }
     }
 
-    function openModal(login = false) {
+    function openModal(login = true) {
         isLoginMode = login;
+        isPasswordResetMode = false;
         updateModalUI();
         dom.authModal?.classList.remove('hidden');
     }
@@ -166,56 +191,60 @@ function initializeCalciPrepApp() {
         dom.authForm?.reset();
     }
     
-    // --- NEW Success Modal Functions ---
-    function openSuccessModal() {
-        const modal = dom.successModal;
-        const modalContent = modal.querySelector('.transform');
-        if (!modal || !modalContent) return;
-        
-        modal.classList.remove('hidden');
-        // Trigger the transition
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-        }, 50);
-
-        lucide.createIcons();
-    }
-
-    function closeSuccessModal() {
-        const modal = dom.successModal;
-        const modalContent = modal.querySelector('.transform');
-
-        if (!modal || !modalContent) return;
-
-        modalContent.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300); // match transition duration
-    }
-
     function updateModalUI() {
-        if (isLoginMode) {
+        dom.errorMessage.classList.add('hidden');
+        if (isPasswordResetMode) {
+            dom.modalHeading.textContent = 'Reset your password';
+            dom.modalSubheading.textContent = 'We\'ll send a recovery link to your email.';
+            dom.authTabs.classList.add('hidden');
+            dom.passwordFieldContainer.classList.add('hidden');
+            dom.passwordStrengthContainer.classList.add('hidden');
+            dom.termsText.classList.add('hidden');
+            dom.modalSubmitBtn.textContent = 'Send Recovery Link';
+            dom.backToSigninLink.classList.remove('hidden');
+        } else if (isLoginMode) {
+            dom.modalHeading.textContent = 'Welcome back!';
+            dom.modalSubheading.textContent = 'Sign in to continue your progress.';
+            dom.authTabs.classList.remove('hidden');
+            dom.passwordFieldContainer.classList.remove('hidden');
+            dom.passwordStrengthContainer.classList.add('hidden');
+            dom.termsText.classList.add('hidden');
+            dom.backToSigninLink.classList.add('hidden');
+
             dom.signinTab.classList.add('border-indigo-600', 'text-indigo-600');
             dom.signinTab.classList.remove('text-gray-500', 'border-transparent');
             dom.signupTab.classList.remove('border-indigo-600', 'text-indigo-600');
             dom.signupTab.classList.add('text-gray-500', 'border-transparent');
             dom.modalSubmitBtn.textContent = 'Sign In';
-            dom.passwordStrengthContainer.classList.add('hidden');
             dom.forgotPasswordLink.classList.remove('hidden');
-        } else {
+            dom.passwordInput.setAttribute('autocomplete', 'current-password');
+        } else { // Sign Up Mode
+            dom.modalHeading.textContent = 'Create your account';
+            dom.modalSubheading.textContent = 'Let\'s get started with your journey.';
+            dom.authTabs.classList.remove('hidden');
+            dom.passwordFieldContainer.classList.remove('hidden');
+            dom.passwordStrengthContainer.classList.remove('hidden');
+            dom.termsText.classList.remove('hidden');
+            dom.backToSigninLink.classList.add('hidden');
+            
             dom.signupTab.classList.add('border-indigo-600', 'text-indigo-600');
             dom.signupTab.classList.remove('text-gray-500', 'border-transparent');
             dom.signinTab.classList.remove('border-indigo-600', 'text-indigo-600');
             dom.signinTab.classList.add('text-gray-500', 'border-transparent');
             dom.modalSubmitBtn.textContent = 'Create Account';
-            dom.passwordStrengthContainer.classList.remove('hidden');
             dom.forgotPasswordLink.classList.add('hidden');
+            dom.passwordInput.setAttribute('autocomplete', 'new-password');
         }
-        checkPasswordStrength(); // Re-check on tab switch
+        checkPasswordStrength();
     }
 
     function checkPasswordStrength() {
-        if (isLoginMode || !dom.passwordInput) return;
+        if (isLoginMode || isPasswordResetMode || !dom.passwordInput) {
+             if(dom.passwordStrengthContainer) dom.passwordStrengthContainer.classList.add('hidden');
+             return;
+        } else {
+             if(dom.passwordStrengthContainer) dom.passwordStrengthContainer.classList.remove('hidden');
+        }
 
         const password = dom.passwordInput.value;
         
@@ -229,26 +258,16 @@ function initializeCalciPrepApp() {
         
         const updateCriterion = (el, isMet) => {
             if (!el) return;
-
+            const iconEl = el.querySelector('i');
+            if(!iconEl) return;
+            
             const newIconName = isMet ? 'check-circle' : 'x-circle';
-            const addClass = isMet ? 'text-green-600' : 'text-red-600';
-            const removeClass = isMet ? 'text-red-600' : 'text-green-600';
-            const initialClass = 'text-gray-500';
-
-            // 1. Update the color of the entire list item `<li>`
-            el.classList.remove(removeClass, initialClass);
+            const addClass = isMet ? 'text-green-600' : 'text-gray-500';
+            const removeClass = isMet ? 'text-gray-500' : 'text-green-600';
+            
+            el.classList.remove(removeClass);
             el.classList.add(addClass);
-
-            // 2. Find the current icon, which could be an `<i>` or an `<svg>`
-            const currentIcon = el.querySelector('i, svg');
-
-            // 3. If an icon exists, replace it with a new `<i>` tag for Lucide to process.
-            if (currentIcon) {
-                const newIconEl = document.createElement('i');
-                newIconEl.setAttribute('data-lucide', newIconName);
-                newIconEl.className = 'w-4 h-4 mr-2'; 
-                currentIcon.parentNode.replaceChild(newIconEl, currentIcon);
-            }
+            iconEl.setAttribute('data-lucide', newIconName);
         };
 
         updateCriterion(dom.passwordCriteria.case, criteriaMet.case);
@@ -260,19 +279,33 @@ function initializeCalciPrepApp() {
         dom.passwordStrengthText.textContent = strengthTextMap[strength];
         dom.passwordStrengthText.className = `font-semibold ${strengthColorMap[strength]}`;
         
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     }
 
 
     function mapAuthError(err) {
         switch (err.code) {
             case 'auth/invalid-email': return 'Invalid email address format.';
-            case 'auth-weak-password': return 'Password does not meet the strength requirements.';
+            case 'auth-weak-password':
+            case 'auth/weak-password': return 'Password does not meet the strength requirements.';
             case 'auth/email-already-in-use': return 'This email is already registered. Please Sign In.';
-            case 'auth/user-not-found': return 'No account found for this email. Please Sign Up.';
+            case 'auth/user-not-found': return 'No account found for this email. Please Sign Up or check for typos.';
             case 'auth/wrong-password': return 'Incorrect password. Please try again.';
             default: return 'An authentication error occurred. Please try again.';
         }
+    }
+    
+    function showError(error) {
+        let message;
+        if (typeof error === 'string') {
+            message = error;
+        } else {
+            message = error.message || mapAuthError(error);
+        }
+        dom.errorMessage.textContent = message;
+        dom.errorMessage.classList.remove('hidden');
     }
 
     let lastScrollTop = 0;
@@ -289,9 +322,23 @@ function initializeCalciPrepApp() {
     dom.loginBtn?.addEventListener('click', () => openModal(true));
     dom.signupBtn?.addEventListener('click', () => openModal(false));
     dom.closeModalBtn?.addEventListener('click', closeModal);
-    dom.closeSuccessModalBtn?.addEventListener('click', closeSuccessModal); // New listener
-    dom.signinTab?.addEventListener('click', () => { isLoginMode = true; updateModalUI(); });
-    dom.signupTab?.addEventListener('click', () => { isLoginMode = false; updateModalUI(); });
+    
+    dom.signinTab?.addEventListener('click', () => { isLoginMode = true; isPasswordResetMode = false; updateModalUI(); });
+    dom.signupTab?.addEventListener('click', () => { isLoginMode = false; isPasswordResetMode = false; updateModalUI(); });
+    
+    dom.forgotPasswordLink?.addEventListener('click', (e) => { 
+        e.preventDefault();
+        isPasswordResetMode = true; 
+        updateModalUI(); 
+    });
+    
+    dom.backToSigninLink?.addEventListener('click', (e) => {
+        e.preventDefault();
+        isPasswordResetMode = false;
+        isLoginMode = true;
+        updateModalUI();
+    });
+
     dom.logoutBtn?.addEventListener('click', () => {
         signOut(auth);
         dom.accountMenu.classList.add('hidden');
@@ -309,41 +356,71 @@ function initializeCalciPrepApp() {
     dom.authForm?.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = dom.emailInput.value;
-        const password = dom.passwordInput.value;
         dom.errorMessage.classList.add('hidden');
+        
+        if (isPasswordResetMode) {
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    isPasswordResetMode = false;
+                    isLoginMode = true;
+                    updateModalUI();
+                    showSuccessMessage("Password reset link sent! Check your inbox.");
+                })
+                .catch((error) => {
+                    showError(error);
+                });
 
-        if (!isLoginMode) {
+        } else if (!isLoginMode) { // Sign Up Logic
+            const password = dom.passwordInput.value;
             const isLengthValid = password.length >= 8;
             const hasChar = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password);
             const hasMixedCase = /(?=.*[a-z])(?=.*[A-Z])/.test(password);
 
             if (!isLengthValid || !hasChar || !hasMixedCase) {
-                dom.errorMessage.textContent = mapAuthError({code: 'auth-weak-password'});
-                dom.errorMessage.classList.remove('hidden');
+                showError({code: 'auth-weak-password'});
                 return;
             }
 
             createUserWithEmailAndPassword(auth, email, password)
-                .then(async ({ user }) => {
-                    await setDoc(doc(db, "users", user.uid), { email: user.email, createdAt: serverTimestamp() });
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    await sendEmailVerification(user);
                     closeModal();
-                    openSuccessModal(); // <-- SHOW SUCCESS MODAL HERE
+                    showSuccessMessage("Verification email sent! Please check your inbox.");
+                    await signOut(auth);
+                    
+                    try {
+                        await setDoc(doc(db, "users", user.uid), {
+                            email: user.email,
+                            createdAt: new Date(),
+                            emailVerified: false
+                        });
+                    } catch (err) {
+                        console.error("❌ Firestore write failed, but user account was created.", err);
+                    }
                 })
-                .catch(error => {
-                    dom.errorMessage.textContent = mapAuthError(error);
-                    dom.errorMessage.classList.remove('hidden');
-                });
-        } else {
+                .catch((error) => showError(error));
+
+        } else { // Sign In Logic
+            const password = dom.passwordInput.value;
             signInWithEmailAndPassword(auth, email, password)
-                .then(closeModal)
-                .catch(error => {
-                    dom.errorMessage.textContent = mapAuthError(error);
-                    dom.errorMessage.classList.remove('hidden');
-                });
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    if (user.emailVerified) {
+                        closeModal();
+                        showSuccessMessage("Signed in successfully!");
+                    } else {
+                        signOut(auth);
+                        showError({ message: "Please verify your email before signing in." });
+                    }
+                })
+                .catch(error => showError(error));
         }
     });
     
-    lucide?.createIcons();
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 async function saveQuizResult(result) {
