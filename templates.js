@@ -4,31 +4,50 @@
     
     // Define templates
     const headerHTML = `
-<header id="header" class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm transition-transform duration-300">
-    <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+<header id="header" class="fixed top-0 left-0 right-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
         <a href="index.html" class="flex-shrink-0">
-            <img src="images/New-logo.svg" alt="CalciPrep Logo" class="h-10">
+            <img src="New-logo.svg" alt="CalciPrep Logo" class="h-10">
         </a>
 
-        <nav id="main-nav" class="hidden lg:flex items-center space-x-8">
-            <a href="index.html#home" class="nav-link">Home</a>
-            <a href="index.html#subjects" class="nav-link">Subjects</a>
-            <a href="index.html#about" class="nav-link">About</a>
-            <a href="index.html#features" class="nav-link">Features</a>
-            <a href="index.html#resources" class="nav-link">Resources</a>
-            <a href="index.html#contact" class="nav-link">Contact</a>
+        <nav id="main-nav" class="glassmorphism-nav hidden lg:flex items-center space-x-1 p-1.5 relative">
+            <div id="nav-highlight" class="nav-highlight"></div>
+            <a href="index.html#home" class="nav-link active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="index.html#subjects" class="nav-link">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span>Subjects</span>
+            </a>
+            <a href="index.html#about" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>About</span>
+            </a>
+            <a href="index.html#features" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                <span>Features</span>
+            </a>
+            <a href="index.html#resources" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                <span>Resources</span>
+            </a>
+            <a href="index.html#contact" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>Contact</span>
+            </a>
         </nav>
 
         <div class="hidden lg:flex items-center space-x-2">
             <div id="back-button-container" class="hidden">
-                <a id="back-link" href="#" class="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Go Back">
-                    <i data-lucide="arrow-left" class="w-5 h-5 text-gray-700"></i>
+                <a id="back-link" href="#" class="p-2 rounded-full hover:opacity-75 transition-all" title="Go Back">
+                    <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
                 </a>
             </div>
             <div id="auth-container">
                 <div id="logged-out-view" class="flex items-center space-x-2">
-                    <button id="login-btn" class="font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-5 py-2 rounded-md transition-colors text-sm">Login</button>
-                    <button id="signup-btn" class="font-semibold text-white bg-gray-900 hover:bg-gray-800 px-5 py-2 rounded-md transition-colors text-sm">Sign up</button>
+                    <button id="login-btn" class="font-semibold text-gray-700 hover:bg-gray-200/50 px-4 py-2 rounded-full transition-colors">Login</button>
+                    <button id="signup-btn" class="btn-primary" style="padding: 0.5rem 1rem;">Sign up</button>
                 </div>
                 <div id="logged-in-view" class="hidden items-center space-x-4 relative">
                      <button id="account-menu-btn" class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -49,17 +68,17 @@
         </div>
     </div>
     
-    <div id="mobile-menu" class="hidden lg:hidden bg-white/95 backdrop-blur-md">
+    <div id="mobile-menu" class="hidden lg:hidden fixed top-24 left-4 right-4 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 overflow-hidden">
         <div class="px-2 pt-2 pb-3 space-y-1">
-             <a href="index.html#home" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-100">Home</a>
-             <a href="index.html#subjects" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-100">Subjects</a>
-             <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-100">About</a>
-             <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-100">Features</a>
-             <a href="index.html#resources" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-100">Resources</a>
-             <a href="index.html#contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-100">Contact</a>
-             <div class="px-3 pt-4 pb-2 border-t border-gray-200">
+             <a href="index.html#home" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-500/10">Home</a>
+             <a href="index.html#subjects" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-500/10">Subjects</a>
+             <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-500/10">About</a>
+             <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-500/10">Features</a>
+             <a href="index.html#resources" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-500/10">Resources</a>
+             <a href="index.html#contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-500/10">Contact</a>
+             <div class="px-3 pt-4 pb-2 border-t border-gray-200/50">
                  <div id="mobile-back-link" class="hidden mb-3">
-                     <a href="#" class="flex items-center text-base font-medium text-gray-800 hover:bg-gray-100 px-3 py-2 rounded-md">
+                     <a href="#" class="flex items-center text-base font-medium text-gray-800 hover:bg-gray-500/10 px-3 py-2 rounded-md">
                          <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
                          Back
                      </a>
@@ -75,15 +94,33 @@
     body {
       padding-top: 80px;
     }
-    .nav-link {
-        color: #4B5563; /* text-gray-600 */
-        transition: color 0.3s ease;
-        font-weight: 500;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.9rem;
+    .glassmorphism-nav {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
     }
-    .nav-link:hover, .nav-link.active {
-        color: #111827; /* text-gray-900 */
+    .nav-link {
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+        border-radius: 9999px; font-weight: 500; color: #374151;
+        transition: color 0.3s ease; position: relative; z-index: 1;
+    }
+    .nav-link.active, .nav-link:hover { color: #111827; }
+    .nav-highlight {
+        position: absolute; top: 6px; bottom: 6px; background-color: #ffffff;
+        border-radius: 9999px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); z-index: 0;
+    }
+    .btn-primary {
+        background-color: #4f46e5; color: white; font-weight: 600;
+        border-radius: 9999px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease; transform: scale(1);
+    }
+    .btn-primary:hover {
+        background-color: #4f46e5; transform: scale(1.05);
     }
     .auth-modal-grid {
         display: grid;
@@ -109,13 +146,13 @@
         
         <!-- Left Panel -->
         <div class="auth-left-panel">
-            <img src="images/Registration-left-panel.svg" alt="CalciPrep Welcome" class="w-full h-full object-cover">
+            <img src="Registration-left-panel.svg" alt="CalciPrep Welcome" class="w-full h-full object-cover">
         </div>
 
         <!-- Right Panel (Form) -->
         <div class="p-12 flex flex-col justify-center" style="font-family: 'Inter', sans-serif;">
             <div class="w-full max-w-md mx-auto">
-                <img src="images/New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-6">
+                <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-6">
                 
                 <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-2">Create your account</h2>
                 <p id="modal-subheading" class="text-sm text-gray-600 mb-6">Let's get started with your 30 day free trial.</p>
@@ -164,19 +201,40 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nav = document.getElementById('main-nav');
+        if (!nav) return;
+
+        const highlight = document.getElementById('nav-highlight');
+        const links = nav.querySelectorAll('.nav-link');
+        const activeLink = nav.querySelector('.nav-link.active');
+
+        function positionHighlight(element) {
+            if (!element) return;
+            highlight.style.width = \`\${element.offsetWidth}px\`;
+            highlight.style.left = \`\${element.offsetLeft}px\`;
+        }
+        setTimeout(() => { if (activeLink) positionHighlight(activeLink); }, 50);
+        links.forEach(link => { link.addEventListener('mouseenter', () => positionHighlight(link)); });
+        nav.addEventListener('mouseleave', () => { positionHighlight(nav.querySelector('.nav-link.active')); });
+    });
+</script>
 `;
 
     const footerHTML = `
 <footer class="bg-gray-800 text-white py-12" style="background-color: #151313;">
     <div class="container mx-auto px-6 text-center">
         <a href="index.html#home">
-            <img src="images/New-logo.svg" alt="CalciPrep Logo" class="h-10 mx-auto">
+            <img src="New-logo.svg" alt="CalciPrep Logo" class="h-10 mx-auto">
         </a>
         <div class="flex justify-center space-x-6 my-6">
-            <a href="index.html#about" class="hover:text-accent-blue text-gray-300">About</a>
-            <a href="index.html#subjects" class="hover:text-accent-blue text-gray-300">Subjects</a>
-            <a href="index.html#features" class="hover:text-accent-blue text-gray-300">Features</a>
-            <a href="index.html#contact" class="hover:text-accent-blue text-gray-300">Contact</a>
+            <a href="index.html#about" class="hover:text-accent-orange text-gray-300">About</a>
+            <a href="index.html#subjects" class="hover:text-accent-orange text-gray-300">Subjects</a>
+            <a href="index.html#features" class="hover:text-accent-orange text-gray-300">Features</a>
+            <a href="index.html#contact" class="hover:text-accent-orange text-gray-300">Contact</a>
         </div>
         <p class="text-gray-400">&copy; 2024 CalciPrep. All Rights Reserved.</p>
     </div>
