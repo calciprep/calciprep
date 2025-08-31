@@ -49,6 +49,7 @@
             border-radius: 0.5rem;
             padding: 0.625rem 0.875rem;
             font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
         .form-input:disabled {
             background-color: #f1f5f9; /* slate-100 */
@@ -71,11 +72,23 @@
             animation: spin 0.6s linear infinite;
         }
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to { transform: rotate(3Ddeg); }
         }
         .profile-pic-label-disabled {
             cursor: not-allowed;
             opacity: 0.7;
+        }
+        .nav-link.active {
+            background-color: #eef2ff; /* indigo-50 */
+            color: #4338ca; /* indigo-700 */
+            font-weight: 600;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .account-panel {
+            animation: fadeIn 0.4s ease-in-out;
         }
     </style>
 </head>
@@ -83,105 +96,124 @@
 
     <div id="header-placeholder"></div>
 
-    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div class="max-w-4xl mx-auto space-y-8">
-            
-            <!-- Profile Card -->
-            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
-                <form id="profile-form">
-                    <!-- Profile Header -->
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-slate-200">
-                        <div class="flex items-center space-x-4">
-                            <div class="relative">
-                                <img id="profile-pic-preview" class="w-20 h-20 rounded-full object-cover" src="https://placehold.co/80x80/eef2ff/4f46e5?text=C" alt="Profile Picture">
-                                <label for="profile-pic" id="profile-pic-label" class="absolute -bottom-1 -right-1 bg-white rounded-full p-1 border border-slate-300 cursor-pointer hover:bg-slate-100 transition-colors profile-pic-label-disabled">
-                                    <i data-lucide="camera" class="w-4 h-4 text-slate-600"></i>
-                                    <input type="file" id="profile-pic" class="hidden" accept="image/*" disabled>
-                                </label>
-                            </div>
-                            <div>
-                                <h1 id="display-name" class="text-xl font-bold text-slate-800">Loading...</h1>
-                                <p id="display-email" class="text-sm text-slate-500">loading@email.com</p>
-                                <div id="email-verified-status" class="hidden items-center mt-1">
-                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-indigo-600"></i>
-                                    <span class="ml-1.5 text-xs font-semibold text-indigo-600 uppercase tracking-wider">VERIFIED</span>
+    <main class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
+            <!-- Sidebar Navigation -->
+            <aside class="py-6 px-2 sm:px-6 lg:py-0 lg:px-0 lg:col-span-3">
+                <nav id="account-nav" class="space-y-1">
+                    <a href="#" data-target="profile-panel" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md text-slate-900 hover:bg-slate-100 active">
+                        <i data-lucide="user-circle" class="text-slate-500 group-hover:text-slate-600 mr-3 flex-shrink-0 h-6 w-6"></i>
+                        <span class="truncate">Profile</span>
+                    </a>
+                    <a href="#" data-target="security-panel" class="nav-link group flex items-center px-3 py-2 text-sm font-medium rounded-md text-slate-900 hover:bg-slate-100">
+                        <i data-lucide="shield-check" class="text-slate-500 group-hover:text-slate-600 mr-3 flex-shrink-0 h-6 w-6"></i>
+                        <span class="truncate">Security</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Main Content Panels -->
+            <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
+                
+                <!-- Profile Panel -->
+                <div id="profile-panel" class="account-panel">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                        <form id="profile-form">
+                            <!-- Profile Header -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-slate-200">
+                                <div class="flex items-center space-x-4">
+                                    <div class="relative">
+                                        <img id="profile-pic-preview" class="w-20 h-20 rounded-full object-cover" src="https://placehold.co/80x80/eef2ff/4f46e5?text=C" alt="Profile Picture">
+                                        <label for="profile-pic" id="profile-pic-label" class="absolute -bottom-1 -right-1 bg-white rounded-full p-1.5 border border-slate-300 cursor-pointer hover:bg-slate-100 transition-colors profile-pic-label-disabled shadow-sm">
+                                            <i data-lucide="camera" class="w-4 h-4 text-slate-600"></i>
+                                            <input type="file" id="profile-pic" class="hidden" accept="image/*" disabled>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <h1 id="display-name" class="text-xl font-bold text-slate-800">Loading...</h1>
+                                        <p id="display-email" class="text-sm text-slate-500">loading@email.com</p>
+                                        <div id="email-verified-status" class="hidden items-center mt-1.5">
+                                            <i data-lucide="check-circle-2" class="w-4 h-4 text-indigo-600"></i>
+                                            <span class="ml-1.5 text-xs font-semibold text-indigo-600 uppercase tracking-wider">VERIFIED</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 sm:mt-0 flex space-x-2 w-full sm:w-auto">
+                                   <button type="button" id="change-profile-btn" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg btn-primary">
+                                        <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>
+                                        <span class="btn-text">Edit Profile</span>
+                                    </button>
+                                    <div id="edit-mode-buttons" class="hidden flex space-x-2 w-full sm:w-auto">
+                                        <button type="button" id="cancel-edit-btn" class="w-1/2 sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg btn-secondary">Cancel</button>
+                                        <button type="submit" id="save-profile-btn" class="w-1/2 sm:w-auto flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg btn-primary">
+                                            <span class="btn-text">Save</span>
+                                            <div class="spinner w-4 h-4 border-2 border-white border-solid rounded-full hidden"></div>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="mt-4 sm:mt-0 flex space-x-2 w-full sm:w-auto">
-                           <button type="button" id="change-profile-btn" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg btn-primary">
-                                <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>
-                                <span class="btn-text">Change</span>
-                            </button>
-                            <div id="edit-mode-buttons" class="hidden flex space-x-2 w-full sm:w-auto">
-                                <button type="button" id="cancel-edit-btn" class="w-1/2 sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg btn-secondary">
-                                    Cancel
-                                </button>
-                                <button type="submit" id="save-profile-btn" class="w-1/2 sm:w-auto flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg btn-primary">
-                                    <span class="btn-text">Save changes</span>
+        
+                            <!-- Profile Form Fields -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 pt-6">
+                                <div>
+                                    <label for="firstName" class="form-label mb-1 block">First Name</label>
+                                    <input type="text" id="firstName" class="form-input w-full" placeholder="Your first name" disabled>
+                                </div>
+                                <div>
+                                    <label for="lastName" class="form-label mb-1 block">Last Name</label>
+                                    <input type="text" id="lastName" class="form-input w-full" placeholder="Your last name" disabled>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="email" class="form-label mb-1 block">Email address</label>
+                                    <input type="email" id="email" class="form-input w-full bg-slate-100 cursor-not-allowed" placeholder="your@email.com" readonly disabled>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="username" class="form-label mb-1 block">Username</label>
+                                    <div class="flex items-center">
+                                        <span class="inline-flex items-center px-3 text-sm text-slate-500 bg-slate-100 border border-r-0 border-slate-300 rounded-l-lg h-[40px]">calciprep.online/</span>
+                                        <input type="text" id="username" class="form-input w-full rounded-l-none" placeholder="your-username" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+        
+                <!-- Security Panel -->
+                <div id="security-panel" class="account-panel hidden">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                        <h2 class="text-lg font-bold text-slate-800 pb-4 border-b border-slate-200">Security</h2>
+                        
+                        <form id="password-form" class="py-6 border-b border-slate-200">
+                            <h3 class="font-semibold text-slate-700 mb-1">Change Password</h3>
+                            <p class="text-sm text-slate-500 mb-4">For your security, you will need to enter your current password to make this change.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                <div>
+                                     <label for="current-password" class="form-label mb-1 block">Current Password</label>
+                                    <input type="password" id="current-password" class="form-input w-full" required>
+                                </div>
+                                <div>
+                                     <label for="new-password" class="form-label mb-1 block">New Password</label>
+                                    <input type="password" id="new-password" class="form-input w-full" required>
+                                </div>
+                            </div>
+                             <div class="mt-4">
+                                <button type="submit" id="save-password-btn" class="flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg btn-primary">
+                                    <span class="btn-text">Update Password</span>
                                     <div class="spinner w-4 h-4 border-2 border-white border-solid rounded-full hidden"></div>
                                 </button>
                             </div>
+                        </form>
+        
+                        <div class="pt-6">
+                            <h3 class="font-semibold text-red-800 mb-1">Delete Account</h3>
+                            <p class="text-sm text-slate-500 mb-4">Permanently delete your account and all associated data. This action cannot be undone.</p>
+                            <button id="delete-account-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors">Delete My Account</button>
                         </div>
                     </div>
-
-                    <!-- Profile Form Fields -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 pt-6">
-                        <div>
-                            <label for="firstName" class="form-label mb-1 block">First Name</label>
-                            <input type="text" id="firstName" class="form-input w-full" placeholder="Your first name" disabled>
-                        </div>
-                        <div>
-                            <label for="lastName" class="form-label mb-1 block">Last Name</label>
-                            <input type="text" id="lastName" class="form-input w-full" placeholder="Your last name" disabled>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label for="email" class="form-label mb-1 block">Email address</label>
-                            <input type="email" id="email" class="form-input w-full bg-slate-100 cursor-not-allowed" placeholder="your@email.com" readonly disabled>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label for="username" class="form-label mb-1 block">Username</label>
-                            <div class="flex items-center">
-                                <span class="inline-flex items-center px-3 text-sm text-slate-500 bg-slate-100 border border-r-0 border-slate-300 rounded-l-lg h-[40px]">calciprep.online/</span>
-                                <input type="text" id="username" class="form-input w-full rounded-l-none" placeholder="your-username" disabled>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Security Card -->
-            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
-                <h2 class="text-lg font-bold text-slate-800 pb-4 border-b border-slate-200">Security</h2>
-                
-                <form id="password-form" class="py-6 border-b border-slate-200">
-                    <h3 class="font-semibold text-slate-700 mb-1">Change Password</h3>
-                    <p class="text-sm text-slate-500 mb-4">For your security, you will need to enter your current password to make this change.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                        <div>
-                             <label for="current-password" class="form-label mb-1 block">Current Password</label>
-                            <input type="password" id="current-password" class="form-input w-full" required>
-                        </div>
-                        <div>
-                             <label for="new-password" class="form-label mb-1 block">New Password</label>
-                            <input type="password" id="new-password" class="form-input w-full" required>
-                        </div>
-                    </div>
-                     <div class="mt-4">
-                        <button type="submit" id="save-password-btn" class="flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg btn-primary">
-                            <span class="btn-text">Update Password</span>
-                            <div class="spinner w-4 h-4 border-2 border-white border-solid rounded-full hidden"></div>
-                        </button>
-                    </div>
-                </form>
-
-                <div class="pt-6">
-                    <h3 class="font-semibold text-slate-700 mb-1">Delete Account</h3>
-                    <p class="text-sm text-slate-500 mb-4">Permanently delete your account and all associated data. This action cannot be undone.</p>
-                    <button id="delete-account-btn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-red-50 text-red-700 hover:bg-red-100">Delete Account</button>
                 </div>
-            </div>
 
+            </div>
         </div>
     </main>
 
@@ -208,18 +240,344 @@
                      <span class="btn-text">Delete Account</span>
                      <div class="spinner w-4 h-4 border-2 border-white border-solid rounded-full hidden"></div>
                 </button>
-                 <button id="cancel-delete-btn" class="w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg btn-secondary">
-                    Cancel
-                </button>
+                 <button id="cancel-delete-btn" class="w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
 
-
     <div id="footer-placeholder"></div>
 
     <script src="templates.js"></script>
-    <script type="module" src="account.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+        // --- Firebase Initialization ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqCKyATw3NkVsbOfeXqU5HCutECF5ILcU",
+            authDomain: "calciprep-1dd16.firebaseapp.com",
+            projectId: "calciprep-1dd16",
+            storageBucket: "calciprep-1dd16.appspot.com",
+            messagingSenderId: "292795386240",
+            appId: "1:292795386240:web:89e1049ea1cfbddb63d965",
+            measurementId: "G-3VK5ZXNCHV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- Toast Notification Function ---
+        function showNotification(message, isSuccess = true) {
+            const notification = document.createElement('div');
+            const bgColor = isSuccess ? 'bg-indigo-600' : 'bg-red-500';
+            notification.className = `fixed bottom-5 right-5 ${bgColor} text-white py-3 px-5 rounded-lg shadow-lg transform transition-all duration-300 translate-y-16 opacity-0 z-[10001]`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('translate-y-16', 'opacity-0');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.add('translate-y-16', 'opacity-0');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Global Elements ---
+            const accountNav = document.getElementById('account-nav');
+            const navLinks = accountNav.querySelectorAll('.nav-link');
+            const contentPanels = document.querySelectorAll('.account-panel');
+
+            // --- Profile Elements ---
+            const profileForm = document.getElementById('profile-form');
+            const profilePicInput = document.getElementById('profile-pic');
+            const profilePicLabel = document.getElementById('profile-pic-label');
+            const profilePicPreview = document.getElementById('profile-pic-preview');
+            const displayName = document.getElementById('display-name');
+            const displayEmail = document.getElementById('display-email');
+            const emailVerifiedStatus = document.getElementById('email-verified-status');
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const emailInput = document.getElementById('email');
+            const usernameInput = document.getElementById('username');
+            const changeProfileBtn = document.getElementById('change-profile-btn');
+            const editModeButtons = document.getElementById('edit-mode-buttons');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const saveProfileBtn = document.getElementById('save-profile-btn');
+            const allFormInputs = [firstNameInput, lastNameInput, usernameInput, profilePicInput];
+
+            // --- Security Elements ---
+            const passwordForm = document.getElementById('password-form');
+            const savePasswordBtn = document.getElementById('save-password-btn');
+            const deleteAccountBtn = document.getElementById('delete-account-btn');
+            const deleteModal = document.getElementById('delete-modal');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const deleteConfirmInput = document.getElementById('delete-confirm-input');
+
+            let currentUser = null;
+            let originalUserData = {};
+
+            function loadTemplatesAndSetupHeader() {
+                const headerPlaceholder = document.getElementById('header-placeholder');
+                const footerPlaceholder = document.getElementById('footer-placeholder');
+                if (headerPlaceholder && window.headerHTML) {
+                    headerPlaceholder.innerHTML = window.headerHTML;
+                }
+                if (footerPlaceholder && window.footerHTML) {
+                    footerPlaceholder.innerHTML = window.footerHTML;
+                }
+
+                // Setup Back Button
+                const backButtonContainer = document.getElementById('back-button-container');
+                const mobileBackLink = document.getElementById('mobile-back-link');
+                if (backButtonContainer) backButtonContainer.classList.remove('hidden');
+                if (mobileBackLink) mobileBackLink.classList.remove('hidden');
+                
+                const backUrl = 'index.html';
+                document.getElementById('back-link')?.setAttribute('href', backUrl);
+                document.querySelector('#mobile-back-link a')?.setAttribute('href', backUrl);
+                
+                // Make Header Interactive
+                const accountMenuBtn = document.getElementById('account-menu-btn');
+                const accountMenu = document.getElementById('account-menu');
+                const logoutBtn = document.getElementById('logout-btn');
+                
+                if(accountMenuBtn && accountMenu) {
+                    accountMenuBtn.addEventListener('click', () => accountMenu.classList.toggle('hidden'));
+                }
+                if(logoutBtn) {
+                     logoutBtn.addEventListener('click', () => signOut(auth));
+                }
+
+                // Re-render icons
+                lucide.createIcons();
+            }
+
+            // --- Main Auth State Change Listener ---
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    currentUser = user;
+                    loadTemplatesAndSetupHeader();
+                    // Update header UI for logged-in user
+                    document.getElementById('logged-in-view')?.classList.remove('hidden');
+                    document.getElementById('logged-out-view')?.classList.add('hidden');
+                    
+                    loadProfileData(user);
+                    setupEventListeners(); 
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            async function loadProfileData(user) {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                
+                let userData = {};
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                }
+                
+                populateForm(user, userData);
+            }
+
+            function populateForm(user, userData) {
+                originalUserData = { ...userData };
+                const fullName = userData.name || user.displayName || 'CalciPrep User';
+                displayName.textContent = fullName;
+                displayEmail.textContent = user.email;
+                emailInput.value = user.email;
+
+                const nameParts = fullName.split(' ');
+                firstNameInput.value = nameParts[0] || '';
+                lastNameInput.value = nameParts.slice(1).join(' ') || '';
+                
+                usernameInput.value = userData.username || '';
+
+                if (userData.photoURL) {
+                    profilePicPreview.src = userData.photoURL;
+                } else {
+                     profilePicPreview.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=eef2ff&color=4f46e5&size=80`;
+                }
+                
+                if (user.emailVerified) {
+                    emailVerifiedStatus.classList.remove('hidden');
+                }
+            }
+
+            function setFormState(isEditable) {
+                if (isEditable) {
+                    allFormInputs.forEach(input => input.disabled = false);
+                    profilePicLabel.classList.remove('profile-pic-label-disabled');
+                    changeProfileBtn.classList.add('hidden');
+                    editModeButtons.classList.remove('hidden');
+                } else {
+                    allFormInputs.forEach(input => input.disabled = true);
+                    profilePicLabel.classList.add('profile-pic-label-disabled');
+                    changeProfileBtn.classList.remove('hidden');
+                    editModeButtons.classList.add('hidden');
+                }
+            }
+
+            function switchTabView(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+                contentPanels.forEach(panel => {
+                    panel.classList.toggle('hidden', panel.id !== targetId);
+                });
+            }
+
+            function toggleButtonLoading(button, isLoading) {
+                const btnText = button.querySelector('.btn-text');
+                const spinner = button.querySelector('.spinner');
+                button.disabled = isLoading;
+                 if (isLoading) {
+                    if (btnText) btnText.classList.add('hidden');
+                    if (spinner) spinner.classList.remove('hidden');
+                } else {
+                    if (btnText) btnText.classList.remove('hidden');
+                    if (spinner) spinner.classList.add('hidden');
+                }
+            }
+            
+            function setupEventListeners() {
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        switchTabView(link.dataset.target);
+                    });
+                });
+
+                changeProfileBtn.addEventListener('click', () => setFormState(true));
+                cancelEditBtn.addEventListener('click', () => {
+                    populateForm(currentUser, originalUserData);
+                    setFormState(false);
+                });
+
+                profilePicInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => { profilePicPreview.src = event.target.result; };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                profileForm.addEventListener('submit', handleProfileUpdate);
+                passwordForm.addEventListener('submit', handlePasswordUpdate);
+                
+                deleteAccountBtn.addEventListener('click', () => deleteModal.classList.remove('hidden'));
+                cancelDeleteBtn.addEventListener('click', () => deleteModal.classList.add('hidden'));
+                deleteConfirmInput.addEventListener('input', () => {
+                    const isDeleteTyped = deleteConfirmInput.value === 'DELETE';
+                    confirmDeleteBtn.disabled = !isDeleteTyped;
+                    confirmDeleteBtn.classList.toggle('opacity-50', !isDeleteTyped);
+                    confirmDeleteBtn.classList.toggle('cursor-not-allowed', !isDeleteTyped);
+                });
+                confirmDeleteBtn.addEventListener('click', handleDeleteAccount);
+            }
+
+            async function handleProfileUpdate(e) {
+                e.preventDefault();
+                if (!currentUser) return;
+                
+                toggleButtonLoading(saveProfileBtn, true);
+                try {
+                    let photoURL = originalUserData.photoURL || currentUser.photoURL;
+                    const file = profilePicInput.files[0];
+                    if (file) {
+                        const storageRef = ref(storage, `profile_pictures/${currentUser.uid}`);
+                        await uploadBytes(storageRef, file);
+                        photoURL = await getDownloadURL(storageRef);
+                    }
+                    
+                    const newFullName = `${firstNameInput.value.trim()} ${lastNameInput.value.trim()}`.trim();
+                    await updateProfile(currentUser, { displayName: newFullName, photoURL: photoURL });
+                    
+                    const updatedData = { name: newFullName, username: usernameInput.value.trim(), photoURL: photoURL };
+                    await setDoc(doc(db, "users", currentUser.uid), updatedData, { merge: true });
+
+                    originalUserData = { ...updatedData };
+                    displayName.textContent = newFullName;
+                    showNotification('Profile updated successfully!');
+                    setFormState(false);
+                } catch (error) {
+                    console.error("Error updating profile: ", error);
+                    showNotification('Failed to update profile. Please try again.', false);
+                } finally {
+                    toggleButtonLoading(saveProfileBtn, false);
+                }
+            }
+
+            async function handlePasswordUpdate(e) {
+                e.preventDefault();
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                if (newPassword.length < 8) {
+                     showNotification('New password must be at least 8 characters long.', false);
+                     return;
+                }
+                toggleButtonLoading(savePasswordBtn, true);
+                try {
+                    const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+                    await reauthenticateWithCredential(currentUser, credential);
+                    await updatePassword(currentUser, newPassword);
+                    showNotification('Password updated successfully!');
+                    passwordForm.reset();
+                } catch (error) {
+                    console.error("Error updating password: ", error);
+                    let message = error.code === 'auth/wrong-password' ? 'Incorrect current password.' : 'Error updating password. Please try again.';
+                    showNotification(message, false);
+                } finally {
+                    toggleButtonLoading(savePasswordBtn, false);
+                }
+            }
+
+            async function handleDeleteAccount() {
+                if (deleteConfirmInput.value !== 'DELETE' || !currentUser) return;
+                
+                toggleButtonLoading(confirmDeleteBtn, true);
+                const currentPassword = prompt("For your security, please re-enter your password to delete your account.");
+                if (!currentPassword) {
+                    toggleButtonLoading(confirmDeleteBtn, false);
+                    return;
+                }
+
+                try {
+                    const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+                    await reauthenticateWithCredential(currentUser, credential);
+
+                    await deleteDoc(doc(db, "users", currentUser.uid));
+                    
+                    if (originalUserData.photoURL) {
+                        const photoRef = ref(storage, `profile_pictures/${currentUser.uid}`);
+                        await deleteObject(photoRef).catch(err => console.warn("Could not delete profile pic.", err));
+                    }
+                    
+                    await deleteUser(currentUser);
+                    
+                    showNotification('Account deleted successfully.');
+                    setTimeout(() => window.location.href = 'index.html', 2000);
+
+                } catch (error) {
+                    console.error("Error deleting account:", error);
+                    let msg = error.code === 'auth/wrong-password' ? 'Incorrect password. Account not deleted.' : 'Failed to delete account. Please try again.';
+                    showNotification(msg, false);
+                    toggleButtonLoading(confirmDeleteBtn, false);
+                }
+            }
+            
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
 
