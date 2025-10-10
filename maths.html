@@ -106,12 +106,13 @@
             color: #888;
         }
     </style>
+    
 </head>
 <body class="text-main">
 
     <div id="header-placeholder"></div>
 
-    <main class="container mx-auto px-6">
+    <main class="container mx-auto px-6 pt-8 pb-12">
         <div class="text-center py-12 md:py-16 rounded-xl bg-accent-orange">
             <h1 class="text-4xl md:text-5xl font-bold text-white">Maths Practice Arena</h1>
             <p class="text-black mt-4 text-lg">Sharpen your calculation speed. Choose your challenge below.</p>
@@ -156,7 +157,7 @@
             <div id="math-game">
                 <div class="text-5xl font-mono text-center my-8 p-6 bg-gray-100 rounded-lg shadow-inner" id="math-problem">Get Ready...</div>
                 <div class="flex items-center space-x-2">
-                    <input type="text" id="math-answer" class="w-full p-4 text-3xl text-center rounded-lg border-2 focus:outline-none focus:border-accent-orange transition-all duration-300" placeholder="Your Answer..." disabled>
+                    <input type="text" inputmode="numeric" pattern="[0-9.-]*" id="math-answer" class="w-full p-4 text-3xl text-center rounded-lg border-2 focus:outline-none focus:border-accent-orange transition-all duration-300" placeholder="Your Answer..." disabled autocomplete="off">
                     <button id="submit-answer-btn" class="hidden p-4 bg-accent-orange text-white rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
@@ -167,7 +168,8 @@
                     <div class="font-semibold">Score: <span id="math-score" class="font-bold text-accent-orange">0</span></div>
                 </div>
                 <div id="button-container" class="mt-8">
-                    <button id="start-game-btn" class="w-full py-4 btn-primary text-xl">Start Game</button>
+                    <!-- This button is no longer needed but kept for structure -->
+                    <button id="start-game-btn" class="hidden w-full py-4 btn-primary text-xl">Start Game</button>
                     <button id="submit-test-btn" class="hidden w-full py-4 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-all">End Game</button>
                 </div>
                  <div id="ad-container" class="hidden mt-8">
@@ -307,14 +309,18 @@
         let selectedChallengeTypes = [];
         let selectedDifficulty = 'easy';
         let currentGameMode = '';
+        let isGameRunning = false;
         
         function openSettingsModal(mode) {
+            if (isGameRunning) return; // Prevent opening settings during a game
             currentGameMode = mode;
             settingsModal.classList.remove('hidden');
         }
+
         function closeSettingsModal() {
             settingsModal.classList.add('hidden');
         }
+
         function handleStartChallenge() {
             selectedChallengeTypes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
             selectedDifficulty = document.querySelector('input[name="difficulty"]:checked').value;
@@ -325,6 +331,8 @@
             closeSettingsModal();
             gameSelection.classList.add('hidden');
             gameInterface.classList.remove('hidden');
+
+            // Setup UI based on game mode
             timerContainer.innerHTML = '';
             questionCounterContainer.innerHTML = '';
             if (currentGameMode === '1-minute') {
@@ -338,7 +346,11 @@
                 timerContainer.innerHTML = `Time: <span id="math-timer" class="font-bold text-accent-orange">0</span>s`;
                 questionCounterContainer.innerHTML = `Question: <span id="question-count" class="font-bold">1</span>/${TOTAL_QUESTIONS}`;
             }
+
+            // Automatically start the game
+            startGame();
         }
+
         function generateProblem() {
             const problemType = selectedChallengeTypes[Math.floor(Math.random() * selectedChallengeTypes.length)];
             let problem = {};
@@ -353,6 +365,7 @@
             mathProblemEl.innerHTML = problem.text;
             currentProblem = { answer: problem.answer };
         }
+
         const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
         function generateAdditionProblem(difficulty) {
             let a, b;
@@ -413,7 +426,9 @@
             const answer = (percent / 100) * num;
             return { text: `${percent}% of ${num}`, answer: parseFloat(answer.toFixed(2)) };
         }
+
         function startGame() {
+            isGameRunning = true;
             correctCount = 0;
             incorrectCount = 0;
             questionCount = 1;
@@ -430,8 +445,10 @@
 
             if (currentGameMode === 'speed-challenge') {
                 const questionCountEl = document.getElementById('question-count');
-                questionCountEl.textContent = questionCount;
+                if(questionCountEl) questionCountEl.textContent = questionCount;
             }
+
+            if(mathTimer) clearInterval(mathTimer);
 
             if (currentGameMode === '1-minute') {
                 let timeLeft = 60;
@@ -454,7 +471,9 @@
                 }, 1000);
             }
         }
+
         function endGame(message) {
+            isGameRunning = false;
             if (mathTimer) clearInterval(mathTimer);
             mathAnswerEl.disabled = true;
             submitAnswerBtn.classList.add('hidden');
@@ -487,7 +506,10 @@
         
         function checkAnswer() {
             mathAnswerEl.classList.remove('correct-answer', 'wrong-answer');
-            const userAnswer = parseFloat(mathAnswerEl.value);
+            const userAnswerStr = mathAnswerEl.value;
+            if (userAnswerStr.trim() === '') return;
+
+            const userAnswer = parseFloat(userAnswerStr);
             let isCorrect = userAnswer === currentProblem.answer;
 
             if (isCorrect) {
@@ -516,11 +538,11 @@
                 mathAnswerEl.value = '';
                 mathAnswerEl.classList.remove('correct-answer', 'wrong-answer');
                 generateProblem();
+                mathAnswerEl.focus();
             }, 300);
         }
         
         startChallengeBtn.addEventListener('click', handleStartChallenge);
-        startGameBtn.addEventListener('click', startGame);
         submitTestBtn.addEventListener('click', () => endGame("Challenge Ended."));
         submitAnswerBtn.addEventListener('click', checkAnswer);
         mathAnswerEl.addEventListener('keydown', (e) => {
@@ -528,8 +550,9 @@
                 checkAnswer();
             }
         });
-// Ensure Lucide replaces data-lucide icons after DOM changes
-if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+
+        // Ensure Lucide replaces data-lucide icons after DOM changes
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
  
      </script>
      
@@ -540,3 +563,4 @@ if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
      <script type="module" src="main.js"></script>
 </body>
 </html>
+

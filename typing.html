@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Practice for Government Exams | CalciPrep</title>
+    <meta name="description" content="Improve your typing speed and accuracy for government exams like SSC CGL, CHSL. Practice with paragraphs tailored for exam preparation.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://calciprep.online/typing.html" />
+    <meta name="google-adsense-account" content="ca-pub-2382040431534049">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        #text-display-container { user-select: none; }
+        #text-display span { transition: all 0.1s ease-out; }
+        .current { background-color: #cfe2ff; }
+        .correct { color: #1f2937; }
+        .incorrect { background-color: #fecaca; text-decoration: underline; text-decoration-color: #ef4444; }
+        .cursor { position: absolute; width: 2px; height: 1.75rem; background-color: #000; animation: blink 1s infinite; will-change: transform; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .settings-panel-checkbox:checked + label {
+            background-color: #4f46e5;
+            color: white;
+        }
+    </style>
+</head>
+<body class="text-main">
+
+    <div id="header-placeholder"></div>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6">
+            
+            <!-- Typing Area -->
+            <div class="col-span-12 lg:col-span-9 bg-white p-4 rounded-lg shadow-md">
+                <div class="flex justify-between items-center p-2 border-b">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <label for="font-select" class="text-sm font-medium mr-2">Font:</label>
+                            <select id="font-select" class="text-sm rounded border-gray-300">
+                                <option>Default</option>
+                                <option>Arial</option>
+                                <option>Verdana</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="bold-checkbox" class="rounded">
+                            <label for="bold-checkbox" class="ml-2 text-sm font-medium">Bold</label>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="text-sm px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Go Pre-Print Mode</button>
+                        <button class="text-sm px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Go Exam Mode</button>
+                    </div>
+                </div>
+
+                <div class="text-center p-2 border-b">
+                    <button id="add-exercise-btn" class="text-sm text-blue-600 font-semibold hover:underline">Add New Exercise</button>
+                </div>
+
+                <div id="text-display-container" class="relative bg-gray-50 my-4 p-4 rounded font-mono text-xl leading-relaxed tracking-wider border-2 border-gray-300 focus:outline-none h-96 overflow-y-auto" tabindex="0">
+                    <div id="text-display"></div>
+                    <div id="cursor" class="cursor hidden"></div>
+                </div>
+
+                <div class="flex justify-between items-center p-2 border-t">
+                    <div class="flex items-center space-x-2">
+                        <label for="duration-select" class="text-sm font-medium">Duration:</label>
+                        <select id="duration-select" class="text-sm rounded border-gray-300">
+                            <option value="60">1 Minute</option>
+                            <option value="120">2 Minutes</option>
+                            <option value="300" selected>5 Minutes</option>
+                            <option value="600">10 Minutes</option>
+                        </select>
+                        <span id="timer" class="ml-4 text-sm font-medium">0:00</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="prev-exercise" class="p-2 rounded hover:bg-gray-200"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <span id="exercise-info" class="text-sm">Exercise: 1/1</span>
+                        <button id="next-exercise" class="p-2 rounded hover:bg-gray-200"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                    </div>
+                    <div class="text-sm font-medium">
+                        WPM: <span id="wpm" class="font-bold text-blue-600">0</span> | 
+                        Accuracy: <span id="accuracy" class="font-bold text-blue-600">100%</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="col-span-12 lg:col-span-3 bg-white p-4 rounded-lg shadow-md">
+                <h3 class="font-bold text-lg border-b pb-2 mb-4">Settings</h3>
+                <!-- Backspace Options -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm mb-2">Backspace Options</h4>
+                    <div class="space-y-1">
+                        <div class="flex items-center"><input type="radio" name="backspace" id="backspace-full" class="mr-2" checked><label for="backspace-full" class="text-sm">Full Backspace</label></div>
+                        <div class="flex items-center"><input type="radio" name="backspace" id="backspace-word" class="mr-2"><label for="backspace-word" class="text-sm">One Word Backspace</label></div>
+                        <div class="flex items-center"><input type="radio" name="backspace" id="backspace-deactivate" class="mr-2"><label for="backspace-deactivate" class="text-sm">Deactivate Backspace</label></div>
+                    </div>
+                </div>
+                 <!-- Highlight Options -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm mb-2">Highlight Options</h4>
+                    <div class="space-y-1">
+                        <div class="flex items-center"><input type="radio" name="highlight" id="highlight-word" class="mr-2" checked><label for="highlight-word" class="text-sm">Word Highlight</label></div>
+                        <div class="flex items-center"><input type="radio" name="highlight" id="highlight-letter" class="mr-2"><label for="highlight-letter" class="text-sm">Letter Highlight</label></div>
+                        <div class="flex items-center"><input type="radio" name="highlight" id="highlight-none" class="mr-2"><label for="highlight-none" class="text-sm">No Highlight</label></div>
+                    </div>
+                </div>
+                <!-- Other Options -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm mb-2">Other Options</h4>
+                     <div class="flex items-center"><input type="checkbox" id="show-scrollbar" class="mr-2" checked><label for="show-scrollbar" class="text-sm">Show Scrollbar</label></div>
+                     <div class="flex items-center"><input type="checkbox" id="auto-scroll" class="mr-2" checked><label for="auto-scroll" class="text-sm">Auto Scroll</label></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Modal -->
+        <div id="results-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="modal-enter bg-white p-6 rounded-lg shadow-2xl w-full max-w-2xl text-sm">
+                <div class="flex justify-between items-center border-b pb-3 mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Result - Soni Typing Tutor</h2>
+                    <button id="close-results-btn" class="text-gray-500 hover:text-gray-700"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+                
+                <h3 class="font-bold text-center mb-4">Detailed Result as Below:</h3>
+                
+                <div class="grid grid-cols-2 gap-x-6 gap-y-3 p-4 bg-gray-50 rounded-lg">
+                    <div><strong>Test Duration:</strong> <span id="res-duration">0</span> seconds</div>
+                    <div><strong>Total Words Typed:</strong> <span id="res-total-words">0</span></div>
+                    <div><strong>Correct Words Typed:</strong> <span id="res-correct-words">0</span></div>
+                    <div><strong>Incorrect Words Typed:</strong> <span id="res-incorrect-words">0</span></div>
+                    <div class="col-span-2"><strong>Standard Method</strong> (one word = 5 characters or key strokes)</div>
+                    <div><strong>Net Speed:</strong> <span id="res-net-wpm">0</span> words per minute</div>
+                    <div class="self-end"><strong>Gross Speed:</strong> <span id="res-gross-wpm">0</span> words per minute</div>
+                    <div class=" -mt-3"><span id="res-net-kpm" class="text-xs text-gray-500">0 key strokes per minute</span></div>
+                    <div class=" -mt-3"><span id="res-gross-kpm" class="text-xs text-gray-500">0 key strokes per minute</span></div>
+                    <div><strong>Accuracy:</strong> <span id="res-accuracy">0%</span></div>
+                    <div><strong>Backspace:</strong> <span id="res-backspace">0</span> times</div>
+                    <div class="col-span-2"><strong>Errors:</strong> <span id="res-errors">0</span></div>
+                    <div class="col-span-2 text-xs text-gray-500">
+                        <strong>Full Mistakes:</strong> <span id="res-full-mistakes">0</span> (Omission: 0, Addition: 0, Substitution: 0) <br>
+                        <strong>Half Mistakes:</strong> <span id="res-half-mistakes">0</span> (Spacing: 0, Capitalisation: 0, Spelling: 0)
+                    </div>
+                </div>
+
+                <div class="mt-4 p-4 border rounded-lg">
+                    <h4 class="font-semibold mb-2">Error Representation</h4>
+                    <div id="error-representation" class="text-xs text-gray-600">There are two types of errors - <br> 1. Full Mistakes - shown in red color</div>
+                </div>
+
+                <div class="flex justify-center space-x-4 mt-6">
+                    <button id="repeat-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-md hover:bg-gray-300">Repeat</button>
+                    <button id="next-btn" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-blue-700">Next >></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="templates.js"></script>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="typing.js"></script>
+</body>
+</html>
+
+

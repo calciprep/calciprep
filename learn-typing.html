@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Typing - CalciPrep</title>
+    <meta name="description" content="Learn touch typing from the ground up with guided lessons and exercises.">
+    <link rel="canonical" href="https://calciprep.online/learn-typing.html" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .tab-link.active { border-bottom-color: #4f46e5; color: #4f46e5; font-weight:600; }
+        .content-panel { display:none; }
+        .content-panel.active { display:block; }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        /* Learn Keys Section Styles */
+        #exercise-display-area { font-size:1.5rem; line-height:2rem; letter-spacing:0.02em; word-spacing:0.05em; }
+        #typing-input-area { caret-color: #4f46e5; }
+        .correct-char { color: #16a34a; }
+        .incorrect-char { color: #dc2626; text-decoration: underline; }
+        .current-char { background-color: #e0e7ff; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div id="header-placeholder"></div>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Step Navigation -->
+            <nav class="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm mb-8">
+                <a href="#" class="tab-link border-b-2 border-transparent px-4 py-2 transition-colors duration-200 text-slate-600 hover:text-indigo-600 active" data-target="panel-1">1. Read Instructions</a>
+                <span class="text-slate-300 mx-2 hidden sm:inline">----&gt;</span>
+                <a href="#" class="tab-link border-b-2 border-transparent px-4 py-2 transition-colors duration-200 text-slate-600 hover:text-indigo-600" data-target="panel-2">2. Learn Keys</a>
+                <span class="text-slate-300 mx-2 hidden sm:inline">----&gt;</span>
+                <a href="#" class="tab-link border-b-2 border-transparent px-4 py-2 transition-colors duration-200 text-slate-600 hover:text-indigo-600" data-target="panel-3">3. Practice Words</a>
+                 <span class="text-slate-300 mx-2 hidden sm:inline">----&gt;</span>
+                <a href="#" class="tab-link border-b-2 border-transparent px-4 py-2 transition-colors duration-200 text-slate-600 hover:text-indigo-600" data-target="panel-4">4. Type Paragraphs</a>
+            </nav>
+
+            <!-- Content Panels -->
+            <div id="panel-1" class="content-panel active text-sm">
+                <div class="bg-white p-6 sm:p-8 rounded-lg shadow-sm">
+                    <h2 class="text-base font-semibold mb-2">Where to put fingers on a QWERTY keyboard</h2>
+                    <p class="text-gray-600">Keyboards like those are widely used are QWERTY keyboards. Before start learning typing you must know where to put your fingers. place your fingers like this (see picture)</p>
+                    
+                    <div class="my-6 flex justify-center">
+                        <img src="instructions.png" alt="Keyboard finger placement guide" class="max-w-xl w-full border rounded-lg shadow-sm">
+                    </div>
+
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>index finger of left hand should be on 'F' key.</li>
+                        <li>index finger of right hand finger on 'J' key.</li>
+                        <li>both thumbs should be on 'space' key.</li>
+                    </ul>
+                    <p class="mt-4 font-semibold text-center">* Best of luck *</p>
+                    <div class="mt-6 text-center">
+                         <button id="start-learning-btn" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition-colors">Start Learning</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-2" class="content-panel">
+                <div class="bg-white p-2 sm:p-4 rounded-lg shadow-sm">
+                    <!-- Exercise Display Area -->
+                    <div id="exercise-display-area" class="w-full h-64 p-4 font-mono text-gray-700 bg-slate-50 rounded-lg border border-slate-200 overflow-y-auto whitespace-pre-wrap select-none"></div>
+                    
+                    <div class="flex justify-between items-center mt-2 px-2 py-1">
+                        <div class="flex items-center space-x-2">
+                            <button id="prev-exercise" class="p-2 rounded-md hover:bg-slate-100 disabled:opacity-50" title="Previous Exercise">&lt;&lt;</button>
+                            <!-- Dropdown to select an exercise -->
+                            <select id="exercise-select" class="text-sm px-2 py-1 border rounded bg-white" aria-label="Select exercise"></select>
+                            <button id="next-exercise" class="p-2 rounded-md hover:bg-slate-100" title="Next Exercise">&gt;&gt;</button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                           <button id="font-decrease" class="p-2 rounded-md hover:bg-slate-100 text-sm">A-</button>
+                           <button id="font-increase" class="p-2 rounded-md hover:bg-slate-100 text-sm">A+</button>
+                        </div>
+                    </div>
+
+                    <!-- Typing Input Area -->
+                    <textarea id="typing-input-area" class="w-full h-48 mt-2 p-4 font-mono text-lg bg-white rounded-lg border-2 border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Start typing here..."></textarea>
+                </div>
+            </div>
+            
+            <div id="panel-3" class="content-panel">
+                 <div class="bg-white p-8 rounded-lg shadow-sm">
+                    <h2 class="text-xl font-bold">3. Practice Words</h2>
+                    <p class="mt-4 text-slate-600">This section will contain exercises for practicing common words. (Content coming soon)</p>
+                </div>
+            </div>
+            
+            <div id="panel-4" class="content-panel">
+                 <div class="bg-white p-8 rounded-lg shadow-sm">
+                    <h2 class="text-xl font-bold">4. Type Paragraphs</h2>
+                    <p class="mt-4 text-slate-600">This section will allow you to practice typing full paragraphs to build speed and accuracy. (Content coming soon)</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <!-- Result Modal (hidden until an exercise completes) -->
+    <div id="result-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 hidden">
+        <div class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 max-h-[80vh] overflow-y-auto border rounded shadow-lg p-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 id="result-title" class="text-center text-lg font-semibold underline">Detailed Result as below</h3>
+                <button id="res-minimize" title="Minimize" class="ml-4 text-slate-500 hover:text-slate-700">-</button>
+            </div>
+
+            <div id="result-content" class="text-sm text-slate-800">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 border-b pb-4">
+                    <div>
+                        <div class="flex justify-between"><span class="font-medium">Test Duration</span><span id="res-duration">: 00 minutes 00 seconds</span></div>
+                        <div class="flex justify-between mt-2"><span class="font-medium">Correct Words Typed</span><span id="res-correct-words">: 0</span></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between"><span class="font-medium">Total Words Typed</span><span id="res-total-words">: 0</span></div>
+                        <div class="flex justify-between mt-2"><span class="font-medium">Incorrect Words Typed</span><span id="res-incorrect-words">: 0</span></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="text-slate-500 italic mb-2">Method 1 <span class="text-xs">(one word = 5 character or key strokes)</span></div>
+                    <div class="grid grid-cols-2 gap-2 pl-4">
+                        <div class="text-slate-700">Net Speed</div><div id="m1-net" class="text-slate-900">: 0 words per minute</div>
+                        <div class="text-slate-700">: </div><div id="m1-net-strokes" class="text-slate-900">: 0 key strokes per minute</div>
+
+                        <div class="text-slate-700">Gross Speed</div><div id="m1-gross" class="text-slate-900">: 0 words per minute</div>
+                        <div class="text-slate-700">: </div><div id="m1-gross-strokes" class="text-slate-900">: 0 key strokes per minute</div>
+
+                        <div class="text-slate-700">Accuracy</div><div id="m1-accuracy" class="text-slate-900">: 0%</div>
+                        <div class="text-slate-700">Backspace</div><div id="m1-backspace" class="text-slate-900">: 0 times</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="text-slate-500 italic mb-2">Method 2 <span class="text-xs">(one word = group of letters separated by space)</span></div>
+                    <div class="grid grid-cols-2 gap-2 pl-4">
+                        <div class="text-slate-700">Net Speed</div><div id="m2-net" class="text-slate-900">: 0 words per minute</div>
+                        <div class="text-slate-700">: </div><div id="m2-net-strokes" class="text-slate-900">: 0 key strokes per minute</div>
+
+                        <div class="text-slate-700">Gross Speed</div><div id="m2-gross" class="text-slate-900">: 0 words per minute</div>
+                        <div class="text-slate-700">: </div><div id="m2-gross-strokes" class="text-slate-900">: 0 key strokes per minute</div>
+
+                        <div class="text-slate-700">Accuracy</div><div id="m2-accuracy" class="text-slate-900">: 0%</div>
+                        <div class="text-slate-700">Backspace</div><div id="m2-backspace" class="text-slate-900">: 0 times</div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500">Note : Key depressions, characters and key strokes are same thing.</div>
+            </div>
+
+            <div class="flex justify-between items-center mt-6">
+                <button id="res-repeat" class="bg-white border px-4 py-2 rounded hover:bg-slate-50">Repeat</button>
+                <button id="res-next" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Next&gt;&gt;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Minimized result bar (shown when modal minimized) -->
+    <div id="result-minimized" class="fixed right-4 bottom-4 z-60 bg-white border rounded shadow px-4 py-2 hidden">
+        <div class="flex items-center space-x-3">
+            <div id="min-summary" class="text-sm text-slate-700">Result summary</div>
+            <button id="min-restore" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm">Show</button>
+        </div>
+    </div>
+
+    <script src="templates.js"></script>
+    <script type="module" src="main.js"></script>
+    <script>
+    // Consolidated script: tabs, fetch exercises, typing tracking, SSC-style scoring, result modal + minimize
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tabs
+        const tabs = document.querySelectorAll('.tab-link');
+        const panels = document.querySelectorAll('.content-panel');
+        const startLearningBtn = document.getElementById('start-learning-btn');
+        function switchTab(id){ panels.forEach(p=>p.classList.toggle('active', p.id===id)); tabs.forEach(t=>t.classList.toggle('active', t.dataset.target===id)); }
+        tabs.forEach(t=>t.addEventListener('click',(e)=>{ e.preventDefault(); switchTab(t.dataset.target); }));
+        startLearningBtn.addEventListener('click', ()=>switchTab('panel-2'));
+
+    // Elements
+        let exercises = [];
+        let currentExerciseIndex = 0;
+        const exerciseDisplay = document.getElementById('exercise-display-area');
+        const typingInput = document.getElementById('typing-input-area');
+    const exerciseCounter = document.getElementById('exercise-counter');
+        const prevBtn = document.getElementById('prev-exercise');
+        const nextBtn = document.getElementById('next-exercise');
+        const fontInc = document.getElementById('font-increase');
+        const fontDec = document.getElementById('font-decrease');
+        let currentFontSize = 1.5;
+    // Track which exercises have been completed at least once during this session
+    const completedExercises = new Set();
+
+    function updateExerciseCounter(){ if(!exercises || !exercises.length) return; if(!exerciseCounter) return; exerciseCounter.textContent = `Exercise : ${currentExerciseIndex+1}/${exercises.length}`; }
+        function updateNavButtons(){ if(!exercises||!exercises.length) return; prevBtn.disabled = currentExerciseIndex===0; nextBtn.disabled = currentExerciseIndex===exercises.length-1; }
+
+    const exerciseSelect = document.getElementById('exercise-select');
+    function renderExerciseText(text){ exerciseDisplay.innerHTML=''; text.split('').forEach(ch=>{ const s=document.createElement('span'); s.textContent=ch; exerciseDisplay.appendChild(s); }); }
+    function populateExerciseSelect(){ if(!exerciseSelect) return; exerciseSelect.innerHTML = ''; exercises.forEach((ex, idx)=>{ const opt = document.createElement('option'); opt.value = idx; const prefix = completedExercises.has(idx) ? '✅ ' : ''; opt.textContent = `${prefix}Exercise : ${idx+1}/${exercises.length}`; exerciseSelect.appendChild(opt); }); exerciseSelect.value = currentExerciseIndex; }
+    function loadExercise(i){ if(!exercises||!exercises.length) return; currentExerciseIndex = Math.max(0, Math.min(i, exercises.length-1)); renderExerciseText(exercises[currentExerciseIndex]); typingInput.value=''; typingInput.focus(); resetTracking(); updateExerciseCounter(); updateNavButtons(); if(exerciseSelect) exerciseSelect.value = currentExerciseIndex; }
+
+    prevBtn.addEventListener('click', ()=>{ if(currentExerciseIndex>0) loadExercise(currentExerciseIndex-1); });
+    nextBtn.addEventListener('click', ()=>{ if(currentExerciseIndex < exercises.length-1) loadExercise(currentExerciseIndex+1); });
+    if(exerciseSelect){ exerciseSelect.addEventListener('change', (e)=>{ const v = parseInt(e.target.value,10); if(!Number.isNaN(v)) loadExercise(v); }); }
+        fontInc.addEventListener('click', ()=>{ currentFontSize = Math.min(2.5, currentFontSize+0.1); exerciseDisplay.style.fontSize = `${currentFontSize}rem`; });
+        fontDec.addEventListener('click', ()=>{ currentFontSize = Math.max(1.0, currentFontSize-0.1); exerciseDisplay.style.fontSize = `${currentFontSize}rem`; });
+
+        // Typing tracking
+        let keystrokeCount = 0, backspaceCount = 0, testStartTime = null;
+        function resetTracking(){ keystrokeCount=0; backspaceCount=0; testStartTime=null; }
+        typingInput.addEventListener('keydown', (e)=>{ if(!testStartTime) testStartTime = Date.now(); if(e.key==='Backspace') backspaceCount++; if(e.key.length===1 || e.key===' ' || e.key==='Enter') keystrokeCount++; });
+
+        typingInput.addEventListener('input', ()=>{
+            const typed = typingInput.value || '';
+            const spans = exerciseDisplay.querySelectorAll('span');
+            spans.forEach((s,i)=>{ s.classList.remove('correct-char','incorrect-char','current-char'); if(i < typed.length) s.classList.add(typed[i]===s.textContent ? 'correct-char' : 'incorrect-char'); else if(i===typed.length) s.classList.add('current-char'); });
+            const expected = exerciseDisplay.textContent || '';
+            if(typed.length>0 && typed.length >= expected.length) finalizeExercise();
+        });
+
+        // Modal + minimize
+        const modal = document.getElementById('result-modal');
+        const minBar = document.getElementById('result-minimized');
+        function showResultModal(){ modal.classList.remove('hidden'); minBar.classList.add('hidden'); }
+        function hideResultModal(){ modal.classList.add('hidden'); }
+
+        // SSC-style scoring (approximation)
+        function finalizeExercise(){
+            const typed = typingInput.value || '';
+            const expected = exerciseDisplay.textContent || '';
+            const durationMs = testStartTime ? (Date.now() - testStartTime) : 0;
+            const typedWords = typed.trim() ? typed.trim().split(/\s+/) : [];
+            const expectedWords = expected.trim() ? expected.trim().split(/\s+/) : [];
+            let fullMistakes=0, halfMistakes=0;
+            const maxW = Math.max(typedWords.length, expectedWords.length);
+            for(let i=0;i<maxW;i++){ const t=typedWords[i]||''; const e=expectedWords[i]||''; if(!t && e) fullMistakes++; else if(t && !e) fullMistakes++; else if(t!==e) fullMistakes++; }
+            if(/\s{2,}/.test(typed)) halfMistakes++;
+            for(let i=0;i<Math.min(typedWords.length, expectedWords.length); i++){ const t=typedWords[i], e=expectedWords[i]; if(t && e && t.toLowerCase()===e.toLowerCase() && t!==e) halfMistakes++; }
+            const punct = /[.,!?;:\-\"]/;
+            for(let i=0;i<Math.min(typedWords.length, expectedWords.length); i++){ const t=typedWords[i], e=expectedWords[i]; if(t && e && punct.test(t)!==punct.test(e)) halfMistakes++; }
+            for(let i=0;i<expectedWords.length-1;i++){ if(typedWords[i]===expectedWords[i+1] && typedWords[i+1]===expectedWords[i]) halfMistakes++; }
+            const totalMistakes = fullMistakes + 0.5*halfMistakes;
+            const totalChars = typed.length;
+            const minutes = (durationMs/60000) || 0.00001;
+            const grossWpm = Math.round((totalChars/5)/minutes);
+            const netWpm = Math.max(0, Math.round(grossWpm - totalMistakes));
+            const grossWpm2 = Math.round((typedWords.length)/minutes);
+            const netWpm2 = Math.max(0, Math.round(grossWpm2 - totalMistakes));
+            const strokesPerMin = Math.round(keystrokeCount / minutes);
+            const accuracy = totalChars>0 ? Math.max(0, Math.round(((totalChars - (fullMistakes*5 + halfMistakes*2.5))/totalChars)*100)) : 100;
+            const formatDuration = ms => { const s=Math.floor(ms/1000); return `${String(Math.floor(s/60)).padStart(2,'0')} minutes ${String(s%60).padStart(2,'0')} seconds`; };
+
+            document.getElementById('res-duration').textContent = `: ${formatDuration(durationMs)}`;
+            document.getElementById('res-correct-words').textContent = `: ${Math.max(0, typedWords.length - Math.round(totalMistakes))}`;
+            document.getElementById('res-total-words').textContent = `: ${typedWords.length}`;
+            document.getElementById('res-incorrect-words').textContent = `: ${Math.round(totalMistakes)}`;
+
+            document.getElementById('m1-net').textContent = `: ${netWpm} words per minute`;
+            document.getElementById('m1-net-strokes').textContent = `: ${strokesPerMin} key strokes per minute`;
+            document.getElementById('m1-gross').textContent = `: ${grossWpm} words per minute`;
+            document.getElementById('m1-gross-strokes').textContent = `: ${strokesPerMin} key strokes per minute`;
+            document.getElementById('m1-accuracy').textContent = `: ${accuracy}%`;
+            document.getElementById('m1-backspace').textContent = `: ${backspaceCount} times`;
+
+            document.getElementById('m2-net').textContent = `: ${netWpm2} words per minute`;
+            document.getElementById('m2-net-strokes').textContent = `: ${strokesPerMin} key strokes per minute`;
+            document.getElementById('m2-gross').textContent = `: ${grossWpm2} words per minute`;
+            document.getElementById('m2-gross-strokes').textContent = `: ${strokesPerMin} key strokes per minute`;
+            document.getElementById('m2-accuracy').textContent = `: ${accuracy}%`;
+            document.getElementById('m2-backspace').textContent = `: ${backspaceCount} times`;
+
+            window.lastResult = { netWpm, grossWpm, accuracy, backspaceCount, totalMistakes, durationMs };
+            // Mark this exercise as completed at least once and refresh the select to show a tick
+            completedExercises.add(currentExerciseIndex);
+            populateExerciseSelect();
+            showResultModal();
+        }
+
+        // Repeat / Next
+        document.getElementById('res-repeat').addEventListener('click', (e)=>{ e.preventDefault(); hideResultModal(); resetTracking(); typingInput.value=''; typingInput.focus(); exerciseDisplay.querySelectorAll('span').forEach(s=>s.classList.remove('correct-char','incorrect-char','current-char')); });
+        document.getElementById('res-next').addEventListener('click', (e)=>{ e.preventDefault(); hideResultModal(); resetTracking(); if(currentExerciseIndex < exercises.length-1) loadExercise(currentExerciseIndex+1); });
+
+        // Minimize / restore
+        document.getElementById('res-minimize').addEventListener('click', ()=>{ hideResultModal(); const r = window.lastResult || {}; document.getElementById('min-summary').textContent = `Net: ${r.netWpm||0} WPM · Acc: ${r.accuracy||0}%`; minBar.classList.remove('hidden'); });
+        document.getElementById('min-restore').addEventListener('click', ()=>{ minBar.classList.add('hidden'); showResultModal(); });
+
+    // Load exercises
+    fetch('data/learn-keys-exercises.json').then(r=>{ if(!r.ok) throw new Error('network'); return r.json(); }).then(json=>{ exercises = Array.isArray(json) ? json : (json && Array.isArray(json.exercises) ? json.exercises : []); if(exercises.length) { currentExerciseIndex = 0; populateExerciseSelect(); loadExercise(0); } else exerciseDisplay.textContent = 'No exercises found.'; }).catch(err=>{ console.error('load failed',err); exerciseDisplay.textContent='No exercises found.'; });
+
+        if(typeof lucide !== 'undefined') lucide.createIcons();
+        });
+        </script>
+    </body>
+    </html>
+</body>
+</html>
+

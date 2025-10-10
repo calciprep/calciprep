@@ -48,8 +48,94 @@ function loadTemplates() {
     } else if (footerPlaceholder && !isIndexPage) {
         footerPlaceholder.style.display = 'none';
     }
+
+    // Set <main> padding-top to the actual header height on non-index pages so
+    // the fixed header never overlaps or creates inconsistent spacing.
+    try {
+        if (!isIndexPage) {
+            const headerEl = document.getElementById('header');
+            const mainEl = document.querySelector('main');
+            if (headerEl && mainEl) {
+                // Measure header height accurately
+                const rect = headerEl.getBoundingClientRect();
+                const headerHeight = Math.round(rect.height) || 64;
+
+                // Remove large Tailwind pt-* utility classes that can add extra space
+                const kept = (mainEl.className || '').split(/\s+/).filter(c => {
+                    return !/^pt-\d+$/i.test(c) && !/^[a-z]+:pt-\d+$/i.test(c);
+                }).join(' ');
+                mainEl.className = kept;
+
+                // Use the header placeholder as the spacer to push content below the fixed header.
+                const headerPlaceholder = document.getElementById('header-placeholder');
+                if (headerPlaceholder) {
+                    // Page-specific override: english page should have no spacer so content sits
+                    // directly under the header (match maths page behavior).
+                    // For specific pages that should sit directly under the fixed header
+                    // (no spacer), set the placeholder height to 0.
+                    if (currentPage.includes('english.html') || currentPage.includes('maths.html') || currentPage.includes('typing-selection.html') || currentPage.includes('typing.html')) {
+                        headerPlaceholder.style.height = '80px';
+                    } else {
+                        headerPlaceholder.style.height = headerHeight + 'px';
+                    }
+                } else {
+                    // Fallback: set main padding-top to header height
+                    mainEl.style.paddingTop = headerHeight + 'px';
+                }
+
+                // Ensure main has no leftover top padding/margin so content sits flush under placeholder
+                mainEl.style.paddingTop = '0';
+                mainEl.style.marginTop = '0';
+
+                // Mark header as a sub-page header so CSS can reserve space for the back button
+                headerEl.classList.add('subpage-header');
+            }
+        }
+    } catch (e) {
+        console.warn('Could not apply header-height padding:', e);
+    }
     
     setupBackButton();
+}
+
+// Visitor counter: try Firestore transaction first, fall back to CountAPI if that fails.
+async function recordAndShowVisitorCount() {
+    const countEl = () => document.getElementById('visitor-count');
+    // Try Firestore transaction
+    try {
+        const docRef = doc(db, 'siteMetrics', 'visitors');
+        await setDoc(docRef, { updatedAt: serverTimestamp() }, { merge: true });
+        // Use transaction-like increment via get + update to keep code simple
+        // (This is safe for most low-traffic use; for high concurrency use server-side admin).
+        const snap = await getDoc(docRef);
+        let current = 0;
+        if (snap.exists()) {
+            current = snap.data().count || 0;
+        }
+        const newVal = current + 1;
+        await setDoc(docRef, { count: newVal, updatedAt: serverTimestamp() }, { merge: true });
+        const el = countEl();
+        if (el) el.textContent = newVal.toLocaleString();
+        return;
+    } catch (e) {
+        console.warn('Firestore visitor increment failed, falling back to CountAPI', e);
+    }
+
+    // Fallback: CountAPI
+    try {
+        const namespace = 'calciprep-website';
+        const key = 'global-visit-count';
+        const url = `https://api.countapi.xyz/hit/${namespace}/${key}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('countapi error');
+        const data = await res.json();
+        const el = countEl();
+        if (el) el.textContent = data.value.toLocaleString();
+    } catch (e) {
+        const el = countEl();
+        if (el) el.textContent = 'n/a';
+        console.warn('CountAPI fallback failed', e);
+    }
 }
 
 function setupBackButton() {
@@ -443,6 +529,8 @@ function initializeWhenReady() {
     if (window.headerHTML && window.footerHTML) {
         loadTemplates();
         initializeCalciPrepApp();
+        // Record visitor count (async, non-blocking)
+        recordAndShowVisitorCount().catch(err => console.warn('Visitor count error', err));
     } else {
         setTimeout(initializeWhenReady, 50);
     }
