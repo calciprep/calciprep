@@ -31,6 +31,9 @@
     <div id="header-placeholder"></div>
 
     <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-4">
+            <button id="ts-back-button" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">&larr; Back to Typing Selection</button>
+        </div>
         <div class="max-w-7xl mx-auto">
             <!-- Step Navigation -->
             <nav class="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm mb-8">
@@ -66,7 +69,7 @@
             </div>
 
             <div id="panel-2" class="content-panel">
-                <div class="bg-white p-2 sm:p-4 rounded-lg shadow-sm">
+                <div class="bg-white p-2 sm:p-4 rounded-lg shadow-sm card-glow">
                     <!-- Exercise Display Area -->
                     <div id="exercise-display-area" class="w-full h-64 p-4 font-mono text-gray-700 bg-slate-50 rounded-lg border border-slate-200 overflow-y-auto whitespace-pre-wrap select-none"></div>
                     
@@ -80,11 +83,18 @@
                         <div class="flex items-center space-x-2">
                            <button id="font-decrease" class="p-2 rounded-md hover:bg-slate-100 text-sm">A-</button>
                            <button id="font-increase" class="p-2 rounded-md hover:bg-slate-100 text-sm">A+</button>
+                                    <label class="inline-flex items-center text-sm ml-2">
+                                         <input id="typing-sound-checkbox" type="checkbox" class="mr-2" />
+                                         <span>Sound</span>
+                                    </label>
                         </div>
                     </div>
 
                     <!-- Typing Input Area -->
                     <textarea id="typing-input-area" class="w-full h-48 mt-2 p-4 font-mono text-lg bg-white rounded-lg border-2 border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Start typing here..."></textarea>
+                    <div class="mt-3 text-right">
+                        <button id="typing-submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Submit</button>
+                    </div>
                 </div>
             </div>
             
@@ -108,10 +118,18 @@
 
     <!-- Result Modal (hidden until an exercise completes) -->
     <div id="result-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 hidden">
-        <div class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 max-h-[80vh] overflow-y-auto border rounded shadow-lg p-6">
+    <div class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 max-h-[80vh] overflow-y-auto border rounded shadow-lg p-6 card-glow" style="position:relative;">
             <div class="flex items-start justify-between mb-4">
                 <h3 id="result-title" class="text-center text-lg font-semibold underline">Detailed Result as below</h3>
-                <button id="res-minimize" title="Minimize" class="ml-4 text-slate-500 hover:text-slate-700">-</button>
+                <div class="flex items-center space-x-2">
+                    <!-- Mac-like circular buttons: close (red) and minimize (green) -->
+                    <button id="res-close" title="Close" class="w-8 h-8 rounded-full flex items-center justify-center bg-red-500 text-white hover:opacity-90" aria-label="Close">
+                        <span style="font-weight:700;line-height:0">✕</span>
+                    </button>
+                    <button id="res-minimize" title="Minimize" class="w-8 h-8 rounded-full flex items-center justify-center bg-green-500 text-white hover:opacity-90" aria-label="Minimize">
+                        <span style="font-weight:700;line-height:0">–</span>
+                    </button>
+                </div>
             </div>
 
             <div id="result-content" class="text-sm text-slate-800">
@@ -181,12 +199,16 @@
         const tabs = document.querySelectorAll('.tab-link');
         const panels = document.querySelectorAll('.content-panel');
         const startLearningBtn = document.getElementById('start-learning-btn');
+    // Back to Typing Selection button
+    const backToSelectionBtn = document.getElementById('ts-back-button');
+    if (backToSelectionBtn) backToSelectionBtn.addEventListener('click', (e)=>{ e.preventDefault(); if(window.history && window.history.length>1) window.history.back(); else window.location.href = 'typing-selection.html'; });
         function switchTab(id){ panels.forEach(p=>p.classList.toggle('active', p.id===id)); tabs.forEach(t=>t.classList.toggle('active', t.dataset.target===id)); }
         tabs.forEach(t=>t.addEventListener('click',(e)=>{ e.preventDefault(); switchTab(t.dataset.target); }));
         startLearningBtn.addEventListener('click', ()=>switchTab('panel-2'));
 
     // Elements
         let exercises = [];
+        const TOTAL_EXERCISES = 50; // show counts as 50 per request
         let currentExerciseIndex = 0;
         const exerciseDisplay = document.getElementById('exercise-display-area');
         const typingInput = document.getElementById('typing-input-area');
@@ -196,15 +218,21 @@
         const fontInc = document.getElementById('font-increase');
         const fontDec = document.getElementById('font-decrease');
         let currentFontSize = 1.5;
-    // Track which exercises have been completed at least once during this session
+    // Track which exercises have been completed at least once (persisted in localStorage)
+    const COMPLETED_KEY = 'calciprep_completed_exercises_v1';
     const completedExercises = new Set();
+    // restore persisted completed set
+    try{
+        const raw = localStorage.getItem(COMPLETED_KEY);
+        if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr)) arr.forEach(n=>{ if(Number.isInteger(n)) completedExercises.add(n); }); }
+    }catch(e){ /* ignore parse errors */ }
 
-    function updateExerciseCounter(){ if(!exercises || !exercises.length) return; if(!exerciseCounter) return; exerciseCounter.textContent = `Exercise : ${currentExerciseIndex+1}/${exercises.length}`; }
+    function updateExerciseCounter(){ if(!exercises || !exercises.length) return; if(!exerciseCounter) return; exerciseCounter.textContent = `Exercise : ${currentExerciseIndex+1}/${TOTAL_EXERCISES}`; }
         function updateNavButtons(){ if(!exercises||!exercises.length) return; prevBtn.disabled = currentExerciseIndex===0; nextBtn.disabled = currentExerciseIndex===exercises.length-1; }
 
     const exerciseSelect = document.getElementById('exercise-select');
     function renderExerciseText(text){ exerciseDisplay.innerHTML=''; text.split('').forEach(ch=>{ const s=document.createElement('span'); s.textContent=ch; exerciseDisplay.appendChild(s); }); }
-    function populateExerciseSelect(){ if(!exerciseSelect) return; exerciseSelect.innerHTML = ''; exercises.forEach((ex, idx)=>{ const opt = document.createElement('option'); opt.value = idx; const prefix = completedExercises.has(idx) ? '✅ ' : ''; opt.textContent = `${prefix}Exercise : ${idx+1}/${exercises.length}`; exerciseSelect.appendChild(opt); }); exerciseSelect.value = currentExerciseIndex; }
+    function populateExerciseSelect(){ if(!exerciseSelect) return; exerciseSelect.innerHTML = ''; exercises.forEach((ex, idx)=>{ const opt = document.createElement('option'); opt.value = idx; const prefix = completedExercises.has(idx) ? '✅ ' : ''; opt.textContent = `${prefix}Exercise : ${idx+1}/${TOTAL_EXERCISES}`; exerciseSelect.appendChild(opt); }); exerciseSelect.value = currentExerciseIndex; }
     function loadExercise(i){ if(!exercises||!exercises.length) return; currentExerciseIndex = Math.max(0, Math.min(i, exercises.length-1)); renderExerciseText(exercises[currentExerciseIndex]); typingInput.value=''; typingInput.focus(); resetTracking(); updateExerciseCounter(); updateNavButtons(); if(exerciseSelect) exerciseSelect.value = currentExerciseIndex; }
 
     prevBtn.addEventListener('click', ()=>{ if(currentExerciseIndex>0) loadExercise(currentExerciseIndex-1); });
@@ -213,10 +241,113 @@
         fontInc.addEventListener('click', ()=>{ currentFontSize = Math.min(2.5, currentFontSize+0.1); exerciseDisplay.style.fontSize = `${currentFontSize}rem`; });
         fontDec.addEventListener('click', ()=>{ currentFontSize = Math.max(1.0, currentFontSize-0.1); exerciseDisplay.style.fontSize = `${currentFontSize}rem`; });
 
+        // Typing sound (WebAudio) - richer click + space/enter thud using small buffers
+        const TYPING_SOUND_KEY = 'calciprep_typing_sound_enabled';
+        let audioCtx = null;
+        let typingSoundEnabled = false;
+        const typingSoundCheckbox = document.getElementById('typing-sound-checkbox');
+        try { typingSoundEnabled = localStorage.getItem(TYPING_SOUND_KEY) === 'true'; } catch(e) { typingSoundEnabled = false; }
+        if(typingSoundCheckbox){ typingSoundCheckbox.checked = typingSoundEnabled; typingSoundCheckbox.addEventListener('change', (ev)=>{ typingSoundEnabled = !!ev.target.checked; try{ localStorage.setItem(TYPING_SOUND_KEY, typingSoundEnabled); }catch(e){} if(typingSoundEnabled && audioCtx && audioCtx.state==='suspended') audioCtx.resume(); }); }
+
+        // We'll create two short buffers: a "click" for normal keys and a slightly fuller "thud" for space/enter
+        let clickBuffer = null;
+        let thudBuffer = null;
+
+        function ensureAudioContext(){ if(!audioCtx){ try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx = null; } } }
+
+        async function makeClickBuffers(){ if(!audioCtx) return; if(clickBuffer && thudBuffer) return;
+            // First try to load sampled assets from /assets/
+            const tryFiles = async (paths) => {
+                for(const p of paths){
+                    try{
+                        const resp = await fetch(p);
+                        if(!resp.ok) continue;
+                        const array = await resp.arrayBuffer();
+                        const buf = await audioCtx.decodeAudioData(array.slice(0));
+                        return buf;
+                    }catch(e){ /* try next */ }
+                }
+                return null;
+            };
+
+            // try click sample (mp3 then wav)
+            clickBuffer = await tryFiles(['/assets/type-click.mp3','/assets/type-click.wav','assets/type-click.mp3','assets/type-click.wav']);
+            thudBuffer = await tryFiles(['/assets/type-thud.mp3','/assets/type-thud.wav','assets/type-thud.mp3','assets/type-thud.wav']);
+
+            // If either is missing, render realistic buffers using OfflineAudioContext (better 'sampled' feel)
+            if(!clickBuffer || !thudBuffer){
+                const sampleRate = audioCtx.sampleRate;
+                // helper to render a buffer via OfflineAudioContext
+                const renderBuffer = async (durationSec, toneFreq, noiseGain=0.35, toneGain=0.6, decay=6) => {
+                    const len = Math.floor(sampleRate * durationSec);
+                    const offline = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, len, sampleRate);
+                    // tone
+                    const osc = offline.createOscillator(); osc.type = 'sine'; osc.frequency.value = toneFreq;
+                    const toneGainNode = offline.createGain();
+                    toneGainNode.gain.setValueAtTime(0.0001, 0);
+                    toneGainNode.gain.linearRampToValueAtTime(toneGain, 0.002);
+                    toneGainNode.gain.exponentialRampToValueAtTime(0.0001, durationSec);
+                    osc.connect(toneGainNode); toneGainNode.connect(offline.destination);
+
+                    // noise buffer source
+                    const noiseBuf = offline.createBuffer(1, len, sampleRate);
+                    const nd = noiseBuf.getChannelData(0);
+                    for(let i=0;i<len;i++){
+                        const t = i / len;
+                        nd[i] = (Math.random()*2 - 1) * Math.pow(1 - t, decay) * noiseGain;
+                    }
+                    const noiseSrc = offline.createBufferSource(); noiseSrc.buffer = noiseBuf; noiseSrc.connect(offline.destination);
+
+                    osc.start(0); noiseSrc.start(0);
+                    const rendered = await offline.startRendering();
+                    return rendered;
+                };
+
+                if(!clickBuffer){
+                    try{
+                        clickBuffer = await renderBuffer(0.06, 1600 + Math.random()*400, 0.25, 0.6, 20);
+                    }catch(e){
+                        // fallback simple buffer if OfflineAudioContext not available
+                        const clickLen = Math.floor(sampleRate * 0.06);
+                        const click = audioCtx.createBuffer(1, clickLen, sampleRate);
+                        const cdata = click.getChannelData(0);
+                        for(let i=0;i<clickLen;i++){ const t=i/clickLen; cdata[i]=(Math.random()*2-1)*(1-t)*0.4; }
+                        clickBuffer = click;
+                    }
+                }
+
+                if(!thudBuffer){
+                    try{
+                        thudBuffer = await renderBuffer(0.12, 300 + Math.random()*200, 0.4, 0.9, 12);
+                    }catch(e){
+                        const thudLen = Math.floor(sampleRate * 0.12);
+                        const thud = audioCtx.createBuffer(1, thudLen, sampleRate);
+                        const tdata = thud.getChannelData(0);
+                        for(let i=0;i<thudLen;i++){ const t=i/thudLen; tdata[i]=(Math.random()*2-1)*(1-t)*0.35; }
+                        thudBuffer = thud;
+                    }
+                }
+            }
+        }
+
+        function playTypeSound(key){ if(!typingSoundEnabled) return; try{
+            ensureAudioContext(); if(!audioCtx) return; if(audioCtx.state==='suspended') audioCtx.resume();
+            makeClickBuffers(); if(!clickBuffer) return;
+            const src = audioCtx.createBufferSource();
+            const gain = audioCtx.createGain();
+            // choose buffer based on key
+            const lowKeys = [' ','Enter'];
+            if(lowKeys.includes(key) && thudBuffer) src.buffer = thudBuffer; else src.buffer = clickBuffer;
+            // small randomness in level
+            gain.gain.value = 0.6 + Math.random()*0.3;
+            src.connect(gain); gain.connect(audioCtx.destination);
+            src.start();
+        }catch(e){ /* ignore audio errors */ } }
+
         // Typing tracking
         let keystrokeCount = 0, backspaceCount = 0, testStartTime = null;
         function resetTracking(){ keystrokeCount=0; backspaceCount=0; testStartTime=null; }
-        typingInput.addEventListener('keydown', (e)=>{ if(!testStartTime) testStartTime = Date.now(); if(e.key==='Backspace') backspaceCount++; if(e.key.length===1 || e.key===' ' || e.key==='Enter') keystrokeCount++; });
+    typingInput.addEventListener('keydown', (e)=>{ if(!testStartTime) testStartTime = Date.now(); if(e.key==='Backspace') backspaceCount++; const isChar = (e.key.length===1 || e.key===' ' || e.key==='Enter'); if(isChar){ keystrokeCount++; playTypeSound(e.key); } });
 
         typingInput.addEventListener('input', ()=>{
             const typed = typingInput.value || '';
@@ -280,20 +411,63 @@
             window.lastResult = { netWpm, grossWpm, accuracy, backspaceCount, totalMistakes, durationMs };
             // Mark this exercise as completed at least once and refresh the select to show a tick
             completedExercises.add(currentExerciseIndex);
+            // persist completed set
+            try{ localStorage.setItem(COMPLETED_KEY, JSON.stringify(Array.from(completedExercises))); }catch(e){}
             populateExerciseSelect();
             showResultModal();
         }
 
         // Repeat / Next
         document.getElementById('res-repeat').addEventListener('click', (e)=>{ e.preventDefault(); hideResultModal(); resetTracking(); typingInput.value=''; typingInput.focus(); exerciseDisplay.querySelectorAll('span').forEach(s=>s.classList.remove('correct-char','incorrect-char','current-char')); });
-        document.getElementById('res-next').addEventListener('click', (e)=>{ e.preventDefault(); hideResultModal(); resetTracking(); if(currentExerciseIndex < exercises.length-1) loadExercise(currentExerciseIndex+1); });
+    document.getElementById('res-next').addEventListener('click', (e)=>{ e.preventDefault(); hideResultModal(); resetTracking(); if(currentExerciseIndex < exercises.length-1) loadExercise(currentExerciseIndex+1); });
 
-        // Minimize / restore
-        document.getElementById('res-minimize').addEventListener('click', ()=>{ hideResultModal(); const r = window.lastResult || {}; document.getElementById('min-summary').textContent = `Net: ${r.netWpm||0} WPM · Acc: ${r.accuracy||0}%`; minBar.classList.remove('hidden'); });
-        document.getElementById('min-restore').addEventListener('click', ()=>{ minBar.classList.add('hidden'); showResultModal(); });
+    // Close (red cross) - hide modal and minimized summary
+    const resClose = document.getElementById('res-close');
+    if(resClose) resClose.addEventListener('click', (e)=>{ e.preventDefault(); hideResultModal(); const min = document.getElementById('result-minimized'); if(min) min.classList.add('hidden'); });
 
-    // Load exercises
-    fetch('data/learn-keys-exercises.json').then(r=>{ if(!r.ok) throw new Error('network'); return r.json(); }).then(json=>{ exercises = Array.isArray(json) ? json : (json && Array.isArray(json.exercises) ? json.exercises : []); if(exercises.length) { currentExerciseIndex = 0; populateExerciseSelect(); loadExercise(0); } else exerciseDisplay.textContent = 'No exercises found.'; }).catch(err=>{ console.error('load failed',err); exerciseDisplay.textContent='No exercises found.'; });
+    // Submit button under typing area - allow early submission
+    const typingSubmit = document.getElementById('typing-submit');
+    if(typingSubmit) typingSubmit.addEventListener('click', (e)=>{ e.preventDefault(); if(!testStartTime) testStartTime = Date.now(); finalizeExercise(); });
+
+    // Minimize / restore
+    document.getElementById('res-minimize').addEventListener('click', ()=>{ hideResultModal(); const r = window.lastResult || {}; document.getElementById('min-summary').textContent = `Net: ${r.netWpm||0} WPM · Acc: ${r.accuracy||0}%`; minBar.classList.remove('hidden'); });
+    document.getElementById('min-restore').addEventListener('click', ()=>{ minBar.classList.add('hidden'); showResultModal(); });
+
+    // Load exercises (flatten lesson-based JSON into a single array)
+    fetch('data/learn-keys-exercises.json').then(r=>{ if(!r.ok) throw new Error('network'); return r.json(); }).then(json=>{
+        exercises = [];
+        if (Array.isArray(json)) {
+            exercises = json.slice(0, TOTAL_EXERCISES);
+        } else if (json && typeof json === 'object') {
+            // Expecting an object like { "Lesson 1": { "1": "...", "2": "..." }, "Lesson 2": {...} }
+            // Sort lessons by lesson number if possible
+            const lessonKeys = Object.keys(json).sort((a,b)=>{
+                const na = parseInt(a.replace(/[^0-9]/g,'')) || 0;
+                const nb = parseInt(b.replace(/[^0-9]/g,'')) || 0;
+                return na - nb;
+            });
+            for (const lk of lessonKeys) {
+                const lesson = json[lk];
+                if (!lesson || typeof lesson !== 'object') continue;
+                // Sort numeric keys inside a lesson
+                const keys = Object.keys(lesson).sort((a,b)=> (parseInt(a,10)||0) - (parseInt(b,10)||0));
+                for (const k of keys) {
+                    if (exercises.length >= TOTAL_EXERCISES) break;
+                    const txt = lesson[k];
+                    if (typeof txt === 'string' && txt.trim()) exercises.push(txt.trim());
+                }
+                if (exercises.length >= TOTAL_EXERCISES) break;
+            }
+        }
+
+        if (exercises.length) {
+            currentExerciseIndex = 0;
+            populateExerciseSelect();
+            loadExercise(0);
+        } else {
+            exerciseDisplay.textContent = 'No exercises found.';
+        }
+    }).catch(err=>{ console.error('load failed',err); exerciseDisplay.textContent='No exercises found.'; });
 
         if(typeof lucide !== 'undefined') lucide.createIcons();
         });

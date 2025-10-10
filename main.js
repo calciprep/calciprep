@@ -69,15 +69,10 @@ function loadTemplates() {
                 // Use the header placeholder as the spacer to push content below the fixed header.
                 const headerPlaceholder = document.getElementById('header-placeholder');
                 if (headerPlaceholder) {
-                    // Page-specific override: english page should have no spacer so content sits
-                    // directly under the header (match maths page behavior).
-                    // For specific pages that should sit directly under the fixed header
-                    // (no spacer), set the placeholder height to 0.
-                    if (currentPage.includes('english.html') || currentPage.includes('maths.html') || currentPage.includes('typing-selection.html') || currentPage.includes('typing.html')) {
-                        headerPlaceholder.style.height = '80px';
-                    } else {
-                        headerPlaceholder.style.height = headerHeight + 'px';
-                    }
+                    // Use a consistent spacer for non-index pages so the fixed header
+                    // does not overlap page content. Per request, set to 80px for
+                    // all non-index pages (index page remains unchanged).
+                    headerPlaceholder.style.height = '80px';
                 } else {
                     // Fallback: set main padding-top to header height
                     mainEl.style.paddingTop = headerHeight + 'px';
@@ -95,6 +90,71 @@ function loadTemplates() {
         console.warn('Could not apply header-height padding:', e);
     }
     
+    // Apply a page-specific card glow theme using CSS variables
+    try {
+        const current = window.location.pathname || '';
+        // Helper to convert hex to "r,g,b"
+        function hexToRgb(hex) {
+            if (!hex) return '79,70,229';
+            const h = hex.replace('#','');
+            const bigint = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `${r},${g},${b}`;
+        }
+
+        // Map pages to accent colors (hex)
+        let accentHex = '#4f46e5'; // default (blue)
+        if (current.includes('typing-selection.html') || current.includes('typing.html') || current.includes('learn-typing.html')) {
+            accentHex = '#10b981'; // Tailwind green-500 used on typing pages
+        } else if (current.includes('english.html')) {
+            accentHex = '#be94f5';
+        } else if (current.includes('maths.html')) {
+            accentHex = '#4f46e5';
+        } else if (current.includes('account.html')) {
+            accentHex = '#4f46e5';
+        }
+
+        const accentRgb = hexToRgb(accentHex);
+        document.documentElement.style.setProperty('--card-accent', accentHex);
+        document.documentElement.style.setProperty('--card-accent-rgb', accentRgb);
+
+        // Inject shared card glow CSS once
+        if (!document.getElementById('card-glow-styles')) {
+            const s = document.createElement('style');
+            s.id = 'card-glow-styles';
+            s.textContent = `
+            .mode-card, .feature-card, .subject-card, .card-glow, .practice-card {
+                transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+            }
+            .mode-card:hover, .feature-card:hover, .subject-card:hover, .card-glow:hover, .practice-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 12px 30px rgba(var(--card-accent-rgb), 0.18), 0 6px 12px rgba(0,0,0,0.06);
+                border-color: var(--card-accent);
+            }
+            /* subtle animated glow ring */
+            .card-glow::after, .mode-card::after, .feature-card::after, .subject-card::after {
+                content: '';
+                pointer-events: none;
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+                box-shadow: 0 0 0 rgba(var(--card-accent-rgb), 0);
+                transition: box-shadow .28s ease, opacity .28s ease;
+                opacity: 0;
+            }
+            .mode-card:hover::after, .feature-card:hover::after, .subject-card:hover::after, .card-glow:hover::after {
+                box-shadow: 0 10px 40px rgba(var(--card-accent-rgb), 0.12);
+                opacity: 1;
+            }
+            `;
+            document.head.appendChild(s);
+        }
+    } catch (err) {
+        console.warn('card glow theme setup failed', err);
+    }
+
     setupBackButton();
 }
 
