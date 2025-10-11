@@ -21,7 +21,7 @@
         
         <!-- Logo (visible on all screen sizes) -->
         <a href="index.html" class="flex justify-center flex-1 lg:flex-none">
-            <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8">
+            <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8">
         </a>
 
         <!-- Right side nav links and auth buttons -->
@@ -62,7 +62,7 @@
         <!-- Mobile Header -->
         <div class="lg:hidden w-full flex justify-between items-center">
             <a href="index.html">
-                <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8">
+                <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8">
             </a>
             <div class="flex items-center space-x-4">
                  <div id="back-button-container-mobile" class="hidden">
@@ -213,13 +213,13 @@
         
         <!-- Left Panel -->
         <div class="auth-left-panel">
-            <img src="Registration-left-panel.svg" alt="CalciPrep Welcome" class="w-full h-full object-cover">
+            <img src="media/Registration-left-panel.svg" alt="CalciPrep Welcome" class="w-full h-full object-cover">
         </div>
 
         <!-- Right Panel (Form) -->
         <div class="p-12 flex flex-col justify-center" style="font-family: 'Inter', sans-serif;">
             <div class="w-full max-w-md mx-auto">
-                <img src="New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-6">
+                <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-6">
                 
                 <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-2">Create your account</h2>
                 <p id="modal-subheading" class="text-sm text-gray-600 mb-6">Let's get started with your 30 day free trial.</p>
@@ -280,7 +280,7 @@
 <footer class="bg-gray-800 text-white py-12" style="background-color: #151313;">
     <div class="container mx-auto px-6 text-center">
         <a href="index.html#home">
-            <img src="New-logo.svg" alt="CalciPrep Logo" class="h-10 mx-auto">
+            <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-10 mx-auto">
         </a>
         <div class="flex justify-center space-x-6 my-6">
             <a href="index.html#about" class="hover:text-accent-orange text-gray-300">About</a>
