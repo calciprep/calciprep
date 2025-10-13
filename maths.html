@@ -13,74 +13,66 @@
     <meta name="google-adsense-account" content="ca-pub-2382040431534049">
 
     <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/svg+xml" href="/media/favicon.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="/media/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#4f46e5">
+    <link rel="icon" type="image/svg+xml" href="media/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="media/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#8B5CF6">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
     <style>
         body {
-            font-family: 'Kodchasan', sans-serif;
-            background-color: #f7f7f7;
-            color: #151313;
+            font-family: 'Work Sans', sans-serif;
+            background-color: #F9FAFB;
+            color: #1F2937;
         }
-        .glassmorphism {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Abril Fatface', cursive;
         }
-        header {
-            transition: transform 0.3s ease-in-out;
-        }
-        .accent-orange { color: #4f46e5; }
-        .bg-accent-orange { background-color: #4f46e5; }
-        .accent-purple { color: #be94f5; }
-        .accent-yellow { color: #fccc42; }
         .btn-primary {
-            padding: 0.75rem 2rem;
-            background-color: #ff5734;
-            color: white;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background-color: #8B5CF6;
             transition: all 0.3s ease;
         }
         .btn-primary:hover {
-            background-color: #e64a2e;
-            transform: scale(1.05);
-        }
-        .btn-primary:disabled {
-            background-color: #ff9d7d;
-            cursor: not-allowed;
+             background-color: #7C3AED;
+             box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
         }
         .game-mode-card {
-            background-color: white;
-            transition: all 0.3s ease;
+            background-color: #FFFFFF;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #F3F4F6;
+            border-radius: 1.5rem;
+            text-align: center;
+            cursor: pointer;
         }
         .game-mode-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
         }
         .custom-checkbox:checked {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
+            background-color: #8B5CF6;
+            border-color: #8B5CF6;
         }
         .custom-checkbox:checked + label {
-            color: #4f46e5;
+            color: #7C3AED;
             font-weight: 700;
         }
         .custom-radio:checked {
-             border-color: #4f46e5;
+             border-color: #8B5CF6;
         }
         .custom-radio:checked::after {
-            background-color: #4f46e5;
+            background-color: #8B5CF6;
+            content: '';
+            display: block;
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+            margin: 2px;
         }
         .correct-answer {
             border-color: #22c55e !important;
@@ -90,12 +82,8 @@
             border-color: #ef4444 !important;
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
         }
-        .modal {
-            transition: opacity 0.3s ease;
-        }
-        /* CLS-safe ad container */
         .ad-container {
-            min-height: 90px; /* Adjust based on expected ad height */
+            min-height: 90px;
             width: 100%;
             background-color: #f0f0f0;
             display: flex;
@@ -108,29 +96,72 @@
 </head>
 <body class="text-main">
 
-    <div id="header-placeholder"></div>
+    <header class="fixed top-4 inset-x-0 z-50 px-4">
+        <div class="glass-nav max-w-7xl mx-auto bg-white/60 backdrop-blur-lg border border-gray-200/80 rounded-full px-6 py-2 shadow-md">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="flex items-center flex-shrink-0">
+                    <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8 w-auto">
+                </a>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="index.html#subjects" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Subjects</a>
+                    <a href="index.html#features" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Features</a>
+                    <a href="index.html#contact" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Contact</a>
+                </nav>
+                <div class="hidden md:flex items-center space-x-2">
+                    <div id="logged-out-view">
+                        <button id="login-btn" class="text-gray-600 hover:text-gray-900 font-medium px-4 py-2 rounded-full text-sm">Sign In</button>
+                        <button id="signup-btn" class="btn-primary text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">Sign Up</button>
+                    </div>
+                    <div id="logged-in-view" class="hidden relative">
+                        <button id="account-menu-btn" class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                            <i data-lucide="user" class="w-6 h-6"></i>
+                        </button>
+                        <div id="account-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 top-full">
+                            <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Account</a>
+                            <button id="logout-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+     <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-20 z-40 p-4">
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 shadow-lg">
+            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-gray-900">Home</a>
+            <a href="index.html#subjects" class="block py-2 text-gray-700 hover:text-gray-900">Subjects</a>
+            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-gray-900">Features</a>
+            <a href="index.html#contact" class="block py-2 text-gray-700 hover:text-gray-900">Contact Us</a>
+            <div id="mobile-auth-container" class="border-t border-gray-200 mt-4 pt-4">
+                <!-- main.js will populate this area -->
+            </div>
+        </div>
+    </div>
 
-    <main class="container mx-auto px-6 pt-8 pb-12">
-        <div class="text-center py-12 md:py-16 rounded-xl bg-accent-orange">
+    <main class="container mx-auto px-6 pt-28 pb-12">
+        <div class="text-center py-12 md:py-16 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600">
             <h1 class="text-4xl md:text-5xl font-bold text-white">Maths Practice Arena</h1>
-            <p class="text-black mt-4 text-lg">Sharpen your calculation speed. Choose your challenge below.</p>
+            <p class="text-purple-100 mt-4 text-lg">Sharpen your calculation speed. Choose your challenge below.</p>
         </div>
 
         <div id="game-selection" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-12">
-            <div onclick="openSettingsModal('1-minute')" class="game-mode-card card-glow p-8 rounded-xl shadow-lg text-center cursor-pointer border-2 border-transparent hover:border-accent-orange glassmorphism" style="position:relative;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 text-accent-orange"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <div onclick="openSettingsModal('1-minute')" class="game-mode-card p-8">
+                <i data-lucide="timer" class="w-16 h-16 mx-auto mb-4 text-purple-500"></i>
                 <h2 class="text-2xl font-bold mb-2">1-Minute Challenge</h2>
-                <p class="text-gray-600">Solve as many problems as you can in 60 seconds. Go!</p>
+                <p class="text-gray-600 font-sans">Solve as many problems as you can in 60 seconds. Go!</p>
             </div>
-            <div onclick="openSettingsModal('bitter-end')" class="game-mode-card card-glow p-8 rounded-xl shadow-lg text-center cursor-pointer border-2 border-transparent hover:border-accent-purple glassmorphism" style="position:relative;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-purple"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <div onclick="openSettingsModal('bitter-end')" class="game-mode-card p-8">
+                <i data-lucide="swords" class="w-16 h-16 mx-auto mb-4 text-indigo-500"></i>
                 <h2 class="text-2xl font-bold mb-2">To the Bitter End</h2>
-                <p class="text-gray-600">One wrong answer ends the game.</p>
+                <p class="text-gray-600 font-sans">One wrong answer ends the game.</p>
             </div>
-            <div onclick="openSettingsModal('speed-challenge')" class="game-mode-card card-glow p-8 rounded-xl shadow-lg text-center cursor-pointer border-2 border-transparent hover:border-accent-yellow glassmorphism" style="position:relative;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-4 accent-yellow"><path d="M12 12c-2 0-4.5 1-5 4.5s2.5 4.5 5 4.5 5-2 5-4.5-2.5-4.5-5-4.5z"/><path d="M12 12v-2"/><path d="M18.3 7.7l-1.4-1.4"/><path d="M5.7 7.7l1.4-1.4"/><circle cx="12" cy="12" r="10"/></svg>
+            <div onclick="openSettingsModal('speed-challenge')" class="game-mode-card p-8">
+                <i data-lucide="zap" class="w-16 h-16 mx-auto mb-4 text-amber-500"></i>
                 <h2 class="text-2xl font-bold mb-2">Speed Challenge</h2>
-                <p class="text-gray-600">Solve 20 problems as fast as you can.</p>
+                <p class="text-gray-600 font-sans">Solve 20 problems as fast as you can.</p>
             </div>
         </div>
 
@@ -150,24 +181,23 @@
             </div>
         </section>
 
-        <div id="game-interface" class="hidden max-w-2xl mx-auto my-12 bg-white p-8 rounded-xl shadow-2xl border border-gray-100 glassmorphism">
+        <div id="game-interface" class="hidden max-w-2xl mx-auto my-12 bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
             <h2 id="game-title" class="text-3xl font-bold text-center mb-6"></h2>
             <div id="math-game">
                 <div class="text-5xl font-mono text-center my-8 p-6 bg-gray-100 rounded-lg shadow-inner" id="math-problem">Get Ready...</div>
                 <div class="flex items-center space-x-2">
-                    <input type="text" inputmode="numeric" pattern="[0-9.-]*" id="math-answer" class="w-full p-4 text-3xl text-center rounded-lg border-2 focus:outline-none focus:border-accent-orange transition-all duration-300" placeholder="Your Answer..." disabled autocomplete="off">
-                    <button id="submit-answer-btn" class="hidden p-4 bg-accent-orange text-white rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <input type="text" inputmode="numeric" pattern="[0-9.-]*" id="math-answer" class="w-full p-4 text-3xl text-center rounded-lg border-2 focus:outline-none focus:border-purple-500 transition-all duration-300" placeholder="Your Answer..." disabled autocomplete="off">
+                    <button id="submit-answer-btn" class="hidden p-4 bg-purple-500 text-white rounded-lg">
+                        <i data-lucide="send" class="w-6 h-6"></i>
                     </button>
                 </div>
-                <div class="flex justify-between items-center mt-8 text-xl">
+                <div class="flex justify-between items-center mt-8 text-xl font-sans">
                     <div id="timer-container" class="font-semibold"></div>
                     <div id="question-counter-container" class="font-semibold"></div>
-                    <div class="font-semibold">Score: <span id="math-score" class="font-bold text-accent-orange">0</span></div>
+                    <div class="font-semibold">Score: <span id="math-score" class="font-bold text-purple-600">0</span></div>
                 </div>
-                <div id="button-container" class="mt-8">
-                    <!-- This button is no longer needed but kept for structure -->
-                    <button id="start-game-btn" class="hidden w-full py-4 btn-primary text-xl">Start Game</button>
+                <div id="button-container" class="mt-8 font-sans">
+                    <button id="start-game-btn" class="hidden w-full py-4 btn-primary text-xl rounded-lg">Start Game</button>
                     <button id="submit-test-btn" class="hidden w-full py-4 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-all">End Game</button>
                 </div>
                  <div id="ad-container" class="hidden mt-8">
@@ -189,99 +219,72 @@
         </div>
     </main>
 
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden glassmorphism">
-            <div class="bg-accent-orange p-6">
-                <h2 class="text-3xl font-bold text-center text-white">Challenge Settings</h2>
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 font-sans">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-purple-500 p-6">
+                <h2 class="text-3xl font-bold text-center text-white" style="font-family: 'Abril Fatface', cursive;">Challenge Settings</h2>
             </div>
             <div class="p-8">
                 <div class="mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Challenge Type (Select at least one)</h3>
+                    <h3 class="text-xl font-semibold mb-4" style="font-family: 'Abril Fatface', cursive;">Challenge Type <span class="text-sm font-normal text-gray-500">(Select at least one)</span></h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex items-center">
-                            <input id="type-add" type="checkbox" value="add" class="custom-checkbox w-5 h-5 mr-3 rounded text-accent-orange focus:ring-0">
+                            <input id="type-add" type="checkbox" value="add" class="custom-checkbox w-5 h-5 mr-3 rounded text-purple-600 focus:ring-0">
                             <label for="type-add" class="text-lg">Addition</label>
                         </div>
                         <div class="flex items-center">
-                            <input id="type-subtract" type="checkbox" value="subtract" class="custom-checkbox w-5 h-5 mr-3 rounded text-accent-orange focus:ring-0">
+                            <input id="type-subtract" type="checkbox" value="subtract" class="custom-checkbox w-5 h-5 mr-3 rounded text-purple-600 focus:ring-0">
                             <label for="type-subtract" class="text-lg">Subtraction</label>
                         </div>
                         <div class="flex items-center">
-                            <input id="type-multiply" type="checkbox" value="multiply" class="custom-checkbox w-5 h-5 mr-3 rounded text-accent-orange focus:ring-0">
+                            <input id="type-multiply" type="checkbox" value="multiply" class="custom-checkbox w-5 h-5 mr-3 rounded text-purple-600 focus:ring-0">
                             <label for="type-multiply" class="text-lg">Multiplication</label>
                         </div>
                         <div class="flex items-center">
-                            <input id="type-divide" type="checkbox" value="divide" class="custom-checkbox w-5 h-5 mr-3 rounded text-accent-orange focus:ring-0">
+                            <input id="type-divide" type="checkbox" value="divide" class="custom-checkbox w-5 h-5 mr-3 rounded text-purple-600 focus:ring-0">
                             <label for="type-divide" class="text-lg">Division</label>
                         </div>
                         <div class="flex items-center">
-                            <input id="type-simplify" type="checkbox" value="simplify" class="custom-checkbox w-5 h-5 mr-3 rounded text-accent-orange focus:ring-0">
+                            <input id="type-simplify" type="checkbox" value="simplify" class="custom-checkbox w-5 h-5 mr-3 rounded text-purple-600 focus:ring-0">
                             <label for="type-simplify" class="text-lg">Simplification</label>
                         </div>
                         <div class="flex items-center">
-                            <input id="type-percentage" type="checkbox" value="percentage" class="custom-checkbox w-5 h-5 mr-3 rounded text-accent-orange focus:ring-0">
+                            <input id="type-percentage" type="checkbox" value="percentage" class="custom-checkbox w-5 h-5 mr-3 rounded text-purple-600 focus:ring-0">
                             <label for="type-percentage" class="text-lg">Percentage</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-8">
-                    <h3 class="text-xl font-semibold mb-4">Difficulty Level</h3>
+                    <h3 class="text-xl font-semibold mb-4" style="font-family: 'Abril Fatface', cursive;">Difficulty Level</h3>
                     <div class="flex justify-around">
                         <div class="flex items-center">
-                            <input id="level-easy" type="radio" name="difficulty" value="easy" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative" checked>
+                            <input id="level-easy" type="radio" name="difficulty" value="easy" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 relative" checked>
                             <label for="level-easy" class="text-lg">Easy</label>
                         </div>
                         <div class="flex items-center">
-                            <input id="level-intermediate" type="radio" name="difficulty" value="intermediate" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative">
+                            <input id="level-intermediate" type="radio" name="difficulty" value="intermediate" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 relative">
                             <label for="level-intermediate" class="text-lg">Intermediate</label>
                         </div>
                          <div class="flex items-center">
-                            <input id="level-advanced" type="radio" name="difficulty" value="advanced" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 checked:after:w-3 checked:after:h-3 checked:after:rounded-full checked:after:block relative">
+                            <input id="level-advanced" type="radio" name="difficulty" value="advanced" class="custom-radio w-5 h-5 mr-2 appearance-none rounded-full border-2 border-gray-300 relative">
                             <label for="level-advanced" class="text-lg">Advanced</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex justify-between items-center border-t pt-6 mt-6">
-                    <button onclick="closeSettingsModal()" class="font-semibold text-gray-600 hover:text-gray-800">Cancel</button>
-                    <button id="start-challenge-btn" class="btn-primary">Start Challenge</button>
+                    <button onclick="closeSettingsModal()" class="font-semibold text-gray-600 hover:text-gray-800 px-4 py-2">Cancel</button>
+                    <button id="start-challenge-btn" class="btn-primary px-6 py-3 rounded-lg font-bold">Start Challenge</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md glassmorphism">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="modal-title" class="text-3xl font-bold">Login</h2>
-                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
-                </div>
-                <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
-                <form id="auth-form">
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                        <input type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <div class="mb-6">
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-accent-orange focus:border-accent-orange">
-                    </div>
-                    <button type="submit" id="modal-submit-btn" class="w-full btn-primary">Login</button>
-                </form>
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    <span id="modal-switch-text">Don't have an account?</span>
-                    <button id="modal-switch-btn" class="font-semibold text-accent-orange hover:underline">Sign Up</button>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <script type="module" src="main.js"></script>
+    <!-- Auth Modal is included via the script below -->
     
     <script>
-        // This script contains only the logic specific to the maths game page.
+        // Page-specific script for the maths game logic.
         
         const gameSelection = document.getElementById('game-selection');
         const gameInterface = document.getElementById('game-interface');
@@ -309,13 +312,13 @@
         let currentGameMode = '';
         let isGameRunning = false;
         
-        function openSettingsModal(mode) {
-            if (isGameRunning) return; // Prevent opening settings during a game
+        window.openSettingsModal = function(mode) {
+            if (isGameRunning) return; 
             currentGameMode = mode;
             settingsModal.classList.remove('hidden');
         }
 
-        function closeSettingsModal() {
+        window.closeSettingsModal = function() {
             settingsModal.classList.add('hidden');
         }
 
@@ -330,22 +333,20 @@
             gameSelection.classList.add('hidden');
             gameInterface.classList.remove('hidden');
 
-            // Setup UI based on game mode
             timerContainer.innerHTML = '';
             questionCounterContainer.innerHTML = '';
             if (currentGameMode === '1-minute') {
                 gameTitle.textContent = `1-Minute Challenge`;
-                timerContainer.innerHTML = `Time: <span id="math-timer" class="font-bold text-accent-orange">60</span>s`;
+                timerContainer.innerHTML = `Time: <span id="math-timer" class="font-bold text-purple-600">60</span>s`;
             } else if (currentGameMode === 'bitter-end') {
                 gameTitle.textContent = `To the Bitter End`;
-                timerContainer.innerHTML = `Time Elapsed: <span id="math-timer" class="font-bold text-accent-orange">0</span>s`;
+                timerContainer.innerHTML = `Time Elapsed: <span id="math-timer" class="font-bold text-purple-600">0</span>s`;
             } else if (currentGameMode === 'speed-challenge') {
                 gameTitle.textContent = `Speed Challenge`;
-                timerContainer.innerHTML = `Time: <span id="math-timer" class="font-bold text-accent-orange">0</span>s`;
+                timerContainer.innerHTML = `Time: <span id="math-timer" class="font-bold text-purple-600">0</span>s`;
                 questionCounterContainer.innerHTML = `Question: <span id="question-count" class="font-bold">1</span>/${TOTAL_QUESTIONS}`;
             }
 
-            // Automatically start the game
             startGame();
         }
 
@@ -405,8 +406,8 @@
                 return { text: `(${a} + ${b}) &times; ${c}`, answer: answer };
             } else {
                 a = rand(10, 50); b = rand(2, 10); c = rand(2, 10);
-                answer = a / b + c;
-                return { text: `${a*b} &divide; ${b} + ${c}`, answer: a + c };
+                let product = a * b;
+                return { text: `${product} &divide; ${b} + ${c}`, answer: a + c };
             }
         }
         function generatePercentageProblem(difficulty) {
@@ -477,7 +478,7 @@
             submitAnswerBtn.classList.add('hidden');
             const finalTime = document.getElementById('math-timer').textContent;
 
-            // Save the result to Firestore
+            // Save the result to Firestore if available
             if (window.saveQuizResult) {
                 const quizName = gameTitle.textContent;
                 window.saveQuizResult({
@@ -491,7 +492,7 @@
             
             mathProblemEl.innerHTML = `
                 <div class="text-3xl font-bold">${message}</div>
-                <div class="text-xl mt-4 space-y-2">
+                <div class="text-xl mt-4 space-y-2 font-sans">
                     <p>Correct Answers: <span class="text-green-500 font-bold">${correctCount}</span></p>
                     <p>Incorrect Answers: <span class="text-red-500 font-bold">${incorrectCount}</span></p>
                     <p>Total Time: <span class="font-bold">${finalTime}s</span></p>
@@ -508,7 +509,7 @@
             if (userAnswerStr.trim() === '') return;
 
             const userAnswer = parseFloat(userAnswerStr);
-            let isCorrect = userAnswer === currentProblem.answer;
+            let isCorrect = Math.abs(userAnswer - currentProblem.answer) < 0.01; // Allow for floating point small errors
 
             if (isCorrect) {
                 mathAnswerEl.classList.add('correct-answer');
@@ -545,20 +546,103 @@
         submitAnswerBtn.addEventListener('click', checkAnswer);
         mathAnswerEl.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
+                e.preventDefault();
                 checkAnswer();
             }
         });
-
-        // Ensure Lucide replaces data-lucide icons after DOM changes
-        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
- 
      </script>
      
      <div id="footer-placeholder"></div>
      
-     <script src="templates.js"></script>
-     
-     <script type="module" src="main.js"></script>
+    <!-- Auth Modal and Main Site Script -->
+    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" style="font-family: 'Work Sans', sans-serif;">
+        <!-- ... Auth modal content from index.html ... -->
+    </div>
+
+    <script type="module">
+        // This is the main script copied from index.html to handle auth and UI consistency
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqCKyATw3NkVsbOfeXqU5HCutECF5ILcU",
+            authDomain: "calciprep-1dd16.firebaseapp.com",
+            projectId: "calciprep-1dd16",
+            storageBucket: "calciprep-1dd16.appspot.com",
+            messagingSenderId: "292795386240",
+            appId: "1:292795386240:web:89e1049ea1cfbddb63d965",
+            measurementId: "G-3VK5ZXNCHV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        // --- Full auth and UI script from index.html ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+            
+            document.addEventListener('click', (e) => {
+                 if (mobileMenu && !mobileMenu.classList.contains('hidden') && !mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+            
+            // Re-adding auth logic here for self-containment
+            let isLoginMode = true;
+            
+            const dom = {
+                loggedOutView: document.getElementById('logged-out-view'),
+                loggedInView: document.getElementById('logged-in-view'),
+                accountMenuBtn: document.getElementById('account-menu-btn'),
+                accountMenu: document.getElementById('account-menu'),
+                logoutBtn: document.getElementById('logout-btn'),
+                loginBtn: document.getElementById('login-btn'),
+                signupBtn: document.getElementById('signup-btn'),
+                mobileAuthContainer: document.getElementById('mobile-auth-container'),
+            };
+
+            function updateAuthUI(user) {
+                if (user) {
+                    dom.loggedInView?.classList.remove('hidden');
+                    dom.loggedOutView?.classList.add('hidden');
+                    if (dom.mobileAuthContainer) {
+                        dom.mobileAuthContainer.innerHTML = `
+                            <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
+                            <a href="account.html" class="block w-full text-left font-semibold text-gray-700 py-2 px-3 hover:bg-gray-100 rounded-md">My Account</a>
+                            <button id="mobile-logout-btn" class="block w-full text-left font-semibold text-red-600 px-3 py-2 hover:bg-red-50 rounded-md">Logout</button>`;
+                        document.getElementById('mobile-logout-btn')?.addEventListener('click', () => signOut(auth));
+                    }
+                } else {
+                    dom.loggedInView?.classList.add('hidden');
+                    dom.loggedOutView?.classList.remove('hidden');
+                    if (dom.mobileAuthContainer) {
+                         dom.mobileAuthContainer.innerHTML = `
+                            <div class="flex gap-3">
+                                <button id="mobile-login-btn" class="flex-1 text-center text-gray-700 bg-white hover:bg-gray-100 font-medium py-2.5 rounded-lg border border-gray-300">Sign In</button>
+                                <button id="mobile-signup-btn" class="flex-1 text-center btn-primary text-white px-5 py-2.5 rounded-lg transition-opacity hover:opacity-90">Sign Up</button>
+                            </div>`;
+                        document.getElementById('mobile-login-btn')?.addEventListener('click', () => openModal(true));
+                        document.getElementById('mobile-signup-btn')?.addEventListener('click', () => openModal(false));
+                    }
+                }
+            }
+             onAuthStateChanged(auth, updateAuthUI);
+        });
+    </script>
 </body>
 </html>
-

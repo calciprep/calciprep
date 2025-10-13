@@ -3,85 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- SEO Meta Tags -->
-    <title>English Quiz - CalciPrep</title> <!-- This will be updated by JS -->
+    <title>English Quiz - CalciPrep</title>
     <meta name="description" content="Take an English practice quiz on CalciPrep. Test your knowledge on synonyms, antonyms, idioms, and more to prepare for your competitive exams.">
-    <meta name="robots" content="noindex, nofollow"> <!-- Individual quizzes shouldn't be indexed -->
+    <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="https://calciprep.online/quiz.html" />
-    
     <meta name="google-adsense-account" content="ca-pub-2382040431534049">
-
-    <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/svg+xml" href="/media/favicon.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="/media/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#4f46e5">
+    <link rel="icon" type="image/svg+xml" href="media/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="media/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#8B5CF6">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
      crossorigin="anonymous"></script>
     <style>
         body {
-            font-family: 'Kodchasan', sans-serif;
-            background-color: #f7f7f7;
-            color: #151313;
+            font-family: 'Work Sans', sans-serif;
+            background-color: #F9FAFB;
         }
-        .glassmorphism {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        h1, h2, h3 {
+            font-family: 'Abril Fatface', cursive;
         }
-        header {
-            transition: transform 0.3s ease-in-out;
-        }
-        .accent-purple { color: #be94f5; }
-        .bg-accent-purple { background-color: #be94f5; }
         .btn-primary {
-            padding: 0.75rem 2rem;
-            background-color: #ff5734;
-            color: white;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #e64a2e;
-            transform: scale(1.05);
+            background-color: #8B5CF6;
         }
         .option-btn {
             background-color: white;
             border: 2px solid #e5e7eb;
             transition: all 0.2s ease;
         }
-        .option-btn:hover {
-            border-color: #be94f5;
-            color: #be94f5;
+        .option-btn:hover:not(:disabled) {
+            border-color: #A78BFA;
+            color: #7C3AED;
         }
         .option-btn.correct {
             background-color: #dcfce7;
             border-color: #22c55e;
             color: #166534;
+            font-weight: 600;
         }
         .option-btn.incorrect {
             background-color: #fee2e2;
             border-color: #ef4444;
             color: #991b1b;
+            font-weight: 600;
         }
         .option-btn:disabled {
             cursor: not-allowed;
         }
-        .modal {
-            transition: opacity 0.3s ease;
-        }
-        /* CLS-safe ad container */
         .ad-container {
-            min-height: 250px; /* Adjust for in-article ad */
+            min-height: 250px;
             width: 100%;
             background-color: #f0f0f0;
             display: flex;
@@ -90,34 +65,55 @@
             color: #888;
             margin-top: 2rem;
         }
+        .auth-modal-grid {
+            display: grid;
+            grid-template-columns: 480px 1fr;
+            height: 650px;
+        }
+        .auth-modal-grid .auth-image-panel {
+            background-color: #f3f4f6;
+        }
+        @media (max-width: 1023px) { /* lg breakpoint */
+            .auth-modal-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+                max-height: 90vh;
+            }
+            .auth-modal-grid .auth-image-panel {
+                display: none;
+            }
+            .auth-modal-grid .auth-form-panel {
+                padding: 2rem;
+            }
+        }
     </style>
 </head>
 <body class="text-main">
+    
+    <div id="nav-placeholder"></div>
 
-    <div id="header-placeholder"></div>
-
-    <main class="container mx-auto px-6 py-12">
+    <main class="container mx-auto px-6 py-28">
         <div class="max-w-3xl mx-auto">
-            <div id="quiz-container" class="bg-white p-8 rounded-xl shadow-2xl glassmorphism">
+            <div id="quiz-container" class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
                 <div id="quiz-header" class="mb-6">
                     <h1 id="quiz-title" class="text-3xl font-bold text-center"></h1>
-                    <div class="flex justify-between items-center mt-4">
-                        <div class="text-lg font-semibold">Question <span id="question-count">1</span>/30</div>
-                        <div class="text-lg font-semibold accent-purple">Time: <span id="timer">15</span>s</div>
+                    <div class="flex justify-between items-center mt-4 text-lg font-semibold">
+                        <div>Question <span id="question-count">1</span>/30</div>
+                        <div class="text-purple-600">Time: <span id="timer">15</span>s</div>
                     </div>
                 </div>
                 
-                <h2 id="question-text" class="text-2xl font-bold text-center my-8 min-h-[6rem]">Loading questions...</h2>
+                <h2 id="question-text" class="text-2xl font-semibold text-center my-8 min-h-[6rem] flex items-center justify-center" style="font-family: 'Work Sans', sans-serif;">Loading questions...</h2>
 
                 <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
                 <div class="flex justify-between items-center mt-8">
-                    <button id="skip-btn" class="font-semibold text-gray-600 hover:text-accent-orange">Skip</button>
-                    <button id="submit-test-btn" class="bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-700">Submit Test</button>
+                    <button id="skip-btn" class="font-semibold text-gray-600 hover:text-purple-600 px-4 py-2">Skip</button>
+                    <button id="submit-test-btn" class="bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-800">Submit Test</button>
                 </div>
             </div>
 
-            <div id="score-card" class="hidden text-center bg-white p-8 rounded-xl shadow-2xl glassmorphism">
+            <div id="score-card" class="hidden text-center bg-white p-8 rounded-xl shadow-2xl">
                  <h2 class="text-4xl font-bold mb-4">Quiz Complete!</h2>
                  <div class="text-xl mt-6 space-y-2">
                     <p>Questions Attempted: <span id="attempted-count" class="font-bold"></span></p>
@@ -138,21 +134,13 @@
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
                  </div>
-                 <button onclick="window.location.reload()" class="btn-primary mt-8">Play Again</button>
+                 <button onclick="window.location.reload()" class="btn-primary text-white font-bold mt-8 px-8 py-3 rounded-lg">Play Again</button>
             </div>
         </div>
     </main>
-
-    <div id="footer-placeholder"></div>
-
-    <script src="templates.js"></script>
-    
-    <script type="module" src="main.js"></script>
     
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // This script handles the quiz logic for this page.
-        
         const quizContainer = document.getElementById('quiz-container');
         const scoreCard = document.getElementById('score-card');
         const quizTitleEl = document.getElementById('quiz-title');
@@ -176,19 +164,15 @@
         let totalTime = 0;
         let totalTimeTracker;
 
-        // --- NEW: Function to fetch quiz data ---
         async function fetchQuizData(category) {
-            // Convert category name to a filename-friendly format (e.g., "One Word Substitution" -> "one_word_substitution")
             const fileName = category.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '.json';
             try {
                 const response = await fetch(`data/${fileName}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return await response.json();
             } catch (error) {
                 console.error("Could not fetch quiz data:", error);
-                questionTextEl.textContent = "Failed to load quiz data. Please check the category and try again.";
+                questionTextEl.textContent = "Failed to load quiz data.";
                 return null;
             }
         }
@@ -229,7 +213,7 @@
             shuffledOptions.forEach(option => {
                 const button = document.createElement('button');
                 button.textContent = option;
-                button.classList.add('option-btn', 'p-4', 'font-semibold', 'rounded-lg', 'w-full', 'text-lg', 'glassmorphism');
+                button.classList.add('option-btn', 'p-4', 'font-semibold', 'rounded-lg', 'w-full', 'text-lg');
                 button.onclick = () => selectAnswer(button, option, currentQuestion.answer);
                 optionsContainer.appendChild(button);
             });
@@ -246,9 +230,14 @@
             } else {
                 button.classList.add('incorrect');
                 incorrectCount++;
+                allOptions.forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
             }
 
-            setTimeout(nextQuestion, 1000);
+            setTimeout(nextQuestion, 1500);
         }
         
         function skipQuestion() {
@@ -276,8 +265,9 @@
                 localStorage.setItem(quizKey, 'completed');
             }
 
-            if (window.saveQuizResult) {
-                window.saveQuizResult({
+            // This global function might be defined in another script (like an account script)
+            if (window.saveQuizResultToFirestore) {
+                window.saveQuizResultToFirestore({
                     category: category,
                     quizName: `${category} - Quiz ${quizNumber}`,
                     correctCount: correctCount,
@@ -292,14 +282,13 @@
             totalTimeEl.textContent = totalTime;
         }
 
-        // --- MODIFIED: Main logic to initialize the quiz ---
         async function initializeQuiz() {
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category');
             const quizNumber = urlParams.get('quiz');
 
             if (!category || !quizNumber) {
-                questionTextEl.textContent = "Invalid quiz URL. Please go back and select a quiz.";
+                questionTextEl.textContent = "Invalid quiz URL.";
                 return;
             }
 
@@ -312,21 +301,17 @@
                 questions = allQuizzesForCategory[quizNumber - 1];
                 startQuiz();
             } else {
-                questionTextEl.textContent = "Quiz data not found. Please go back and select another quiz.";
+                questionTextEl.textContent = "Quiz data not found.";
             }
         }
         
         skipBtn.addEventListener('click', skipQuestion);
-        submitTestBtn.addEventListener('click', () => {
-            // Replaced the native confirm() with a simple check for now.
-            // A custom modal would be a good future improvement.
-            showScore();
-        });
+        submitTestBtn.addEventListener('click', showScore);
 
         initializeQuiz();
-
-        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     });
-</script>
+    </script>
+    <script src="nav.js" defer></script>
 </body>
 </html>
+

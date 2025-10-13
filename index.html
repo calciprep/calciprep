@@ -1,454 +1,516 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- SEO Meta Tags -->
-    <title>CalciPrep - SSC, Maths & English Practice for Competitive Exams</title>
-    <meta name="description" content="Practice smarter for competitive exams with CalciPrep. Master Maths and English vocabulary with gamified challenges and progress tracking to solve faster and achieve more.">
-    <meta name="keywords" content="CalciPrep, SSC practice,maths Calculation practice online, maths calculation practice, blackbook quiz practice, Calculation practice, maths practice, english vocabulary, blackbook english, online quiz, exam preparation">
+    <title>CalciPrep - Gamified Learning for Competitive Exams</title>
+    <meta name="description" content="Practice smarter for competitive exams with CalciPrep. Master Maths, English vocabulary, and typing with gamified challenges and progress tracking to solve faster and achieve more.">
+    <meta name="keywords" content="CalciPrep, SSC practice, maths calculation practice, english vocabulary, blackbook english, online quiz, exam preparation, typing practice">
     <link rel="canonical" href="https://calciprep.online/" />
-    
     <meta name="google-adsense-account" content="ca-pub-2382040431534049">
-
+    
     <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/svg+xml" href="/media/favicon.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="/media/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#0f4a34">
+    <link rel="icon" type="image/svg+xml" href="media/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="media/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#8B5CF6">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-
-    <!-- GSAP Core and plugins -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/SplitText.min.js"></script>
-
-
     <style>
+        :root {
+            --primary-color: #8B5CF6;
+            --secondary-color: #A78BFA;
+            --bg-light: #FFFFFF;
+            --bg-lighter: #F9FAFB;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --border-color-light: rgba(0, 0, 0, 0.07);
+            --bg-light-gradient: radial-gradient(ellipse 50% 60% at 5% 40%, rgba(139, 92, 246, 0.1), transparent),
+                                 radial-gradient(ellipse 30% 40% at 95% 60%, rgba(99, 102, 241, 0.08), transparent);
+        }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Work Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: #1F2937;
         }
-        .font-kodchasan {
-            font-family: 'Kodchasan', serif;
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Abril Fatface', cursive;
         }
-        .hero-bg {
-            background-color: #134D2A;
-        }
-        .subject-card, .feature-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            border: 1px solid transparent; 
-        }
-        .subject-card:hover, .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-        }
-        .subject-card:hover.maths-card { border-color: #4f46e5; }
-        .subject-card:hover.english-card { border-color: #be94f5; }
-        .subject-card:hover.typing-card { border-color: #10B981; }
-        .subject-card:hover.gk-card { border-color: #3b82f6; }
-        .subject-card:hover.reasoning-card { border-color: #fccc42; }
-        .subject-card:hover.ca-card { border-color: #ef4444; }
-        .form-input {
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
+        
+        .hero-section {
+            min-height: 100vh;
             width: 100%;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-input:focus {
-            outline: 2px solid transparent;
-            outline-offset: 2px;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
-        }
-        .ad-container {
-            min-height: 90px;
-            width: 100%;
-            background-color: #f0f0f0;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #888;
+            flex-direction: column;
+            background-color: var(--bg-light);
+            background-image: var(--bg-light-gradient);
+            overflow: hidden;
         }
+        
+        .glass-nav {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-color-light);
+            border-radius: 9999px;
+            padding: 0.5rem 1.5rem;
+            box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card {
+            background-color: #FFFFFF;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #F3F4F6;
+            border-radius: 1.5rem;
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #8B5CF6, #6366F1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-primary {
+            background-color: #8B5CF6;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+             background-color: #7C3AED;
+             box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .subject-card {
+            background-color: #FFFFFF;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #F3F4F6;
+            border-radius: 1.5rem; /* 24px */
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .subject-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Visualization styles */
+        .viz-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+        }
+        .orbit {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(0, 0, 0, 0.1);
+            animation: spin 60s linear infinite;
+        }
+        .orbit-1 { width: 300px; height: 300px; }
+        .orbit-2 { width: 450px; height: 450px; animation-duration: 90s; }
+        .orbit-3 { width: 600px; height: 600px; animation-duration: 120s; }
+
+        .viz-icon {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #E5E7EB;
+            border-radius: 1rem;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .central-orb {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        .central-orb h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #111827;
+        }
+        .central-orb p {
+            font-size: 1rem;
+            color: #4B5563;
+        }
+        
         .auth-modal-grid {
             display: grid;
             grid-template-columns: 480px 1fr;
+            height: 650px;
         }
-        @media (max-width: 768px) {
+        .auth-modal-grid .auth-image-panel {
+            background-color: #f3f4f6;
+        }
+
+        @media (max-width: 1023px) { /* lg breakpoint */
             .auth-modal-grid {
                 grid-template-columns: 1fr;
+                height: auto;
+                max-height: 90vh;
             }
-            .auth-left-panel {
+            .auth-modal-grid .auth-image-panel {
                 display: none;
+            }
+            .auth-modal-grid .auth-form-panel {
+                padding: 2rem; /* Reduce padding on smaller screens */
             }
         }
 
-        /* GSAP Button Animation Styles */
-        .btn-gsap {
-            position: relative;
-            overflow: hidden;
-            -webkit-mask-image: -webkit-radial-gradient(white, black); /* Fix for overflow:hidden on rounded corners */
-            mask-image: radial-gradient(white, black);
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        .btn-gsap .btn-gsap-text {
-            position: relative;
-            z-index: 1;
-            transition: color 0.4s ease-out;
-        }
-        .btn-gsap .btn-gsap-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #4f46e5; /* New fill color */
-            z-index: 0;
-        }
-        .btn-gsap:hover .btn-gsap-text {
-            color: white !important;
-        }
-        
-        /* New style for light-fill buttons (auth modal) */
-        .btn-gsap-light .btn-gsap-fill {
-            background-color: #ffffff;
-        }
-         .btn-gsap-light:hover .btn-gsap-text {
-            color: #4f46e5 !important;
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
 
-    <div class="hero-bg relative w-full h-screen overflow-hidden">
-        <!-- Header -->
-        <header class="absolute top-0 left-0 right-0 z-20 py-6 px-4 sm:px-6 lg:px-8">
-            <div class="container mx-auto flex justify-between items-center">
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex w-full justify-between items-center">
-                    <!-- Logo (Left) -->
-                    <div class="flex-1 flex justify-start">
-                        <a href="#">
-                             <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8">
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <header class="fixed top-4 inset-x-0 z-50 px-4">
+                <div class="glass-nav">
+                    <div class="flex justify-between items-center">
+                        <a href="index.html" class="flex items-center flex-shrink-0">
+                            <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8 w-auto">
+                        </a>
+                        <nav class="hidden md:flex items-center space-x-6">
+                            <a href="#subjects" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Subjects</a>
+                            <a href="#features" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Features</a>
+                            <a href="#contact" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Contact</a>
+                        </nav>
+                        <div class="hidden md:flex items-center space-x-2">
+                            <div id="logged-out-view">
+                                <button id="login-btn" class="text-gray-600 hover:text-gray-900 font-medium px-4 py-2 rounded-full text-sm">Sign In</button>
+                                <button id="signup-btn" class="btn-primary text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">Sign Up</button>
+                            </div>
+                            <div id="logged-in-view" class="hidden relative">
+                                <button id="account-menu-btn" class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                    <i data-lucide="user" class="w-6 h-6"></i>
+                                </button>
+                                <div id="account-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 top-full">
+                                    <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Account</a>
+                                    <button id="logout-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+             <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-20 z-40 p-4">
+                <div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 shadow-lg">
+                    <a href="#home" class="block py-2 text-gray-700 hover:text-gray-900">Home</a>
+                    <a href="#subjects" class="block py-2 text-gray-700 hover:text-gray-900">Subjects</a>
+                    <a href="#features" class="block py-2 text-gray-700 hover:text-gray-900">Features</a>
+                    <a href="#contact" class="block py-2 text-gray-700 hover:text-gray-900">Contact Us</a>
+                    <div id="mobile-auth-container" class="border-t border-gray-200 mt-4 pt-4">
+                        <!-- main.js will populate this area -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto flex-grow grid lg:grid-cols-2 items-center px-6 pt-24 lg:pt-0">
+                <!-- Left Column -->
+                <div class="text-center lg:text-left">
+                    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6 text-gray-900">
+                        The Fun Way to <br> <span class="gradient-text">Ace Your Exams.</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-600 max-w-xl mx-auto lg:mx-0 mb-8">
+                        CalciPrep turns practice into an engaging adventure. Master your subjects with challenges that make you faster and smarter.
+                    </p>
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-4 max-w-md mx-auto lg:mx-0 mb-10 text-left">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-purple-500 flex-shrink-0"></i>
+                            <span class="text-gray-700">Increased Speed</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-purple-500 flex-shrink-0"></i>
+                            <span class="text-gray-700">Improved Accuracy</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-purple-500 flex-shrink-0"></i>
+                            <span class="text-gray-700">Gamified Learning</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-purple-500 flex-shrink-0"></i>
+                            <span class="text-gray-700">Leaderboard Ranking</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-center lg:justify-start">
+                        <a href="#subjects" class="btn-primary text-white px-8 py-4 rounded-full font-bold text-lg inline-flex items-center">
+                            Start Learning Now <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
                         </a>
                     </div>
-                    
-                    <!-- Navigation (Center) -->
-                    <nav id="desktop-nav" class="flex items-center space-x-8">
-                        <a href="#subjects" class="text-sm text-white/80 hover:text-white transition-colors">Subjects</a>
-                        <a href="#features" class="text-sm text-white/80 hover:text-white transition-colors">Features</a>
-                        <a href="#about" class="text-sm text-white/80 hover:text-white transition-colors">About Us</a>
-                        <a href="#contact" class="text-sm text-white/80 hover:text-white transition-colors">Contact</a>
-                    </nav>
-                    
-                    <!-- Auth Buttons (Right) -->
-                    <div class="flex-1 flex justify-end">
-                        <div class="flex items-center space-x-2">
-                            <button id="login-btn" class="btn-gsap text-sm font-semibold text-white/80 transition-colors px-4 py-2 rounded-full">
-                                <span class="btn-gsap-text">Login</span>
-                                <span class="btn-gsap-fill"></span>
-                            </button>
-                            <button id="signup-btn" class="btn-gsap bg-white text-[#0f4a34] font-bold rounded-full px-5 py-2.5 text-sm transition-all">
-                                <span class="btn-gsap-text">Sign up</span>
-                                <span class="btn-gsap-fill"></span>
-                            </button>
+                </div>
+
+                <!-- Right Column (Visualization) -->
+                <div class="hidden lg:flex justify-center items-center h-full">
+                    <div class="viz-container">
+                        <div class="orbit orbit-1"></div>
+                        <div class="orbit orbit-2"></div>
+                        <div class="orbit orbit-3"></div>
+                        
+                        <div class="central-orb">
+                           <h3>10k+</h3>
+                           <p>Questions</p>
+                        </div>
+                        
+                        <div class="viz-icon text-purple-500" style="top: 10%; left: 40%; animation-delay: 0s;">
+                            <i data-lucide="calculator"></i>
+                        </div>
+                        <div class="viz-icon text-blue-500" style="top: 40%; left: 0%; animation-delay: 1s;">
+                            <i data-lucide="book-open-text"></i>
+                        </div>
+                        <div class="viz-icon text-amber-500" style="top: 70%; left: 20%; animation-delay: 2s;">
+                            <i data-lucide="keyboard"></i>
+                        </div>
+                        <div class="viz-icon text-green-500" style="top: 25%; right: 10%; animation-delay: 3s;">
+                            <i data-lucide="bar-chart-3"></i>
+                        </div>
+                        <div class="viz-icon text-rose-500" style="bottom: 15%; right: 25%; animation-delay: 1.5s;">
+                            <i data-lucide="award"></i>
+                        </div>
+                         <div class="viz-icon text-sky-500" style="top: 60%; right: 0%; animation-delay: 0.5s;">
+                            <i data-lucide="users"></i>
                         </div>
                     </div>
                 </div>
-
-                <!-- Mobile Header -->
-                <div class="md:hidden flex w-full justify-between items-center">
-                     <!-- Logo -->
-                    <a href="#">
-                         <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8">
-                    </a>
-                     <!-- Mobile Menu Button -->
-                    <button id="mobile-menu-btn" class="text-white">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
-                    </button>
-                </div>
             </div>
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="hidden md:hidden bg-[#0f4a34] absolute top-full left-0 right-0">
-                 <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
-                    <a href="#subjects" class="text-sm text-white/80 hover:text-white transition-colors">Subjects</a>
-                    <a href="#features" class="text-sm text-white/80 hover:text-white transition-colors">Features</a>
-                    <a href="#about" class="text-sm text-white/80 hover:text-white transition-colors">About Us</a>
-                    <a href="#contact" class="text-sm text-white/80 hover:text-white transition-colors">Contact</a>
-                    <div class="mt-4 pt-4 border-t border-white/20">
-                        <button id="mobile-login-btn" class="btn-gsap text-left w-full text-sm font-semibold text-white/80 py-2 transition-colors">
-                             <span class="btn-gsap-text">Login</span>
-                             <span class="btn-gsap-fill"></span>
-                        </button>
-                        <button id="mobile-signup-btn" class="btn-gsap mt-2 w-full bg-white text-[#0f4a34] font-bold rounded-full py-2.5 text-sm text-center">
-                            <span class="btn-gsap-text">Sign Up</span>
-                            <span class="btn-gsap-fill"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Hero Content -->
-        <div class="relative z-10 h-full flex flex-col items-center justify-start pt-40 sm:pt-48 text-center px-4">
-            <h1 class="font-kodchasan text-5xl sm:text-6xl md:text-7xl font-bold text-white tracking-tight !leading-tight">
-                Welcome to CalciPrep
-            </h1>
-            <p class="mt-4 max-w-xl text-lg text-white/80">
-                Practice smarter. Solve faster. Achieve more.
-            </p>
-            <div class="mt-8">
-                <a href="#subjects" class="btn-gsap bg-white text-[#0f4a34] font-bold rounded-full px-8 py-3.5 text-sm transition-all duration-300 transform hover:scale-105 shadow-lg inline-block">
-                    <span class="btn-gsap-text">Start Practicing</span>
-                    <span class="btn-gsap-fill"></span>
-                </a>
-            </div>
-        </div>
+        </section>
         
-        <!-- Illustration Container -->
-        <div class="absolute bottom-0 left-0 right-0 w-full z-0 pointer-events-none">
-            <img src="media/homepage.svg" alt="A colorful illustration of a diverse group of people" class="w-full h-auto" />
-        </div>
-    </div>
-    
-    <!-- Subjects Section -->
-    <section id="subjects" class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-kodchasan font-bold text-gray-800">Explore Subjects & Practice</h2>
-                <p class="text-gray-600 mt-4 text-lg max-w-2xl mx-auto">Master every section of your exam with our gamified challenges.</p>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Left Vertical Ad -->
-                <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 600px;">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2382040431534049" data-ad-slot="7371178730" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                    <script> if (window.getComputedStyle(document.currentScript.parentElement).display !== 'none') { (adsbygoogle = window.adsbygoogle || []).push({}); } </script>
+        <!-- Subjects and Features Section -->
+        <section id="subjects" class="py-24 bg-bg-lighter">
+            <div class="container mx-auto px-6">
+                <div class="mb-16 text-center">
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900">Your Complete <span class="gradient-text">Prep Toolkit</span></h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Engaging modules designed to make learning effective and enjoyable.</p>
                 </div>
-                <!-- Subject Cards -->
-                <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <a href="maths.html" class="subject-card maths-card bg-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center text-center">
-                        <i data-lucide="calculator" class="w-16 h-16 mb-4 text-indigo-600"></i>
-                        <h3 class="text-2xl font-bold font-kodchasan text-gray-800 mb-2">Maths</h3>
-                        <p class="text-gray-600 flex-grow mb-4">Boost your calculation speed with our gamified challenges.</p>
-                        <div class="font-semibold text-indigo-600">Practice Maths &rarr;</div>
-                    </a>
-                    <a href="english.html" class="subject-card english-card bg-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center text-center">
-                        <i data-lucide="book-open" class="w-16 h-16 mb-4" style="color: #be94f5;"></i>
-                        <h3 class="text-2xl font-bold font-kodchasan text-gray-800 mb-2">English</h3>
-                        <p class="text-gray-600 flex-grow mb-4">Enhance your vocabulary and grammar with quizzes based on Blackbook.</p>
-                        <div class="font-semibold" style="color: #be94f5;">Practice English &rarr;</div>
-                    </a>
-                    <a href="typing-selection.html" class="subject-card typing-card bg-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center text-center">
-                        <i data-lucide="keyboard" class="w-16 h-16 mb-4 text-green-500"></i>
-                        <h3 class="text-2xl font-bold font-kodchasan text-gray-800 mb-2">Typing Practice</h3>
-                        <p class="text-gray-600 flex-grow mb-4">Practice typing for government exams.</p>
-                        <div class="font-semibold text-green-500">Start Typing &rarr;</div>
-                    </a>
-                    <a href="#" class="subject-card gk-card bg-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center text-center opacity-60 cursor-not-allowed">
-                        <i data-lucide="globe" class="w-16 h-16 mb-4 text-blue-500"></i>
-                        <h3 class="text-2xl font-bold font-kodchasan text-gray-800 mb-2">General Knowledge</h3>
-                        <p class="text-gray-600 flex-grow mb-4">Stay updated with a wide range of topics.</p>
-                        <div class="font-semibold text-gray-500">Coming Soon &rarr;</div>
-                    </a>
-                    <a href="#" class="subject-card reasoning-card bg-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center text-center opacity-60 cursor-not-allowed">
-                        <i data-lucide="puzzle" class="w-16 h-16 mb-4" style="color: #fccc42;"></i>
-                        <h3 class="text-2xl font-bold font-kodchasan text-gray-800 mb-2">Reasoning</h3>
-                        <p class="text-gray-600 flex-grow mb-4">Sharpen your logical and analytical skills.</p>
-                        <div class="font-semibold text-gray-500">Coming Soon &rarr;</div>
-                    </a>
-                    <a href="#" class="subject-card ca-card bg-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center text-center opacity-60 cursor-not-allowed">
-                        <i data-lucide="newspaper" class="w-16 h-16 mb-4 text-red-500"></i>
-                        <h3 class="text-2xl font-bold font-kodchasan text-gray-800 mb-2">Current Affairs</h3>
-                        <p class="text-gray-600 flex-grow mb-4">Keep pace with the latest events.</p>
-                        <div class="font-semibold text-gray-500">Coming Soon &rarr;</div>
-                    </a>
-                </div>
-                 <!-- Right Vertical Ad -->
-                <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 600px;">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2382040431534049" data-ad-slot="7371178730" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                    <script> if (window.getComputedStyle(document.currentScript.parentElement).display !== 'none') { (adsbygoogle = window.adsbygoogle || []).push({}); } </script>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Horizontal Ad Section -->
-    <section class="py-10 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="ad-container rounded-lg">
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2382040431534049" data-ad-slot="8873345555" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="py-20" style="background-color: #FCD34D;">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-kodchasan font-bold text-gray-800">Powerful Features</h2>
-                <p class="text-gray-700 mt-4 text-lg max-w-2xl mx-auto">Tools designed to accelerate your learning and keep you motivated.</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                <!-- Progress Tracking Card -->
-                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg text-center">
-                    <div class="flex justify-center items-center mb-4">
-                        <svg class="w-12 h-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Progress Tracking</h3>
-                    <p class="text-gray-600">Monitor your growth and identify weak spots.</p>
-                </div>
-                <!-- Leaderboards Card -->
-                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg text-center">
-                     <div class="flex justify-center items-center mb-4">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.5a2.5 2.5 0 0 0-5 0V22h5v-7.5Z"/><path d="M19 14.5a2.5 2.5 0 0 0-5 0V22h5v-7.5Z"/><path d="M14 14.5V9h-4v5.5"/><path d="M12 9V5.5a2.5 2.5 0 0 1 5 0V9h-5Z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Leaderboards</h3>
-                    <p class="text-gray-600">Compete with peers and stay motivated.</p>
-                </div>
-                <!-- Daily Challenges Card -->
-                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg text-center">
-                     <div class="flex justify-center items-center mb-4">
-                        <svg class="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 16l2 2 4-4"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Daily Challenges</h3>
-                    <p class="text-gray-600">New questions every day to keep you sharp.</p>
-                </div>
-                <!-- Personalized Tips Card -->
-                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg text-center">
-                    <div class="flex justify-center items-center mb-4">
-                       <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Personalized Tips</h3>
-                    <p class="text-gray-600">AI-powered recommendations to guide you.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Horizontal Ad Section -->
-    <section class="py-10 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="ad-container rounded-lg">
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2382040431534049" data-ad-slot="8873345555" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Us Section -->
-    <section id="about" class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-kodchasan font-bold text-gray-800">About CalciPrep</h2>
-                <p class="text-gray-600 mt-4 text-lg max-w-2xl mx-auto">Our goal is to empower competitive exam aspirants with the tools they need to succeed.</p>
-            </div>
-            <div class="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
-                <div class="bg-gray-50 p-8 rounded-xl border">
-                    <h3 class="text-2xl font-semibold font-kodchasan mb-4 text-indigo-600">Our Mission</h3>
-                    <p class="text-gray-700 leading-relaxed">To provide a comprehensive, all-in-one practice platform for competitive exam aspirants. We aim to make high-quality preparation accessible, engaging, and effective for everyone, breaking down complex topics into manageable practice sessions.</p>
-                </div>
-                <div class="bg-gray-50 p-8 rounded-xl border">
-                    <h3 class="text-2xl font-semibold font-kodchasan mb-4 text-purple-500">Our Vision</h3>
-                    <p class="text-gray-700 leading-relaxed">We envision a world where every learner can approach their exams with confidence and speed. Through consistent practice and data-driven insights, we help students not only master their subjects but also develop the critical thinking and time management skills needed to excel.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Horizontal Ad Section -->
-     <section class="py-10 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="ad-container rounded-lg">
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2382040431534049" data-ad-slot="8873345555" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20" style="background-color: #8ed38b;">
-         <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-kodchasan font-bold text-gray-800">Get In Touch</h2>
-                <p class="text-gray-600 mt-4 text-lg max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you.</p>
-            </div>
-             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 300px;">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2382040431534049" data-ad-slot="7371178730" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                    <script> if (window.getComputedStyle(document.currentScript.parentElement).display !== 'none') { (adsbygoogle = window.adsbygoogle || []).push({}); } </script>
-                </div>
-                <div class="lg:col-span-8 max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg w-full">
-                    <form action="https://formspree.io/f/mandwjpj" method="POST">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                            <input type="text" name="name" placeholder="Your Name" class="form-input" required>
-                            <input type="email" name="email" placeholder="Your Email" class="form-input" required>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Maths Arena -->
+                    <a href="maths.html" class="subject-card">
+                        <div class="p-8 bg-purple-100 text-center">
+                             <div class="bg-white/50 text-purple-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                                <i data-lucide="calculator" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Maths Arena</h3>
+                            <p class="text-gray-600 text-sm min-h-[40px]">Sharpen your calculation speed and accuracy with gamified maths challenges.</p>
                         </div>
-                        <div class="mb-6">
-                            <input type="text" name="subject" placeholder="Subject" class="form-input" required>
+                        <div class="p-6 bg-white flex justify-between items-center">
+                            <span class="font-semibold text-gray-700">Explore</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 text-gray-500"></i>
                         </div>
-                        <div class="mb-6">
-                            <textarea name="message" placeholder="Your Message" rows="5" class="form-input" required></textarea>
+                    </a>
+                    <!-- English Practice -->
+                    <a href="english.html" class="subject-card">
+                         <div class="p-8 bg-blue-100 text-center">
+                            <div class="bg-white/50 text-blue-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                                <i data-lucide="book-open-text" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">English Mastery</h3>
+                            <p class="text-gray-600 text-sm min-h-[40px]">Master grammar and vocabulary with interactive quizzes based on SSC patterns.</p>
                         </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn-gsap bg-indigo-600 text-white font-bold rounded-full px-8 py-3.5 text-sm transform hover:scale-105 shadow-lg">
-                                <span class="btn-gsap-text">Send Message</span>
-                                <span class="btn-gsap-fill bg-indigo-700"></span>
-                            </button>
+                        <div class="p-6 bg-white flex justify-between items-center">
+                            <span class="font-semibold text-gray-700">Explore</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 text-gray-500"></i>
                         </div>
-                    </form>
-                    <p class="text-center text-gray-500 mt-8 text-sm">
-                        You can also email us at: <a href="mailto:contact@calciprep.online" class="text-indigo-600 hover:underline font-semibold">contact@calciprep.online</a>
-                    </p>
-                </div>
-                <div class="hidden lg:flex lg:col-span-2 items-center justify-center rounded-lg ad-container" style="min-height: 300px;">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2382040431534049" data-ad-slot="7371178730" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                    <script> if (window.getComputedStyle(document.currentScript.parentElement).display !== 'none') { (adsbygoogle = window.adsbygoogle || []).push({}); } </script>
+                    </a>
+                    <!-- Typing Arena -->
+                    <a href="typing-selection.html" class="subject-card">
+                        <div class="p-8 bg-amber-100 text-center">
+                             <div class="bg-white/50 text-amber-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                                <i data-lucide="keyboard" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Typing Arena</h3>
+                            <p class="text-gray-600 text-sm min-h-[40px]">Improve your typing speed with guided lessons and practice tests.</p>
+                        </div>
+                        <div class="p-6 bg-white flex justify-between items-center">
+                            <span class="font-semibold text-gray-700">Explore</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 text-gray-500"></i>
+                        </div>
+                    </a>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <footer class="bg-gray-800 text-white py-12" style="background-color: #151313;">
-        <div class="container mx-auto px-6 text-center">
-            <a href="#">
-                <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-10 mx-auto">
-            </a>
-            <div class="flex justify-center space-x-6 my-6">
-                <a href="#about" class="hover:text-indigo-400 text-gray-300">About</a>
-                <a href="#subjects" class="hover:text-indigo-400 text-gray-300">Subjects</a>
-                <a href="#features" class="hover:text-indigo-400 text-gray-300">Features</a>
-                <a href="#contact" class="hover:text-indigo-400 text-gray-300">Contact</a>
+        </section>
+
+        <!-- Upcoming Features Section -->
+        <section id="features" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                 <div class="mb-16 text-center">
+                    <h2 class="text-4xl md-text-5xl font-extrabold mb-4 text-gray-900">The <span class="gradient-text">Future of Prep</span> is Here</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">We're constantly working on new tools to supercharge your preparation.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Live Multiplayer Challenges -->
+                    <div class="subject-card">
+                        <div class="p-8 bg-rose-100 text-center">
+                            <div class="bg-white/50 text-rose-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                                <i data-lucide="users" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Multiplayer Challenges</h3>
+                            <p class="text-gray-600 text-sm min-h-[40px]">Compete with friends and other aspirants in real-time.</p>
+                        </div>
+                        <div class="p-6 bg-white flex justify-between items-center">
+                            <span class="font-semibold text-gray-500">Coming Soon</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <!-- Advanced Analytics -->
+                    <div class="subject-card">
+                        <div class="p-8 bg-sky-100 text-center">
+                            <div class="bg-white/50 text-sky-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                                <i data-lucide="bar-chart-3" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Advanced Analytics</h3>
+                            <p class="text-gray-600 text-sm min-h-[40px]">Track your progress in detail to find your weak spots.</p>
+                        </div>
+                        <div class="p-6 bg-white flex justify-between items-center">
+                            <span class="font-semibold text-gray-500">Coming Soon</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <!-- Achievements & Badges -->
+                    <div class="subject-card">
+                        <div class="p-8 bg-green-100 text-center">
+                            <div class="bg-white/50 text-green-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                                <i data-lucide="award" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-3 text-gray-900">Achievements & Badges</h3>
+                            <p class="text-gray-600 text-sm min-h-[40px]">Unlock special milestones and badges as you learn.</p>
+                        </div>
+                        <div class="p-6 bg-white flex justify-between items-center">
+                            <span class="font-semibold text-gray-500">Coming Soon</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="text-gray-400 mt-2">&copy; 2025 CalciPrep. All Rights Reserved.</p>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-24 bg-bg-lighter">
+            <div class="container mx-auto px-6">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div class="text-center lg:text-left">
+                        <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900">Get in <span class="gradient-text">Touch</span></h2>
+                        <p class="text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center space-x-4 justify-center lg:justify-start">
+                                <div class="bg-purple-100 text-purple-600 w-12 h-12 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="mail" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg text-gray-900">Email</h3>
+                                    <p class="text-gray-500">support@calciprep.online</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4 justify-center lg:justify-start">
+                                <div class="bg-purple-100 text-purple-600 w-12 h-12 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="phone" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg text-gray-900">Phone</h3>
+                                    <p class="text-gray-500">+91-XXXXXXXXXX</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 p-8 rounded-2xl shadow-lg">
+                        <form>
+                            <div class="mb-5">
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                                <input type="text" id="name" placeholder="John Doe" class="w-full bg-bg-lighter p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900">
+                            </div>
+                             <div class="mb-5">
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <input type="email" id="email" placeholder="john@example.com" class="w-full bg-bg-lighter p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900">
+                            </div>
+                            <div class="mb-6">
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                <textarea id="message" placeholder="How can we help?" rows="4" class="w-full bg-bg-lighter p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"></textarea>
+                            </div>
+                            <button type="submit" class="w-full btn-primary text-white p-3 rounded-lg font-semibold transition-opacity hover:opacity-90">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8 text-gray-600">
+                <div>
+                    <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-4">
+                    <p class="text-sm">Gamified learning for competitive exams. Solve faster, achieve more.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#home" class="hover:text-gray-900">Home</a></li>
+                        <li><a href="#subjects" class="hover:text-gray-900">Subjects</a></li>
+                        <li><a href="#features" class="hover:text-gray-900">Features</a></li>
+                        <li><a href="#contact" class="hover:text-gray-900">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:text-gray-900"><i data-lucide="twitter"></i></a>
+                        <a href="#" class="hover:text-gray-900"><i data-lucide="facebook"></i></a>
+                        <a href="#" class="hover:text-gray-900"><i data-lucide="instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 mt-8 pt-6 text-center text-gray-500 text-sm">
+                <p>&copy; 2024 CalciPrep. All Rights Reserved.</p>
+            </div>
         </div>
     </footer>
 
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden auth-modal-grid relative" style="height: 650px;">
+    <!-- Auth Modal (Copied from templates.js and adapted for main.js) -->
+    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-y-auto auth-modal-grid relative">
             <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 z-20 text-3xl leading-none">&times;</button>
             
-            <!-- Left Panel -->
-            <div class="auth-left-panel">
+            <div class="auth-image-panel">
                 <img src="media/Registration-left-panel.svg" alt="CalciPrep Welcome" class="w-full h-full object-cover">
             </div>
     
-            <!-- Right Panel (Form) -->
-            <div class="p-12 flex flex-col justify-center">
+            <div class="auth-form-panel p-12 flex flex-col justify-center" style="font-family: 'Work Sans', sans-serif;">
                 <div class="w-full max-w-md mx-auto">
                     <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8 mb-6">
                     
@@ -465,14 +527,14 @@
                     <form id="auth-form">
                         <div class="mb-4">
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Id</label>
-                            <input type="email" id="email-input" name="email" autocomplete="email" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="email" id="email" name="email" autocomplete="email" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="mb-4" id="password-field-container">
                             <div class="flex justify-between items-center mb-1">
                                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                                 <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:underline hidden">Forgot Password?</a>
                             </div>
-                            <input type="password" id="password-input" name="password" autocomplete="new-password" placeholder="Enter Password" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Enter Password" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         
                         <div id="password-strength-container" class="text-sm text-gray-600 space-y-2 mb-6">
@@ -486,10 +548,7 @@
                             </ul>
                         </div>
     
-                        <button type="submit" id="modal-submit-btn" class="btn-gsap btn-gsap-light w-full bg-indigo-600 text-white rounded-md py-3 text-base font-semibold shadow-sm">
-                            <span class="btn-gsap-text">Create Account</span>
-                            <span class="btn-gsap-fill"></span>
-                        </button>
+                        <button type="submit" id="modal-submit-btn" class="w-full bg-indigo-600 text-white rounded-md py-3 text-base font-semibold hover:bg-indigo-700 transition-colors shadow-sm">Create Account</button>
                         
                         <div class="text-center mt-4">
                             <a href="#" id="back-to-signin-link" class="text-sm text-indigo-600 hover:underline hidden">Back to Sign In</a>
@@ -504,10 +563,43 @@
     </div>
 
 
+    <script>
+        // Script for mobile menu from the new design
+        lucide.createIcons();
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+        
+        document.addEventListener('click', (e) => {
+             if (!mobileMenu.classList.contains('hidden') && !mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+    </script>
     <script type="module">
+        // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
         // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqCKyATw3NkVsbOfeXqU5HCutECF5ILcU",
@@ -522,164 +614,141 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
+        // --- App Initialization on DOMContentLoaded ---
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-
-            // --- Mobile Menu ---
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            // --- GSAP Smooth Scrolling ---
-            gsap.registerPlugin(ScrollToPlugin);
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        gsap.to(window, {
-                            duration: 1.2,
-                            scrollTo: { y: target, offsetY: 0 },
-                            ease: "power2.inOut"
-                        });
-                    }
-                });
-            });
-
-             // --- GSAP Button Hover Animation ---
-            document.querySelectorAll('.btn-gsap').forEach(button => {
-                const fill = button.querySelector('.btn-gsap-fill');
-                
-                // Set initial state
-                gsap.set(fill, { x: '-101%' });
-
-                const tl = gsap.timeline({ paused: true });
-
-                tl.to(fill, {
-                    x: '0%',
-                    duration: 0.4,
-                    ease: 'power2.inOut'
-                });
-
-                button.addEventListener('mouseenter', () => {
-                    tl.timeScale(1).play();
-                });
-
-                button.addEventListener('mouseleave', () => {
-                    tl.timeScale(1.5).reverse();
-                });
-            });
-
-
-            // --- Auth Modal Logic ---
-            const authModal = document.getElementById('auth-modal');
-            const closeModalBtn = document.getElementById('close-modal-btn');
             
-            const loginBtn = document.getElementById('login-btn');
-            const signupBtn = document.getElementById('signup-btn');
-            const mobileLoginBtn = document.getElementById('mobile-login-btn');
-            const mobileSignupBtn = document.getElementById('mobile-signup-btn');
-
-            const signinTab = document.getElementById('signin-tab');
-            const signupTab = document.getElementById('signup-tab');
-            const authForm = document.getElementById('auth-form');
-            const emailInput = document.getElementById('email-input');
-            const passwordInput = document.getElementById('password-input');
-            const errorMessage = document.getElementById('error-message');
-            
-            const modalHeading = document.getElementById('modal-heading');
-            const modalSubheading = document.getElementById('modal-subheading');
-            const authTabs = document.getElementById('auth-tabs');
-            const passwordFieldContainer = document.getElementById('password-field-container');
-            const termsText = document.getElementById('terms-text');
-            
-            const modalSubmitBtn = document.getElementById('modal-submit-btn');
-            const modalSubmitBtnText = modalSubmitBtn.querySelector('.btn-gsap-text');
-
-            const forgotPasswordLink = document.getElementById('forgot-password-link');
-            const backToSigninLink = document.getElementById('back-to-signin-link');
-            const passwordStrengthContainer = document.getElementById('password-strength-container');
-            const passwordStrengthText = document.getElementById('password-strength-text');
-            const passwordCriteria = {
-                case: document.getElementById('crit-case'),
-                length: document.getElementById('crit-length'),
-                char: document.getElementById('crit-char'),
-            };
-
+            // --- Global State ---
             let isLoginMode = true;
             let isPasswordResetMode = false;
 
-            const openModal = (loginMode) => {
-                isLoginMode = loginMode;
+            // --- DOM Element Cache ---
+            const dom = {
+                loggedOutView: document.getElementById('logged-out-view'),
+                loggedInView: document.getElementById('logged-in-view'),
+                accountMenuBtn: document.getElementById('account-menu-btn'),
+                accountMenu: document.getElementById('account-menu'),
+                logoutBtn: document.getElementById('logout-btn'),
+                loginBtn: document.getElementById('login-btn'),
+                signupBtn: document.getElementById('signup-btn'),
+                mobileAuthContainer: document.getElementById('mobile-auth-container'),
+                authModal: document.getElementById('auth-modal'),
+                closeModalBtn: document.getElementById('close-modal-btn'),
+                signupTab: document.getElementById('signup-tab'),
+                signinTab: document.getElementById('signin-tab'),
+                modalSubmitBtn: document.getElementById('modal-submit-btn'),
+                authForm: document.getElementById('auth-form'),
+                emailInput: document.getElementById('email'),
+                passwordInput: document.getElementById('password'),
+                errorMessage: document.getElementById('error-message'),
+                passwordStrengthContainer: document.getElementById('password-strength-container'),
+                passwordStrengthText: document.getElementById('password-strength-text'),
+                passwordCriteria: {
+                    case: document.getElementById('crit-case'),
+                    length: document.getElementById('crit-length'),
+                    char: document.getElementById('crit-char'),
+                },
+                forgotPasswordLink: document.getElementById('forgot-password-link'),
+                modalHeading: document.getElementById('modal-heading'),
+                modalSubheading: document.getElementById('modal-subheading'),
+                authTabs: document.getElementById('auth-tabs'),
+                passwordFieldContainer: document.getElementById('password-field-container'),
+                termsText: document.getElementById('terms-text'),
+                backToSigninLink: document.getElementById('back-to-signin-link')
+            };
+
+            // --- UI Update Functions ---
+            function updateAuthUI(user) {
+                if (user) {
+                    dom.loggedInView?.classList.remove('hidden');
+                    dom.loggedOutView?.classList.add('hidden');
+                    if (dom.mobileAuthContainer) {
+                        dom.mobileAuthContainer.innerHTML = `
+                            <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
+                            <a href="account.html" class="block w-full text-left font-semibold text-gray-700 py-2 px-3 hover:bg-gray-100 rounded-md">My Account</a>
+                            <button id="mobile-logout-btn" class="block w-full text-left font-semibold text-red-600 px-3 py-2 hover:bg-red-50 rounded-md">Logout</button>`;
+                        document.getElementById('mobile-logout-btn')?.addEventListener('click', () => signOut(auth));
+                    }
+                } else {
+                    dom.loggedInView?.classList.add('hidden');
+                    dom.loggedOutView?.classList.remove('hidden');
+                    if (dom.mobileAuthContainer) {
+                        dom.mobileAuthContainer.innerHTML = `
+                            <div class="flex gap-3">
+                                <button id="mobile-login-btn" class="flex-1 text-center text-gray-700 bg-white hover:bg-gray-100 font-medium py-2.5 rounded-lg border border-gray-300">Sign In</button>
+                                <button id="mobile-signup-btn" class="flex-1 text-center btn-primary text-white px-5 py-2.5 rounded-lg transition-opacity hover:opacity-90">Sign Up</button>
+                            </div>`;
+                        document.getElementById('mobile-login-btn')?.addEventListener('click', () => openModal(true));
+                        document.getElementById('mobile-signup-btn')?.addEventListener('click', () => openModal(false));
+                    }
+                }
+            }
+
+            function openModal(login = true) {
+                isLoginMode = login;
                 isPasswordResetMode = false;
                 updateModalUI();
-                authModal.classList.remove('hidden');
-            };
+                dom.authModal?.classList.remove('hidden');
+            }
 
-            const closeModal = () => {
-                authModal.classList.add('hidden');
-            };
-            
-            const updateModalUI = () => {
-                errorMessage.classList.add('hidden');
-                authForm.reset();
+            function closeModal() {
+                dom.authModal?.classList.add('hidden');
+            }
 
+            function updateModalUI() {
+                dom.errorMessage.classList.add('hidden');
+                dom.authForm.reset();
+                
                 if (isPasswordResetMode) {
-                    modalHeading.textContent = 'Reset your password';
-                    modalSubheading.textContent = 'We\'ll send a recovery link to your email.';
-                    authTabs.classList.add('hidden');
-                    passwordFieldContainer.classList.add('hidden');
-                    passwordStrengthContainer.classList.add('hidden');
-                    termsText.classList.add('hidden');
-                    modalSubmitBtnText.textContent = 'Send Recovery Link';
-                    backToSigninLink.classList.remove('hidden');
-                    forgotPasswordLink.classList.add('hidden');
+                    dom.modalHeading.textContent = 'Reset your password';
+                    dom.modalSubheading.textContent = 'We\'ll send a recovery link to your email.';
+                    dom.authTabs.classList.add('hidden');
+                    dom.passwordFieldContainer.classList.add('hidden');
+                    dom.passwordStrengthContainer.classList.add('hidden');
+                    dom.termsText.classList.add('hidden');
+                    dom.modalSubmitBtn.textContent = 'Send Recovery Link';
+                    dom.backToSigninLink.classList.remove('hidden');
                 } else if (isLoginMode) {
-                    modalHeading.textContent = 'Welcome back!';
-                    modalSubheading.textContent = 'Sign in to continue your progress.';
-                    authTabs.classList.remove('hidden');
-                    passwordFieldContainer.classList.remove('hidden');
-                    passwordStrengthContainer.classList.add('hidden');
-                    termsText.classList.add('hidden');
-                    backToSigninLink.classList.add('hidden');
-                    signinTab.classList.add('border-indigo-600', 'text-indigo-600');
-                    signinTab.classList.remove('text-gray-500', 'border-transparent');
-                    signupTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                    signupTab.classList.add('text-gray-500', 'border-transparent');
-                    modalSubmitBtnText.textContent = 'Sign In';
-                    forgotPasswordLink.classList.remove('hidden');
-                } else { // Signup
-                    modalHeading.textContent = 'Create your account';
-                    modalSubheading.textContent = 'Let\'s get started with your journey.';
-                    authTabs.classList.remove('hidden');
-                    passwordFieldContainer.classList.remove('hidden');
-                    passwordStrengthContainer.classList.remove('hidden');
-                    termsText.classList.remove('hidden');
-                    backToSigninLink.classList.add('hidden');
-                    signupTab.classList.add('border-indigo-600', 'text-indigo-600');
-                    signupTab.classList.remove('text-gray-500', 'border-transparent');
-                    signinTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                    signinTab.classList.add('text-gray-500', 'border-transparent');
-                    modalSubmitBtnText.textContent = 'Create Account';
-                    forgotPasswordLink.classList.add('hidden');
-                }
-            };
-            
-            const showError = (message) => {
-                errorMessage.textContent = message;
-                errorMessage.classList.remove('hidden');
-            };
+                    dom.modalHeading.textContent = 'Welcome back!';
+                    dom.modalSubheading.textContent = 'Sign in to continue your progress.';
+                    dom.authTabs.classList.remove('hidden');
+                    dom.passwordFieldContainer.classList.remove('hidden');
+                    dom.passwordStrengthContainer.classList.add('hidden');
+                    dom.termsText.classList.add('hidden');
+                    dom.backToSigninLink.classList.add('hidden');
 
-            const checkPasswordStrength = () => {
+                    dom.signinTab.classList.add('border-indigo-600', 'text-indigo-600');
+                    dom.signinTab.classList.remove('text-gray-500', 'border-transparent');
+                    dom.signupTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                    dom.signupTab.classList.add('text-gray-500', 'border-transparent');
+                    dom.modalSubmitBtn.textContent = 'Sign In';
+                    dom.forgotPasswordLink.classList.remove('hidden');
+                } else { // Signup
+                    dom.modalHeading.textContent = 'Create your account';
+                    dom.modalSubheading.textContent = 'Let\'s get started with your journey.';
+                    dom.authTabs.classList.remove('hidden');
+                    dom.passwordFieldContainer.classList.remove('hidden');
+                    dom.passwordStrengthContainer.classList.remove('hidden');
+                    dom.termsText.classList.remove('hidden');
+                    dom.backToSigninLink.classList.add('hidden');
+
+                    dom.signupTab.classList.add('border-indigo-600', 'text-indigo-600');
+                    dom.signupTab.classList.remove('text-gray-500', 'border-transparent');
+                    dom.signinTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                    dom.signinTab.classList.add('text-gray-500', 'border-transparent');
+                    dom.modalSubmitBtn.textContent = 'Create Account';
+                    dom.forgotPasswordLink.classList.add('hidden');
+                }
+            }
+
+            function showError(error) {
+                dom.errorMessage.textContent = error.message;
+                dom.errorMessage.classList.remove('hidden');
+            }
+             function checkPasswordStrength() {
                 if (isLoginMode || isPasswordResetMode) return;
-                const password = passwordInput.value;
+                const password = dom.passwordInput.value;
                 const criteriaMet = {
                     length: password.length >= 8,
                     char: /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password),
@@ -693,111 +762,78 @@
                     el.classList.toggle('text-gray-500', !isMet);
                     iconEl.setAttribute('data-lucide', newIconName);
                 };
-                updateCriterion(passwordCriteria.case, criteriaMet.case);
-                updateCriterion(passwordCriteria.length, criteriaMet.length);
-                updateCriterion(passwordCriteria.char, criteriaMet.char);
+                updateCriterion(dom.passwordCriteria.case, criteriaMet.case);
+                updateCriterion(dom.passwordCriteria.length, criteriaMet.length);
+                updateCriterion(dom.passwordCriteria.char, criteriaMet.char);
                 const strengthTextMap = { 0: 'Weak', 1: 'Weak', 2: 'Medium', 3: 'Strong' };
                 const strengthColorMap = { 0: 'text-red-600', 1: 'text-red-600', 2: 'text-yellow-600', 3: 'text-green-600' };
-                passwordStrengthText.textContent = strengthTextMap[strength];
-                passwordStrengthText.className = `font-semibold ${strengthColorMap[strength]}`;
+                dom.passwordStrengthText.textContent = strengthTextMap[strength];
+                dom.passwordStrengthText.className = `font-semibold ${strengthColorMap[strength]}`;
                 lucide.createIcons();
             };
 
-            // Event Listeners for Auth
-            loginBtn.addEventListener('click', () => openModal(true));
-            signupBtn.addEventListener('click', () => openModal(false));
-            mobileLoginBtn.addEventListener('click', () => openModal(true));
-            mobileSignupBtn.addEventListener('click', () => openModal(false));
-            closeModalBtn.addEventListener('click', closeModal);
-            signinTab.addEventListener('click', () => { isLoginMode = true; isPasswordResetMode = false; updateModalUI(); });
-            signupTab.addEventListener('click', () => { isLoginMode = false; isPasswordResetMode = false; updateModalUI(); });
-            forgotPasswordLink.addEventListener('click', (e) => { e.preventDefault(); isPasswordResetMode = true; updateModalUI(); });
-            backToSigninLink.addEventListener('click', (e) => { e.preventDefault(); isPasswordResetMode = false; isLoginMode = true; updateModalUI(); });
-            passwordInput.addEventListener('input', checkPasswordStrength);
+            // --- Event Listeners ---
+            onAuthStateChanged(auth, updateAuthUI);
 
-            authForm.addEventListener('submit', (e) => {
+            dom.loginBtn?.addEventListener('click', () => openModal(true));
+            dom.signupBtn?.addEventListener('click', () => openModal(false));
+            dom.closeModalBtn?.addEventListener('click', closeModal);
+
+            dom.signinTab?.addEventListener('click', () => { isLoginMode = true; isPasswordResetMode = false; updateModalUI(); });
+            dom.signupTab?.addEventListener('click', () => { isLoginMode = false; isPasswordResetMode = false; updateModalUI(); });
+            
+            dom.forgotPasswordLink?.addEventListener('click', (e) => { e.preventDefault(); isPasswordResetMode = true; updateModalUI(); });
+            dom.backToSigninLink?.addEventListener('click', (e) => { e.preventDefault(); isPasswordResetMode = false; isLoginMode = true; updateModalUI(); });
+
+            dom.logoutBtn?.addEventListener('click', () => signOut(auth));
+            dom.passwordInput?.addEventListener('input', checkPasswordStrength);
+            
+            dom.accountMenuBtn?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dom.accountMenu.classList.toggle('hidden');
+            });
+            window.addEventListener('click', (e) => {
+                if (dom.accountMenu && !dom.accountMenu.classList.contains('hidden') && !dom.accountMenu.contains(e.target) && !dom.accountMenuBtn.contains(e.target)) {
+                    dom.accountMenu.classList.add('hidden');
+                }
+            });
+
+            dom.authForm?.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const email = emailInput.value;
-                const password = passwordInput.value;
-                errorMessage.classList.add('hidden');
+                const email = dom.emailInput.value;
+                const password = dom.passwordInput.value;
+                showError({ message: '' }); // Clear previous error
 
                 if (isPasswordResetMode) {
                     sendPasswordResetEmail(auth, email)
                         .then(() => {
-                            isPasswordResetMode = false; isLoginMode = true; updateModalUI();
                             alert("Password reset link sent! Check your inbox.");
+                            isPasswordResetMode = false;
+                            isLoginMode = true;
+                            updateModalUI();
                         })
-                        .catch(err => showError(err.message));
+                        .catch(showError);
                 } else if (isLoginMode) {
                     signInWithEmailAndPassword(auth, email, password)
-                        .then(userCredential => closeModal())
-                        .catch(err => showError(err.message));
-                } else { // Sign up
+                        .then(() => closeModal())
+                        .catch(showError);
+                } else { // Signup
                     createUserWithEmailAndPassword(auth, email, password)
-                        .then(userCredential => {
-                            alert("Account created! Please check your email to verify your account before logging in.");
+                        .then(async (userCredential) => {
+                             const user = userCredential.user;
+                             await setDoc(doc(db, "users", user.uid), {
+                                email: user.email,
+                                createdAt: new Date(),
+                             });
                             closeModal();
                         })
-                        .catch(err => showError(err.message));
+                        .catch(showError);
                 }
-            });
-
-            onAuthStateChanged(auth, user => {
-                // You can add logic here to change the UI when a user is logged in
-                // For now, it just works silently.
-                if(user) {
-                    console.log("User is signed in:", user.email);
-                } else {
-                    console.log("User is signed out.");
-                }
-            });
-
-            
-            // --- GSAP SCROLL & TEXT ANIMATIONS ---
-            window.addEventListener('load', () => {
-                gsap.registerPlugin(ScrollTrigger, SplitText);
-                
-                const animatedSections = gsap.utils.toArray('#subjects, #features, #about, #contact');
-
-                animatedSections.forEach(section => {
-                    const heading = section.querySelector('h2.font-kodchasan');
-                    const contentElements = section.querySelectorAll('p, .subject-card, .feature-card, .grid > div:not(.ad-container), form');
-
-                    const tl = gsap.timeline({
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "top 80%",
-                            toggleActions: "play none none none",
-                        }
-                    });
-
-                    if (heading) {
-                        const split = new SplitText(heading, { type: "words, chars" });
-                        
-                        tl.from(split.chars, {
-                            duration: 0.6,
-                            opacity: 0,
-                            scale: 0,
-                            y: 80,
-                            rotationX: -90,
-                            transformOrigin: "0% 50% -50",
-                            ease: "back.out",
-                            stagger: 0.02,
-                        });
-                    }
-
-                    if (contentElements.length > 0) {
-                        tl.from(contentElements, {
-                            duration: 0.8,
-                            autoAlpha: 0,
-                            y: 40,
-                            stagger: 0.1,
-                            ease: "power3.out"
-                        }, heading ? "-=0.5" : "0");
-                    }
-                });
             });
         });
     </script>
+
 </body>
 </html>
+
+

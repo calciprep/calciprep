@@ -7,80 +7,83 @@
     <meta name="description" content="Improve your typing speed and accuracy for government exams like SSC CGL, CHSL. Practice with paragraphs tailored for exam preparation.">
     <link rel="canonical" href="https://calciprep.online/typing.html" />
     <meta name="google-adsense-account" content="ca-pub-2382040431534049">
-    <link rel="icon" type="image/svg+xml" href="/media/favicon.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="/media/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="media/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="media/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <meta name="theme-color" content="#10b981">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
+        body { font-family: 'Work Sans', sans-serif; background-color: #f0fdf4; }
+        h1, h2, h3 { font-family: 'Abril Fatface', cursive; }
         .font-mono { font-family: 'Roboto Mono', monospace; }
 
-        /* Character styles */
         #text-display span { transition: all 0.1s ease-out; }
-        .current-char { background-color: #d1fae5; }
+        .current-char { background-color: #d1fae5; border-radius: 2px; }
         .correct-char { color: #15803d; }
-        .incorrect-char { background-color: #fee2e2; color: #b91c1c; text-decoration: underline; }
+        .incorrect-char { background-color: #fee2e2; color: #b91c1c; text-decoration: underline; border-radius: 2px;}
         #typing-input { caret-color: #10b981; }
 
-        /* Ad container styles */
-        .ad-container {
-            min-height: 600px;
-            width: 100%;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-        }
+        .ad-container { min-height: 600px; width: 100%; display: flex; align-items: flex-start; justify-content: center; }
 
-        /* Custom utility to reliably hide controls */
-        .controls-hidden {
-            display: none !important;
+        .controls-hidden { display: none !important; }
+
+        .btn-primary {
+            background-color: #8B5CF6;
+            transition: all 0.3s ease;
+        }
+        .auth-modal-grid {
+            display: grid;
+            grid-template-columns: 480px 1fr;
+            height: 650px;
+        }
+        .auth-modal-grid .auth-image-panel { background-color: #f3f4f6; }
+        @media (max-width: 1023px) {
+            .auth-modal-grid { grid-template-columns: 1fr; height: auto; max-height: 90vh; }
+            .auth-modal-grid .auth-image-panel { display: none; }
+            .auth-modal-grid .auth-form-panel { padding: 2rem; }
         }
     </style>
 </head>
 <body class="text-slate-800">
 
-    <div id="header-placeholder"></div>
+    <div id="nav-placeholder"></div>
 
-    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-28">
         <div class="mb-4 max-w-4xl mx-auto">
-             <a href="typing-selection.html" class="text-sm text-green-600 hover:text-green-800 font-medium">&larr; Back to Typing Selection</a>
+             <a href="typing-selection.html" class="text-sm text-green-600 hover:text-green-800 font-medium inline-flex items-center gap-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to Typing Selection
+             </a>
         </div>
         
         <div class="flex justify-center gap-8">
-            <!-- Left Ad Container -->
             <aside class="w-40 hidden xl:block">
                 <div class="sticky top-28 ad-container">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-2382040431534049"
-                         crossorigin="anonymous"></script>
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
                     <ins class="adsbygoogle"
                          style="display:block"
                          data-ad-client="ca-pub-2382040431534049"
                          data-ad-slot="4929439151"
                          data-ad-format="auto"
                          data-full-width-responsive="true"></ins>
-                    <script>
-                        if (document.currentScript.parentElement.offsetParent !== null) {
-                           (adsbygoogle = window.adsbygoogle || []).push({});
-                        }
-                    </script>
+                    <script>if (document.currentScript.parentElement.offsetParent !== null) {(adsbygoogle = window.adsbygoogle || []).push({});}</script>
                 </div>
             </aside>
 
-            <!-- Main Typing Content -->
-            <div class="flex-grow max-w-4xl bg-green-100 p-2 sm:p-4 rounded-lg shadow-sm border-2 border-green-500">
-                <div id="text-display" class="w-full h-64 p-4 font-mono text-gray-700 bg-white rounded-lg border border-slate-200 overflow-y-auto whitespace-pre-wrap select-none text-xl leading-relaxed"></div>
+            <div class="flex-grow max-w-4xl bg-white p-2 sm:p-4 rounded-2xl shadow-lg border">
+                <div id="text-display" class="w-full h-64 p-4 font-mono text-gray-700 bg-gray-50 rounded-lg border border-slate-200 overflow-y-auto whitespace-pre-wrap select-none text-xl leading-relaxed"></div>
                 
-                <!-- Controls Bar -->
-                <div class="flex flex-wrap items-center justify-between gap-y-2 gap-x-4 my-3 px-2">
+                <div class="flex flex-wrap items-center justify-between gap-y-2 gap-x-4 my-3 px-2 font-sans">
                     <div class="flex items-center space-x-2">
                         <label for="duration-select" class="text-sm font-medium">Duration:</label>
-                        <select id="duration-select" class="text-sm rounded border-gray-300 focus:ring-green-500 focus:border-green-500">
+                        <select id="duration-select" class="text-sm rounded-md border-gray-300 focus:ring-green-500 focus:border-green-500">
                             <option value="60">1 Minute</option>
                             <option value="120">2 Minutes</option>
                             <option value="180">3 Minutes</option>
@@ -93,9 +96,9 @@
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <button id="prev-exercise" class="p-1.5 rounded-md hover:bg-green-200 disabled:opacity-50" title="Previous Exercise"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <select id="exercise-select" class="text-sm px-2 py-1 border rounded bg-white w-48" aria-label="Select exercise"></select>
-                        <button id="next-exercise" class="p-1.5 rounded-md hover:bg-green-200" title="Next Exercise"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                        <button id="prev-exercise" class="p-1.5 rounded-md hover:bg-green-100 disabled:opacity-50" title="Previous Exercise"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <select id="exercise-select" class="text-sm px-2 py-1 border rounded-md bg-white w-48" aria-label="Select exercise"></select>
+                        <button id="next-exercise" class="p-1.5 rounded-md hover:bg-green-100" title="Next Exercise"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                     </div>
                     
                     <div id="timer-controls" class="sm:flex items-center space-x-2 controls-hidden">
@@ -105,8 +108,8 @@
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <button id="font-decrease" class="p-1.5 rounded-md hover:bg-green-200 text-sm">A-</button>
-                        <button id="font-increase" class="p-1.5 rounded-md hover:bg-green-200 text-sm">A+</button>
+                        <button id="font-decrease" class="p-1.5 rounded-md hover:bg-green-100 text-sm">A-</button>
+                        <button id="font-increase" class="p-1.5 rounded-md hover:bg-green-100 text-sm">A+</button>
                         <label class="inline-flex items-center text-sm ml-2 cursor-pointer">
                             <input id="typing-sound-checkbox" type="checkbox" class="mr-1.5 rounded text-green-600 focus:ring-green-500"/>
                             <span>Sound</span>
@@ -123,32 +126,23 @@
                 <textarea id="typing-input" class="w-full h-48 mt-2 p-4 font-mono text-lg bg-white rounded-lg border-2 border-slate-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Select test duration and start typing... Timer will start automatically"></textarea>
             </div>
 
-            <!-- Right Ad Container -->
             <aside class="w-40 hidden xl:block">
                 <div class="sticky top-28 ad-container">
-                     <script async src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-2382040431534049"
-                         crossorigin="anonymous"></script>
+                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049" crossorigin="anonymous"></script>
                     <ins class="adsbygoogle"
                          style="display:block"
                          data-ad-client="ca-pub-2382040431534049"
                          data-ad-slot="4929439151"
                          data-ad-format="auto"
                          data-full-width-responsive="true"></ins>
-                    <script>
-                        if (document.currentScript.parentElement.offsetParent !== null) {
-                           (adsbygoogle = window.adsbygoogle || []).push({});
-                        }
-                    </script>
+                    <script> if (document.currentScript.parentElement.offsetParent !== null) {(adsbygoogle = window.adsbygoogle || []).push({});}</script>
                 </div>
             </aside>
         </div>
     </main>
     
-    <div id="footer-placeholder"></div>
-
-    <script src="templates.js"></script>
-    <script type="module" src="main.js"></script>
     <script type="module" src="typing.js"></script>
+    <script src="nav.js" defer></script>
 </body>
 </html>
 
