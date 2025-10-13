@@ -33,21 +33,8 @@
         .ad-container { min-height: 600px; width: 100%; display: flex; align-items: flex-start; justify-content: center; }
 
         .controls-hidden { display: none !important; }
-
         .btn-primary {
             background-color: #8B5CF6;
-            transition: all 0.3s ease;
-        }
-        .auth-modal-grid {
-            display: grid;
-            grid-template-columns: 480px 1fr;
-            height: 650px;
-        }
-        .auth-modal-grid .auth-image-panel { background-color: #f3f4f6; }
-        @media (max-width: 1023px) {
-            .auth-modal-grid { grid-template-columns: 1fr; height: auto; max-height: 90vh; }
-            .auth-modal-grid .auth-image-panel { display: none; }
-            .auth-modal-grid .auth-form-panel { padding: 2rem; }
         }
     </style>
 </head>
@@ -141,8 +128,8 @@
         </div>
     </main>
     
+    <script src="nav.js" type="module" defer></script>
     <script type="module" src="typing.js"></script>
-    <script src="nav.js" defer></script>
 </body>
 </html>
 

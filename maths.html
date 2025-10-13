@@ -95,51 +95,7 @@
     
 </head>
 <body class="text-main">
-
-    <header class="fixed top-4 inset-x-0 z-50 px-4">
-        <div class="glass-nav max-w-7xl mx-auto bg-white/60 backdrop-blur-lg border border-gray-200/80 rounded-full px-6 py-2 shadow-md">
-            <div class="flex justify-between items-center">
-                <a href="index.html" class="flex items-center flex-shrink-0">
-                    <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8 w-auto">
-                </a>
-                <nav class="hidden md:flex items-center space-x-6">
-                    <a href="index.html#subjects" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Subjects</a>
-                    <a href="index.html#features" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Features</a>
-                    <a href="index.html#contact" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Contact</a>
-                </nav>
-                <div class="hidden md:flex items-center space-x-2">
-                    <div id="logged-out-view">
-                        <button id="login-btn" class="text-gray-600 hover:text-gray-900 font-medium px-4 py-2 rounded-full text-sm">Sign In</button>
-                        <button id="signup-btn" class="btn-primary text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">Sign Up</button>
-                    </div>
-                    <div id="logged-in-view" class="hidden relative">
-                        <button id="account-menu-btn" class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-                            <i data-lucide="user" class="w-6 h-6"></i>
-                        </button>
-                        <div id="account-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 top-full">
-                            <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Account</a>
-                            <button id="logout-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
-                        </div>
-                    </div>
-                </div>
-                <button id="mobile-menu-button" class="md:hidden text-gray-700">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-20 z-40 p-4">
-        <div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 shadow-lg">
-            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-gray-900">Home</a>
-            <a href="index.html#subjects" class="block py-2 text-gray-700 hover:text-gray-900">Subjects</a>
-            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-gray-900">Features</a>
-            <a href="index.html#contact" class="block py-2 text-gray-700 hover:text-gray-900">Contact Us</a>
-            <div id="mobile-auth-container" class="border-t border-gray-200 mt-4 pt-4">
-                <!-- main.js will populate this area -->
-            </div>
-        </div>
-    </div>
+    <div id="nav-placeholder"></div>
 
     <main class="container mx-auto px-6 pt-28 pb-12">
         <div class="text-center py-12 md:py-16 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600">
@@ -281,8 +237,7 @@
         </div>
     </div>
     
-    <!-- Auth Modal is included via the script below -->
-    
+    <script src="nav.js" type="module" defer></script>
     <script>
         // Page-specific script for the maths game logic.
         
@@ -477,18 +432,6 @@
             mathAnswerEl.disabled = true;
             submitAnswerBtn.classList.add('hidden');
             const finalTime = document.getElementById('math-timer').textContent;
-
-            // Save the result to Firestore if available
-            if (window.saveQuizResult) {
-                const quizName = gameTitle.textContent;
-                window.saveQuizResult({
-                    category: "Maths",
-                    quizName: quizName,
-                    correctCount: correctCount,
-                    incorrectCount: incorrectCount,
-                    totalTime: parseInt(finalTime)
-                });
-            }
             
             mathProblemEl.innerHTML = `
                 <div class="text-3xl font-bold">${message}</div>
@@ -509,7 +452,7 @@
             if (userAnswerStr.trim() === '') return;
 
             const userAnswer = parseFloat(userAnswerStr);
-            let isCorrect = Math.abs(userAnswer - currentProblem.answer) < 0.01; // Allow for floating point small errors
+            let isCorrect = Math.abs(userAnswer - currentProblem.answer) < 0.01; 
 
             if (isCorrect) {
                 mathAnswerEl.classList.add('correct-answer');
@@ -550,99 +493,10 @@
                 checkAnswer();
             }
         });
-     </script>
-     
-     <div id="footer-placeholder"></div>
-     
-    <!-- Auth Modal and Main Site Script -->
-    <div id="auth-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" style="font-family: 'Work Sans', sans-serif;">
-        <!-- ... Auth modal content from index.html ... -->
-    </div>
 
-    <script type="module">
-        // This is the main script copied from index.html to handle auth and UI consistency
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqCKyATw3NkVsbOfeXqU5HCutECF5ILcU",
-            authDomain: "calciprep-1dd16.firebaseapp.com",
-            projectId: "calciprep-1dd16",
-            storageBucket: "calciprep-1dd16.appspot.com",
-            messagingSenderId: "292795386240",
-            appId: "1:292795386240:web:89e1049ea1cfbddb63d965",
-            measurementId: "G-3VK5ZXNCHV"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        
-        // --- Full auth and UI script from index.html ---
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-
-            mobileMenuButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                mobileMenu.classList.toggle('hidden');
-            });
-            
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                });
-            });
-            
-            document.addEventListener('click', (e) => {
-                 if (mobileMenu && !mobileMenu.classList.contains('hidden') && !mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-            
-            // Re-adding auth logic here for self-containment
-            let isLoginMode = true;
-            
-            const dom = {
-                loggedOutView: document.getElementById('logged-out-view'),
-                loggedInView: document.getElementById('logged-in-view'),
-                accountMenuBtn: document.getElementById('account-menu-btn'),
-                accountMenu: document.getElementById('account-menu'),
-                logoutBtn: document.getElementById('logout-btn'),
-                loginBtn: document.getElementById('login-btn'),
-                signupBtn: document.getElementById('signup-btn'),
-                mobileAuthContainer: document.getElementById('mobile-auth-container'),
-            };
-
-            function updateAuthUI(user) {
-                if (user) {
-                    dom.loggedInView?.classList.remove('hidden');
-                    dom.loggedOutView?.classList.add('hidden');
-                    if (dom.mobileAuthContainer) {
-                        dom.mobileAuthContainer.innerHTML = `
-                            <p class="px-3 py-2 text-sm text-gray-500">${user.email}</p>
-                            <a href="account.html" class="block w-full text-left font-semibold text-gray-700 py-2 px-3 hover:bg-gray-100 rounded-md">My Account</a>
-                            <button id="mobile-logout-btn" class="block w-full text-left font-semibold text-red-600 px-3 py-2 hover:bg-red-50 rounded-md">Logout</button>`;
-                        document.getElementById('mobile-logout-btn')?.addEventListener('click', () => signOut(auth));
-                    }
-                } else {
-                    dom.loggedInView?.classList.add('hidden');
-                    dom.loggedOutView?.classList.remove('hidden');
-                    if (dom.mobileAuthContainer) {
-                         dom.mobileAuthContainer.innerHTML = `
-                            <div class="flex gap-3">
-                                <button id="mobile-login-btn" class="flex-1 text-center text-gray-700 bg-white hover:bg-gray-100 font-medium py-2.5 rounded-lg border border-gray-300">Sign In</button>
-                                <button id="mobile-signup-btn" class="flex-1 text-center btn-primary text-white px-5 py-2.5 rounded-lg transition-opacity hover:opacity-90">Sign Up</button>
-                            </div>`;
-                        document.getElementById('mobile-login-btn')?.addEventListener('click', () => openModal(true));
-                        document.getElementById('mobile-signup-btn')?.addEventListener('click', () => openModal(false));
-                    }
-                }
-            }
-             onAuthStateChanged(auth, updateAuthUI);
+             lucide.createIcons();
         });
-    </script>
+     </script>
 </body>
 </html>

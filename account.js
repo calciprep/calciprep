@@ -1,12 +1,5 @@
-import { getAuth, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+// This script now relies on nav.js to provide Firebase instances.
 
-const auth = getAuth();
-const db = getFirestore();
-const storage = getStorage();
-
-// --- Toast Notification Function ---
 function showNotification(message, isSuccess = true) {
     const notification = document.createElement('div');
     const bgColor = isSuccess ? 'bg-indigo-600' : 'bg-red-500';
@@ -25,7 +18,10 @@ function showNotification(message, isSuccess = true) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Profile Elements ---
+    let currentUser = null;
+    let originalUserData = {};
+    let firebaseInstances = null;
+
     const profileForm = document.getElementById('profile-form');
     const profilePicInput = document.getElementById('profile-pic');
     const profilePicLabel = document.getElementById('profile-pic-label');
@@ -38,15 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailInput = document.getElementById('email');
     const usernameInput = document.getElementById('username');
     
-    // Buttons for edit/view state
     const changeProfileBtn = document.getElementById('change-profile-btn');
     const editModeButtons = document.getElementById('edit-mode-buttons');
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
     const saveProfileBtn = document.getElementById('save-profile-btn');
     const allFormInputs = [firstNameInput, lastNameInput, usernameInput, profilePicInput];
 
-
-    // --- Security Elements ---
     const passwordForm = document.getElementById('password-form');
     const savePasswordBtn = document.getElementById('save-password-btn');
     const deleteAccountBtn = document.getElementById('delete-account-btn');
@@ -54,34 +47,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const deleteConfirmInput = document.getElementById('delete-confirm-input');
+    
+    // Tab switching logic
+    const accountNav = document.getElementById('account-nav');
+    const navLinks = accountNav.querySelectorAll('.nav-link');
+    const contentPanels = document.querySelectorAll('.account-panel');
 
-    let currentUser = null;
-    let originalUserData = {};
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.dataset.target;
+            
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            contentPanels.forEach(panel => {
+                panel.classList.toggle('hidden', panel.id !== targetId);
+            });
+        });
+    });
+
+
+    const firebaseCheckInterval = setInterval(() => {
+        if (window.firebaseInstances) {
+            clearInterval(firebaseCheckInterval);
+            firebaseInstances = window.firebaseInstances;
+            const { auth, onAuthStateChanged } = firebaseInstances;
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    loadUserData();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    }, 100); 
+    
+    async function loadUserData() {
+        if (!currentUser) return;
+        const { db, doc, getDoc } = firebaseInstances;
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+            populateForm(currentUser, userDoc.data());
+        } else {
+            populateForm(currentUser, {});
+        }
+    }
 
     function populateForm(user, userData) {
-        originalUserData = { ...userData }; // Store original data for cancellation
-
+        originalUserData = { ...userData }; 
         const fullName = userData.name || user.displayName || 'CalciPrep User';
         displayName.textContent = fullName;
         displayEmail.textContent = user.email;
         emailInput.value = user.email;
-
         const nameParts = fullName.split(' ');
         firstNameInput.value = nameParts[0] || '';
         lastNameInput.value = nameParts.slice(1).join(' ') || '';
-        
         usernameInput.value = userData.username || '';
-
         if (userData.photoURL) {
             profilePicPreview.src = userData.photoURL;
         } else {
              profilePicPreview.src = `https://placehold.co/80x80/eef2ff/4f46e5?text=${fullName.charAt(0).toUpperCase()}`;
         }
-        
         if (user.emailVerified) {
             emailVerifiedStatus.classList.remove('hidden');
-             const verificationDate = user.metadata.lastSignInTime;
-            emailVerifiedStatus.querySelector('span').textContent = `VERIFIED ON ${new Date(verificationDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;
         }
     }
 
@@ -98,22 +130,22 @@ document.addEventListener('DOMContentLoaded', () => {
             editModeButtons.classList.add('hidden');
         }
     }
-    
-    auth.onAuthStateChanged(async user => {
-        if (user) {
-            currentUser = user;
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-            
-            if (userDoc.exists()) {
-                populateForm(user, userDoc.data());
-            } else {
-                populateForm(user, {});
-            }
+
+    function toggleButtonLoading(button, isLoading) {
+        const btnText = button.querySelector('.btn-text');
+        const spinner = button.querySelector('.spinner');
+        if(!button) return;
+        button.disabled = isLoading;
+        if (isLoading) {
+            if(btnText) btnText.style.display = 'none';
+            if(spinner) spinner.classList.remove('hidden');
         } else {
-            window.location.href = 'index.html';
+            if(btnText) btnText.style.display = '';
+            if(spinner) spinner.classList.add('hidden');
         }
-    });
+    }
+
+    // --- EVENT LISTENERS (Attached Once) ---
 
     changeProfileBtn.addEventListener('click', () => {
         setFormState(true);
@@ -131,16 +163,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     cancelEditBtn.addEventListener('click', () => {
-        populateForm(currentUser, originalUserData); // Discard changes
+        populateForm(currentUser, originalUserData);
         setFormState(false);
         showNotification('Changes discarded');
     });
 
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!currentUser) return;
-        
+        if (!currentUser || !firebaseInstances) return;
         toggleButtonLoading(saveProfileBtn, true);
+
+        const { storage, ref, uploadBytes, getDownloadURL, updateProfile, db, doc, setDoc } = firebaseInstances;
 
         try {
             let photoURL = originalUserData.photoURL || currentUser.photoURL;
@@ -148,29 +181,29 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (file) {
                 const storageRef = ref(storage, `profile_pictures/${currentUser.uid}`);
-                await uploadBytes(storageRef, file);
-                photoURL = await getDownloadURL(storageRef);
+                const snapshot = await uploadBytes(storageRef, file);
+                photoURL = await getDownloadURL(snapshot.ref);
             }
             
             const newFullName = `${firstNameInput.value.trim()} ${lastNameInput.value.trim()}`.trim();
 
             await updateProfile(currentUser, {
                 displayName: newFullName,
-                photoURL: photoURL
+                photoURL: photoURL || null
             });
             
             const updatedData = {
                 ...originalUserData,
                 name: newFullName,
                 username: usernameInput.value.trim(),
-                photoURL: photoURL
+                photoURL: photoURL || null
             };
 
             await setDoc(doc(db, "users", currentUser.uid), updatedData, { merge: true });
 
             originalUserData = { ...updatedData };
             displayName.textContent = newFullName;
-
+            
             showNotification('Profile updated successfully!');
             setFormState(false);
 
@@ -182,9 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Security Logic (remains unchanged) ---
     passwordForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (!currentUser || !firebaseInstances) return;
+        const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } = firebaseInstances;
+
         const currentPassword = document.getElementById('current-password').value;
         const newPassword = document.getElementById('new-password').value;
 
@@ -194,8 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         toggleButtonLoading(savePasswordBtn, true);
-        const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
         try {
+            const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
             await reauthenticateWithCredential(currentUser, credential);
             await updatePassword(currentUser, newPassword);
             showNotification('Password updated successfully!');
@@ -203,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error updating password: ", error);
             let message = 'Error updating password. Please try again.';
-            if (error.code === 'auth/wrong-password') {
+            if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                 message = 'Incorrect current password.';
             }
             showNotification(message, false);
@@ -225,17 +260,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    confirmDeleteBtn.addEventListener('click', async (e) => {
-        if (deleteConfirmInput.value !== 'DELETE' || !currentUser) return;
+    confirmDeleteBtn.addEventListener('click', async () => {
+        if (deleteConfirmInput.value !== 'DELETE' || !currentUser || !firebaseInstances) return;
         
         toggleButtonLoading(confirmDeleteBtn, true);
+        const { db, doc, deleteDoc, storage, ref, deleteObject, deleteUser } = firebaseInstances;
 
         try {
             await deleteDoc(doc(db, "users", currentUser.uid));
             
             if (originalUserData.photoURL) {
-                const photoRef = ref(storage, `profile_pictures/${currentUser.uid}`);
-                await deleteObject(photoRef).catch(err => console.warn("Could not delete profile pic.", err));
+                try {
+                    const photoRef = ref(storage, originalUserData.photoURL);
+                    await deleteObject(photoRef);
+                } catch (error) {
+                    // Ignore errors if file doesn't exist (e.g., already deleted)
+                    if (error.code !== 'storage/object-not-found') {
+                        console.warn("Could not delete profile pic.", error);
+                    }
+                }
             }
             
             await deleteUser(currentUser);
@@ -249,21 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleButtonLoading(confirmDeleteBtn, false);
         }
     });
-
-
-    function toggleButtonLoading(button, isLoading) {
-        const btnText = button.querySelector('.btn-text');
-        const spinner = button.querySelector('.spinner');
-        if (isLoading) {
-            button.disabled = true;
-            if(btnText) btnText.style.display = 'none';
-            if(spinner) spinner.classList.remove('hidden');
-        } else {
-            button.disabled = false;
-            if(btnText) btnText.style.display = '';
-            if(spinner) spinner.classList.add('hidden');
-        }
-    }
 
     lucide.createIcons();
 });

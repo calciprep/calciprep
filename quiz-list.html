@@ -63,37 +63,7 @@
     </style>
 </head>
 <body class="text-main">
-
-     <header class="fixed top-4 inset-x-0 z-50 px-4">
-        <div class="glass-nav max-w-7xl mx-auto bg-white/60 backdrop-blur-lg border border-gray-200/80 rounded-full px-6 py-2 shadow-md">
-            <div class="flex justify-between items-center">
-                <a href="index.html" class="flex items-center flex-shrink-0">
-                    <img src="media/New-logo.svg" alt="CalciPrep Logo" class="h-8 w-auto">
-                </a>
-                <nav class="hidden md:flex items-center space-x-6">
-                    <a href="index.html#subjects" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Subjects</a>
-                    <a href="index.html#features" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Features</a>
-                    <a href="index.html#contact" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Contact</a>
-                </nav>
-                <div class="hidden md:flex items-center space-x-2">
-                    <div id="logged-out-view">
-                        <button id="login-btn" class="text-gray-600 hover:text-gray-900 font-medium px-4 py-2 rounded-full text-sm">Sign In</button>
-                        <button id="signup-btn" class="btn-primary text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">Sign Up</button>
-                    </div>
-                    <div id="logged-in-view" class="hidden relative">
-                        <!-- Logged in view content -->
-                    </div>
-                </div>
-                <button id="mobile-menu-button" class="md:hidden text-gray-700">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-20 z-40 p-4">
-        <!-- Mobile menu content -->
-    </div>
+    <div id="nav-placeholder"></div>
 
     <div class="flex justify-center pt-28">
         <aside class="hidden xl:block w-40 mx-4">
@@ -140,9 +110,7 @@
         </aside>
     </div>
     
-    <script type="module">
-        // Main script from index.html for auth and UI
-    </script>
+    <script src="nav.js" type="module" defer></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
