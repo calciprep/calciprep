@@ -59,14 +59,21 @@
     <div id="nav-placeholder"></div>
 
     <main class="container mx-auto px-6 pt-28 pb-12">
-        <div class="text-center py-12 md:py-16 rounded-2xl bg-gradient-to-r from-blue-500 to-sky-600">
-            <h1 class="text-4xl md:text-5xl font-bold text-white">English Practice Arena</h1>
-            <p class="text-blue-100 mt-4 text-lg">Strengthen your vocabulary and grammar. Choose a category to begin.</p>
+        <div class="rounded-2xl bg-gradient-to-r from-blue-500 to-sky-600 p-8 md:p-12">
+             <div class="grid md:grid-cols-2 items-center gap-8">
+                <div class="text-center md:text-left">
+                    <h1 class="text-4xl md:text-5xl font-bold text-white">English Practice Arena</h1>
+                    <p class="text-blue-100 mt-4 text-lg">Strengthen your vocabulary and grammar. Choose a category to begin.</p>
+                </div>
+                <div class="hidden md:flex justify-center items-center">
+                    <img src="media/english-card-illustration.svg" alt="English Mastery Illustration" class="h-56 w-auto">
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto mt-12">
             
-            <a href="quiz-list.html?category=Synonyms" class="category-card p-8">
+            <a href="quiz-list.html?category=Synonyms" class="category-card p-8 bg-purple-50">
                 <i data-lucide="book-marked" class="w-16 h-16 mx-auto mb-4 text-purple-500"></i>
                 <div>
                     <h2 class="text-2xl font-bold mb-2">Synonyms Practice</h2>
@@ -74,7 +81,7 @@
                 </div>
             </a>
 
-            <a href="quiz-list.html?category=Antonyms" class="category-card p-8">
+            <a href="quiz-list.html?category=Antonyms" class="category-card p-8 bg-amber-50">
                 <i data-lucide="git-compare" class="w-16 h-16 mx-auto mb-4 text-amber-500"></i>
                 <div>
                     <h2 class="text-2xl font-bold mb-2">Antonyms Practice</h2>
@@ -96,7 +103,7 @@
 </script>
             </div>
 
-            <a href="quiz-list.html?category=One Word Substitution" class="category-card p-8">
+            <a href="quiz-list.html?category=One Word Substitution" class="category-card p-8 bg-rose-50">
                 <i data-lucide="replace" class="w-16 h-16 mx-auto mb-4 text-rose-500"></i>
                 <div>
                     <h2 class="text-2xl font-bold mb-2">One Word Substitution</h2>
@@ -104,7 +111,7 @@
                 </div>
             </a>
 
-            <a href="quiz-list.html?category=Idioms and Phrases" class="category-card p-8">
+            <a href="quiz-list.html?category=Idioms and Phrases" class="category-card p-8 bg-sky-50">
                 <i data-lucide="quote" class="w-16 h-16 mx-auto mb-4 text-sky-500"></i>
                 <div>
                     <h2 class="text-2xl font-bold mb-2">Idioms & Phrases</h2>
@@ -112,7 +119,7 @@
                 </div>
             </a>
 
-            <a href="quiz-list.html?category=SSC PYQs" class="category-card p-8">
+            <a href="quiz-list.html?category=SSC PYQs" class="category-card p-8 bg-green-50">
                 <i data-lucide="file-question" class="w-16 h-16 mx-auto mb-4 text-green-500"></i>
                 <div>
                     <h2 class="text-2xl font-bold mb-2">SSC PYQ's Practice</h2>

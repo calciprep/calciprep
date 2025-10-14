@@ -12,7 +12,7 @@
                 
                 <!-- LEFT PART: Logo & Back Button -->
                 <div class="flex-1 flex justify-start items-center space-x-2">
-                    <a id="back-link" href="index.html" class="hidden md:block p-2 rounded-full hover:bg-gray-200/50 transition-colors" title="Go Back">
+                    <a id="back-link" href="index.html" class="p-2 rounded-full hover:bg-gray-200/50 transition-colors" title="Go Back">
                         <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
                     </a>
                     <a href="index.html" class="flex items-center flex-shrink-0">
@@ -53,7 +53,7 @@
             <!-- Mobile Menu Dropdown -->
             <div id="mobile-menu" class="md:hidden overflow-hidden">
                 <div class="pt-2 pb-4 px-4 font-sans">
-                     <div id="mobile-back-link-container" class="hidden pb-2 mb-2 border-b border-gray-200/80">
+                     <div id="mobile-back-link-container" class="pb-2 mb-2 border-b border-gray-200/80">
                          <a id="mobile-back-link" href="index.html" class="flex items-center text-lg font-semibold text-gray-800 hover:bg-gray-100/50 px-3 py-3 rounded-xl">
                              <i data-lucide="arrow-left" class="w-5 h-5 mr-3"></i>
                              Back
@@ -136,6 +136,17 @@
         @media (min-width: 1024px) { .auth-modal-grid { grid-template-columns: 400px 1fr; } }
         .btn-primary { background-color: #8B5CF6; }
 
+        /* New logic for back buttons */
+        #back-link, #mobile-back-link-container { display: none; }
+        
+        .is-sub-page #mobile-back-link-container { display: block; }
+
+        @media (min-width: 768px) { /* md breakpoint */
+            .is-sub-page #back-link {
+                display: flex;
+            }
+        }
+        
         /* CSS Animation for Mobile Menu */
         #glass-nav-container { transition: border-radius 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
         #glass-nav-container.menu-open { border-radius: 2rem; }
@@ -237,8 +248,10 @@
                 const isOpen = dom.glassNav.classList.toggle('menu-open');
                 dom.mobileMenu.classList.toggle('menu-open');
                 dom.mobileMenuButton.classList.toggle('menu-open');
-                const icon = dom.mobileMenuButton.querySelector('i');
-                icon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+                if(dom.mobileMenuButton.querySelector('i')) {
+                    const icon = dom.mobileMenuButton.querySelector('i');
+                    icon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+                }
                 lucide.createIcons();
             }
 
@@ -396,36 +409,32 @@
                 const currentPage = window.location.pathname.split('/').pop();
                 const isIndex = currentPage === 'index.html' || currentPage === '';
                 
+                const header = document.getElementById('app-header');
                 const backLink = document.getElementById('back-link');
-                const mobileBackContainer = document.getElementById('mobile-back-link-container');
                 const mobileBackLink = document.getElementById('mobile-back-link');
 
                 if (isIndex) {
-                    if (backLink) backLink.classList.add('hidden');
-                    if (mobileBackContainer) mobileBackContainer.classList.add('hidden');
-                    return;
-                };
+                    header.classList.remove('is-sub-page');
+                } else {
+                    header.classList.add('is-sub-page');
 
-                // The md:block class on backLink will handle desktop visibility.
-                if(backLink) backLink.classList.remove('hidden');
-                if(mobileBackContainer) mobileBackContainer.classList.remove('hidden');
-                
-                let backUrl = 'index.html';
-                const urlParams = new URLSearchParams(window.location.search);
-
-                if (currentPage === 'quiz-list.html') {
-                    backUrl = 'english.html';
-                } else if (currentPage === 'quiz.html') {
-                    const category = urlParams.get('category');
-                    if (category) backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
-                } else if (['english.html', 'maths.html', 'typing-selection.html', 'account.html'].includes(currentPage)) {
-                    backUrl = 'index.html';
-                } else if (['learn-typing.html', 'typing.html'].includes(currentPage)) {
-                    backUrl = 'typing-selection.html';
+                    // --- Set Href Logic ---
+                    let backUrl = 'index.html';
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (currentPage === 'quiz-list.html') {
+                        backUrl = 'english.html';
+                    } else if (currentPage === 'quiz.html') {
+                        const category = urlParams.get('category');
+                        if (category) backUrl = `quiz-list.html?category=${encodeURIComponent(category)}`;
+                    } else if (['english.html', 'maths.html', 'typing-selection.html', 'account.html'].includes(currentPage)) {
+                        backUrl = 'index.html';
+                    } else if (['learn-typing.html', 'typing.html'].includes(currentPage)) {
+                        backUrl = 'typing-selection.html';
+                    }
+                    
+                    if(backLink) backLink.setAttribute('href', backUrl);
+                    if(mobileBackLink) mobileBackLink.setAttribute('href', backUrl);
                 }
-                
-                if(backLink) backLink.setAttribute('href', backUrl);
-                if(mobileBackLink) mobileBackLink.setAttribute('href', backUrl);
             }
 
             // --- Event Listeners ---
