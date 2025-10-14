@@ -154,13 +154,13 @@
             <h2 id="game-title" class="text-3xl font-bold text-center mb-6"></h2>
             <div id="math-game">
                 <div class="text-5xl font-mono text-center my-8 p-6 bg-gray-100 rounded-lg shadow-inner" id="math-problem">Get Ready...</div>
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2" id="answer-container">
                     <input type="text" inputmode="decimal" pattern="[0-9.-]*" id="math-answer" class="w-full p-4 text-3xl text-center rounded-lg border-2 focus:outline-none focus:border-purple-500 transition-all duration-300" placeholder="Your Answer..." disabled autocomplete="off">
                     <button id="submit-answer-btn" class="hidden p-4 bg-purple-500 text-white rounded-lg">
                         <i data-lucide="send" class="w-6 h-6"></i>
                     </button>
                 </div>
-                <div class="flex justify-between items-center mt-8 text-xl font-sans">
+                <div class="flex justify-between items-center mt-8 text-xl font-sans" id="game-stats-container">
                     <div id="timer-container" class="font-semibold"></div>
                     <div id="question-counter-container" class="font-semibold"></div>
                     <div class="font-semibold">Score: <span id="math-score" class="font-bold text-purple-600">0</span></div>
@@ -270,6 +270,8 @@
             const submitTestBtn = document.getElementById('submit-test-btn');
             const startChallengeBtn = document.getElementById('start-challenge-btn');
             const submitAnswerBtn = document.getElementById('submit-answer-btn');
+            const answerContainer = document.getElementById('answer-container');
+            const gameStatsContainer = document.getElementById('game-stats-container');
 
             let mathTimer;
             let correctCount = 0;
@@ -409,6 +411,8 @@
                 startGameBtn.classList.add('hidden');
                 submitTestBtn.classList.remove('hidden');
                 submitAnswerBtn.classList.remove('hidden');
+                answerContainer.classList.remove('hidden');
+                gameStatsContainer.classList.remove('hidden');
 
                 generateProblem();
 
@@ -445,7 +449,9 @@
                 isGameRunning = false;
                 if (mathTimer) clearInterval(mathTimer);
                 mathAnswerEl.disabled = true;
-                submitAnswerBtn.classList.add('hidden');
+                answerContainer.classList.add('hidden');
+                gameStatsContainer.classList.add('hidden');
+                
                 const finalTime = document.getElementById('math-timer').textContent;
                 
                 mathProblemEl.innerHTML = `
