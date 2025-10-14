@@ -98,13 +98,14 @@
         }
 
         /* --- New Styles for Card Beam Animation --- */
-        #features { background-color: #000000; color: #fff; }
+        #features { position: relative; overflow: hidden; background-color: #000000; color: #fff; }
+        #features .container, #features .beam-container { position: relative; z-index: 1; }
         #features .gradient-text { background: linear-gradient(90deg, #A78BFA, #38BDF8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
         #features p { color: #a1a1aa; }
         .beam-container { position: relative; width: 100vw; height: 500px; display: flex; align-items: center; justify-content: center; margin-left: 50%; transform: translateX(-50%); }
         .card-stream { position: absolute; width: 100%; height: 250px; display: flex; align-items: center; overflow: visible; }
         .card-line { display: flex; align-items: center; gap: 40px; white-space: nowrap; will-change: transform; }
-        .beam-card-wrapper { position: relative; width: 400px; height: 250px; flex-shrink: 0; perspective: 1000px; }
+        .beam-card-wrapper { position: relative; width: 90vw; max-width: 400px; height: 250px; flex-shrink: 0; perspective: 1000px; }
         .beam-card {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             border-radius: 15px; overflow: hidden;
@@ -135,8 +136,8 @@
             -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
             mask-image: linear-gradient(to right, black 70%, transparent 100%);
         }
-        #particleCanvas, #scannerCanvas { position: absolute; top: 50%; left: 0; transform: translateY(-50%); width: 100%; height: 300px; z-index: 0; pointer-events: none; }
-        #scannerCanvas { z-index: 5; }
+        #particleCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        #scannerCanvas { position: absolute; top: 50%; left: 0; transform: translateY(-50%); width: 100%; height: 300px; z-index: 5; pointer-events: none; }
         
     </style>
 </head>
@@ -243,6 +244,7 @@
         <!-- Future Prep Section - REBUILT with Card Beam Animation             -->
         <!-- ================================================================== -->
         <section id="features" class="py-20">
+            <canvas id="particleCanvas"></canvas>
             <div class="container mx-auto px-6">
                  <div class="mb-12 text-center" id="features-text-wrapper">
                     <h2 class="text-4xl md:text-5xl font-extrabold mb-4">The <span class="gradient-text">Future of Prep</span> is Here</h2>
@@ -250,7 +252,6 @@
                 </div>
             </div>
             <div class="beam-container">
-                <canvas id="particleCanvas"></canvas>
                 <canvas id="scannerCanvas"></canvas>
                 <div class="card-stream" id="cardStream">
                   <div class="card-line" id="cardLine"></div>
@@ -413,7 +414,8 @@
     // This script is complex and relies on Three.js and advanced Canvas manipulation.
     // It's a direct, high-quality adaptation of the reference script you provided.
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.innerWidth < 1024) return; // Only run animation on desktop
+        
+        const featuresSection = document.getElementById('features');
 
         const cardData = [
             { icon: "graduation-cap", title: "Maths Classes", color: "#fda4af" },
@@ -451,7 +453,7 @@
             }
             startAnimation() { this.isAnimating = true; this.lastTime = performance.now(); if (particleScanner) particleScanner.isAnimating = true; }
             stopAnimation() { this.isAnimating = false; if (particleScanner) particleScanner.isAnimating = false; }
-            calculateDimensions() { this.containerWidth = cardStream.offsetWidth; const cardWidth = 400; const cardGap = 40; this.cardLineWidth = (cardWidth + cardGap) * this.cardLine.children.length; }
+            calculateDimensions() { this.containerWidth = cardStream.offsetWidth; const cardWidth = this.cardLine.children[0] ? this.cardLine.children[0].offsetWidth : 400; const cardGap = 40; this.cardLineWidth = (cardWidth + cardGap) * this.cardLine.children.length; }
             animate() {
                 if (this.isAnimating) {
                     const currentTime = performance.now(); const deltaTime = (currentTime - this.lastTime) / 1000;
@@ -531,10 +533,10 @@
         class ParticleSystem {
             constructor() {
                 this.scene = new THREE.Scene();
-                this.camera = new THREE.OrthographicCamera(-window.innerWidth/2, window.innerWidth/2, 150, -150, 1, 1000);
+                this.camera = new THREE.OrthographicCamera(featuresSection.offsetWidth / -2, featuresSection.offsetWidth / 2, featuresSection.offsetHeight / 2, featuresSection.offsetHeight / -2, 1, 1000);
                 this.camera.position.z = 100;
                 this.renderer = new THREE.WebGLRenderer({ canvas: particleCanvas, alpha: true });
-                this.renderer.setSize(window.innerWidth, 300);
+                this.renderer.setSize(featuresSection.offsetWidth, featuresSection.offsetHeight);
                 this.renderer.setClearColor(0x000000, 0);
                 this.particleCount = 5000;
                 this.createParticles();
@@ -547,8 +549,8 @@
                 this.velocities = new Float32Array(this.particleCount);
 
                 for (let i = 0; i < this.particleCount; i++) {
-                    positions[i*3] = (Math.random() - 0.5) * window.innerWidth * 2;
-                    positions[i*3+1] = (Math.random() - 0.5) * 300;
+                    positions[i*3] = (Math.random() - 0.5) * featuresSection.offsetWidth * 2;
+                    positions[i*3+1] = (Math.random() - 0.5) * featuresSection.offsetHeight;
                     this.velocities[i] = Math.random() * 0.3 + 0.1;
                 }
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -562,16 +564,19 @@
                 const positions = this.particles.geometry.attributes.position.array;
                 for (let i = 0; i < this.particleCount; i++) {
                     positions[i*3] += this.velocities[i];
-                    if (positions[i*3] > window.innerWidth / 2 + 50) {
-                        positions[i*3] = -window.innerWidth / 2 - 50;
+                    if (positions[i*3] > featuresSection.offsetWidth / 2 + 50) {
+                        positions[i*3] = -featuresSection.offsetWidth / 2 - 50;
                     }
                 }
                 this.particles.geometry.attributes.position.needsUpdate = true;
                 this.renderer.render(this.scene, this.camera);
             }
             onWindowResize() {
-                this.camera.left = -window.innerWidth/2; this.camera.right = window.innerWidth/2;
-                this.camera.updateProjectionMatrix(); this.renderer.setSize(window.innerWidth, 300);
+                this.camera.left = featuresSection.offsetWidth / -2;
+                this.camera.right = featuresSection.offsetWidth / 2;
+                this.camera.top = featuresSection.offsetHeight / 2;
+                this.camera.bottom = featuresSection.offsetHeight / -2;
+                this.camera.updateProjectionMatrix(); this.renderer.setSize(featuresSection.offsetWidth, featuresSection.offsetHeight);
             }
         }
 

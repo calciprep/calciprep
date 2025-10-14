@@ -7,7 +7,7 @@
     const navAndAuthHTML = `
     <!-- Header -->
     <header id="app-header" class="fixed top-4 inset-x-0 z-50 px-4 transition-transform duration-300">
-        <div id="glass-nav-container" class="glass-nav max-w-7xl mx-auto bg-white/60 backdrop-blur-lg border border-gray-200/80 shadow-md rounded-full overflow-hidden">
+        <div id="glass-nav-container" class="glass-nav max-w-7xl mx-auto overflow-hidden">
             <div class="flex justify-between items-center h-14 px-4 sm:px-6 py-2">
                 
                 <!-- LEFT PART: Logo & Back Button -->
@@ -147,8 +147,21 @@
             }
         }
         
-        /* CSS Animation for Mobile Menu */
-        #glass-nav-container { transition: border-radius 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+        /* CSS Animation for Mobile Menu & Glassmorphism*/
+        #glass-nav-container {
+            /* Glassmorphism Styles */
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* For Safari */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            /* User provided styles */
+            position: relative;
+            border-radius: 2rem;
+            box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.5);
+        }
+        
         #glass-nav-container.menu-open { border-radius: 2rem; }
         #mobile-menu {
             max-height: 0;
@@ -556,4 +569,3 @@
         });
     });
 })();
-
