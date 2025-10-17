@@ -176,6 +176,11 @@ const TypingTestPage = () => {
 
   const currentParagraph = paragraphs[currentParagraphIndex];
 
+  const handleCloseResults = () => {
+    setIsResultOpen(false);
+    resetTestState(currentParagraphIndex);
+  };
+
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#f0fdf4' }}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-28">
@@ -189,14 +194,14 @@ const TypingTestPage = () => {
                   position: absolute;
                   top: 10%;
                   bottom: 10%;
-                  left: -2px;
+                  left: -1px;
                   width: 2px;
                   background-color: #10b981;
                   animation: blink 1.2s infinite;
               }
               .correct-char { color: #15803d; }
               .incorrect-char { background-color: #fee2e2; color: #b91c1c; text-decoration: underline; border-radius: 2px;}
-              #typing-input { caret-color: #10b981; }
+              #typing-input { caret-color: transparent; }
           `}</style>
         <div className="mb-4 max-w-7xl mx-auto">
           <Link to="/typing-selection.html" className="text-sm text-green-600 hover:text-green-800 font-medium inline-flex items-center gap-2">
@@ -277,7 +282,7 @@ const TypingTestPage = () => {
         <ResultPopup 
             isOpen={isResultOpen}
             results={finalResults}
-            onClose={() => setIsResultOpen(false)}
+            onClose={handleCloseResults}
             onRepeat={() => resetTestState(currentParagraphIndex)}
             onNext={() => changeParagraph(currentParagraphIndex + 1)}
         />

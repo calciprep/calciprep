@@ -3,15 +3,13 @@ import { AuthProvider } from './components/common/context/AuthContext';
 import Layout from './components/common/Layout';
 import AuthModal from './components/common/AuthModal';
 import Notification from './components/common/Notification';
+import ProtectedRoute from './components/common/ProtectedRoute'; // Import the guard
 import HomePage from './pages/HomePage';
 import EnglishPage from './pages/EnglishPage';
 import MathsPage from './pages/MathsPage';
 import TypingSelectionPage from './pages/TypingSelectionPage';
 import NotFoundPage from './pages/NotFoundPage';
-
-// Import the new page
 import MathsGamePage from './pages/MathsGamePage'; 
-
 import LearnTypingPage from './pages/LearnTypingPage';
 import TypingTestPage from './pages/TypingTestPage';
 import QuizListPage from './pages/QuizListPage';
@@ -30,15 +28,21 @@ function App() {
             <Route path="/english.html" element={<EnglishPage />} />
             <Route path="/maths.html" element={<MathsPage />} />
             <Route path="/typing-selection.html" element={<TypingSelectionPage />} />
-            
-            {/* Add the new route for the maths game */}
             <Route path="/maths/game" element={<MathsGamePage />} />
-
             <Route path="/learn-typing.html" element={<LearnTypingPage />} />
             <Route path="/typing.html" element={<TypingTestPage />} />
             <Route path="/quiz-list.html" element={<QuizListPage />} />
             <Route path="/quiz.html" element={<QuizPage />} />
-            <Route path="/account.html" element={<AccountPage />} />
+            
+            {/* Wrap the AccountPage route with ProtectedRoute */}
+            <Route 
+              path="/account.html" 
+              element={
+                <ProtectedRoute>
+                  <AccountPage />
+                </ProtectedRoute>
+              } 
+            />
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
