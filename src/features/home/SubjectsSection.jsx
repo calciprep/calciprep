@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import { Calculator, BookOpenText, Keyboard, ArrowRight } from 'lucide-react';
 
+
 const SubjectsSection = () => {
     const cardsWrapperRef = useRef(null);
     const illustrationRef = useRef(null);
@@ -25,58 +26,118 @@ const SubjectsSection = () => {
                 // --- Mobile Swipe Animation ---
                 let currentIndex = 0;
                 let startX = 0;
-                let dragX = 0;
+                let currentX = 0;
+                let isDragging = false;
+                let didDrag = false;
+                const topCardRotation = -4;
 
                 const updateCardPositions = (animated = false) => {
                     cards.forEach((card, i) => {
-                        const position = (i - currentIndex + cards.length) % cards.length;
-                        const isVisible = position < 3;
-                        gsap.to(card, { 
-                            y: position * 20, 
-                            rotation: position === 0 ? -4 : (position === 1 ? 0 : 4), 
-                            zIndex: cards.length - position, 
-                            opacity: isVisible ? 1 : 0, 
-                            scale: 1 - position * 0.05, 
-                            duration: animated ? 0.4 : 0, 
-                            ease: 'power2.out' 
+                        const cardElement = card;
+                        const positionIndex = (i - currentIndex + cards.length) % cards.length;
+                        const isVisible = positionIndex < 3;
+                        gsap.to(cardElement, {
+                            x: 0,
+                            y: positionIndex * 20,
+                            rotation: positionIndex === 0 ? topCardRotation : (positionIndex === 1 ? 0 : 4),
+                            zIndex: cards.length - positionIndex,
+                            opacity: isVisible ? 1 : 0,
+                            scale: 1 - positionIndex * 0.05,
+                            duration: animated ? 0.4 : 0,
+                            ease: 'power2.out'
                         });
                     });
                 };
 
-                const onTouchStart = (e) => { 
-                    startX = e.touches[0].clientX; 
-                    container.addEventListener('touchmove', onTouchMove); 
-                    container.addEventListener('touchend', onTouchEnd, { once: true }); 
-                };
-                const onTouchMove = (e) => { 
-                    dragX = e.touches[0].clientX - startX; 
-                    gsap.to(cards[currentIndex], { x: dragX, rotation: -4 + dragX / 30, duration: 0.2 }); 
-                };
-                const onTouchEnd = () => {
-                    container.removeEventListener('touchmove', onTouchMove);
-                    const topCard = cards[currentIndex];
-                    if (dragX < -80) { // Swipe Left
-                        gsap.to(topCard, { 
-                            x: -400, 
-                            opacity: 0, 
-                            rotation: -20, 
-                            duration: 0.4, 
-                            ease: 'power2.in', 
-                            onComplete: () => { 
-                                gsap.set(topCard, { x: 0, opacity: 1 }); 
-                                currentIndex = (currentIndex + 1) % cards.length; 
-                                updateCardPositions(true); 
-                            } 
-                        });
-                    } else { // Return to stack
-                        gsap.to(topCard, { x: 0, rotation: -4, duration: 0.4, ease: 'back.out(1.7)' });
-                    }
-                    dragX = 0;
+                const onDragStart = (e) => {
+                    isDragging = true;
+                    didDrag = false;
+                    startX = e.pageX || e.touches[0].pageX;
+                    gsap.killTweensOf(cards[currentIndex]);
+                    
+                    container.addEventListener('mousemove', onDragMove);
+                    container.addEventListener('touchmove', onDragMove, { passive: true });
+
+                    window.addEventListener('mouseup', onDragEnd, { once: true });
+                    window.addEventListener('touchend', onDragEnd, { once: true });
                 };
 
-                container.addEventListener('touchstart', onTouchStart);
+                const onDragMove = (e) => {
+                    if (!isDragging) return;
+                    
+                    const moveX = e.pageX || e.touches[0].pageX;
+                    currentX = moveX - startX;
+
+                    if (Math.abs(currentX) > 5) { // Threshold to consider it a drag
+                        didDrag = true;
+                    }
+                    
+                    // Directly set properties for buttery smooth dragging
+                    gsap.set(cards[currentIndex], { 
+                        x: currentX, 
+                        rotation: topCardRotation + currentX / 20,
+                    });
+                };
+
+                const onDragEnd = () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    
+                    container.removeEventListener('mousemove', onDragMove);
+                    container.removeEventListener('touchmove', onDragMove);
+                    
+                    const topCard = cards[currentIndex];
+                    const swipeThreshold = 80;
+
+                    if (currentX < -swipeThreshold) { // Swipe Left
+                        gsap.to(topCard, {
+                            x: -400, opacity: 0, rotation: -20, duration: 0.3, ease: 'power2.in',
+                            onComplete: () => {
+                                gsap.set(topCard, { x: 0, opacity: 1, rotation: topCardRotation }); // Reset for reuse
+                                currentIndex = (currentIndex + 1) % cards.length;
+                                updateCardPositions(true);
+                            }
+                        });
+                    } else if (currentX > swipeThreshold) { // Swipe Right
+                        gsap.to(topCard, {
+                            x: 400, opacity: 0, rotation: 20, duration: 0.3, ease: 'power2.in',
+                            onComplete: () => {
+                                gsap.set(topCard, { x: 0, opacity: 1, rotation: topCardRotation }); // Reset for reuse
+                                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                                updateCardPositions(true);
+                            }
+                        });
+                    } else { // Not a full swipe, snap back
+                        gsap.to(topCard, { x: 0, rotation: topCardRotation, duration: 0.4, ease: 'back.out(1.7)' });
+                    }
+                    currentX = 0;
+                };
+
                 updateCardPositions();
-                cleanupFuncs.push(() => {if(container) container.removeEventListener('touchstart', onTouchStart)});
+                
+                container.addEventListener('mousedown', onDragStart);
+                container.addEventListener('touchstart', onDragStart, { passive: true });
+                
+                // Prevent click on links after a drag
+                const clickHandler = (e) => {
+                    if (didDrag) {
+                        e.preventDefault();
+                    }
+                };
+                container.addEventListener('click', clickHandler);
+
+
+                cleanupFuncs.push(() => {
+                    if(container) {
+                        container.removeEventListener('mousedown', onDragStart);
+                        container.removeEventListener('touchstart', onDragStart);
+                        container.removeEventListener('mousemove', onDragMove);
+                        container.removeEventListener('touchmove', onDragMove);
+                        window.removeEventListener('mouseup', onDragEnd);
+                        window.removeEventListener('touchend', onDragEnd);
+                        container.removeEventListener('click', clickHandler);
+                    }
+                });
 
             } else {
                 // --- Desktop Hover Animation ---
