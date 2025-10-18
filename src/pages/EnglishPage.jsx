@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { BookMarked, GitCompare, Replace, Quote, FileQuestion } from 'lucide-react';
+import { BookMarked, GitCompare, Replace, Quote, FileQuestion, ArrowRight } from 'lucide-react';
 import AdSenseBlock from '../components/common/AdSenseBlock';
 
 const EnglishPage = () => {
@@ -11,6 +11,20 @@ const EnglishPage = () => {
         <title>English Practice for SSC - Vocabulary & Grammar | CalciPrep</title>
         <meta name="description" content="Enhance your English vocabulary and grammar for competitive exams. Practice with quizzes on synonyms, antonyms, idioms, and more, based on the Blackbook." />
       </Helmet>
+      <style>{`
+        .category-card {
+          border: 1px solid #F3F4F6;
+          border-radius: 1.5rem;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .category-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+      `}</style>
       <div className="rounded-2xl bg-gradient-to-r from-blue-500 to-sky-600 p-8 md:p-12">
         <div className="grid md:grid-cols-2 items-center gap-8">
           <div className="text-center md:text-left">
@@ -25,23 +39,90 @@ const EnglishPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto mt-12">
         
-        <Link to="/quiz-list.html?category=Synonyms" className="category-card p-8 bg-purple-50 transition hover:transform hover:-translate-y-2 hover:shadow-xl">
-          <BookMarked className="w-16 h-16 mx-auto mb-4 text-purple-500" />
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Synonyms Practice</h2>
-            <p className="text-gray-600 font-sans">Find words with similar meanings.</p>
+        <Link to="/quiz-list.html?category=Synonyms" className="category-card bg-purple-100">
+          <div className="p-8 text-center flex flex-col flex-grow">
+            <div className="flex-shrink-0">
+                <div className="bg-white/60 text-purple-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <BookMarked size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">Synonyms</h2>
+                <p className="text-gray-600 font-sans text-sm">Find words with similar meanings.</p>
+            </div>
+            <div className="mt-4 flex-grow flex justify-center items-end">
+                {/* Illustration can go here */}
+            </div>
+          </div>
+          <div className="p-5 bg-white flex justify-between items-center mt-auto">
+            <span className="font-semibold text-gray-800">Explore</span>
+            <ArrowRight className="text-gray-400" />
           </div>
         </Link>
 
-        <Link to="/quiz-list.html?category=Antonyms" className="category-card p-8 bg-amber-50 transition hover:transform hover:-translate-y-2 hover:shadow-xl">
-          <GitCompare className="w-16 h-16 mx-auto mb-4 text-amber-500" />
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Antonyms Practice</h2>
-            <p className="text-gray-600 font-sans">Find words with opposite meanings.</p>
+        <Link to="/quiz-list.html?category=Antonyms" className="category-card bg-amber-100">
+          <div className="p-8 text-center flex flex-col flex-grow">
+            <div className="flex-shrink-0">
+                <div className="bg-white/60 text-amber-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <GitCompare size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">Antonyms</h2>
+                <p className="text-gray-600 font-sans text-sm">Find words with opposite meanings.</p>
+            </div>
+          </div>
+          <div className="p-5 bg-white flex justify-between items-center mt-auto">
+            <span className="font-semibold text-gray-800">Explore</span>
+            <ArrowRight className="text-gray-400" />
           </div>
         </Link>
 
-        <div className="category-card bg-gray-50 flex items-center justify-center p-4">
+        <Link to="/quiz-list.html?category=One Word Substitution" className="category-card bg-rose-100">
+          <div className="p-8 text-center flex flex-col flex-grow">
+              <div className="flex-shrink-0">
+                  <div className="bg-white/60 text-rose-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                      <Replace size={32} />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2 text-gray-900">One Word Substitution</h2>
+                  <p className="text-gray-600 font-sans text-sm">Replace a phrase with a single word.</p>
+              </div>
+          </div>
+          <div className="p-5 bg-white flex justify-between items-center mt-auto">
+            <span className="font-semibold text-gray-800">Explore</span>
+            <ArrowRight className="text-gray-400" />
+          </div>
+        </Link>
+
+        <Link to="/quiz-list.html?category=Idioms and Phrases" className="category-card bg-sky-100">
+          <div className="p-8 text-center flex flex-col flex-grow">
+              <div className="flex-shrink-0">
+                  <div className="bg-white/60 text-sky-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                      <Quote size={32} />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2 text-gray-900">Idioms & Phrases</h2>
+                  <p className="text-gray-600 font-sans text-sm">Understand common idioms.</p>
+              </div>
+          </div>
+          <div className="p-5 bg-white flex justify-between items-center mt-auto">
+            <span className="font-semibold text-gray-800">Explore</span>
+            <ArrowRight className="text-gray-400" />
+          </div>
+        </Link>
+
+        <Link to="/quiz-list.html?category=SSC PYQs" className="category-card bg-green-100">
+          <div className="p-8 text-center flex flex-col flex-grow">
+              <div className="flex-shrink-0">
+                  <div className="bg-white/60 text-green-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                      <FileQuestion size={32} />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2 text-gray-900">SSC PYQs</h2>
+                  <p className="text-gray-600 font-sans text-sm">Practice previous year questions.</p>
+              </div>
+          </div>
+          <div className="p-5 bg-white flex justify-between items-center mt-auto">
+            <span className="font-semibold text-gray-800">Explore</span>
+            <ArrowRight className="text-gray-400" />
+          </div>
+        </Link>
+
+        <div className="category-card bg-gray-50 flex items-center justify-center p-4 rounded-3xl">
            <AdSenseBlock
               adSlot="8028804221"
               adFormat="fluid"
@@ -49,33 +130,10 @@ const EnglishPage = () => {
             />
         </div>
 
-        <Link to="/quiz-list.html?category=One Word Substitution" className="category-card p-8 bg-rose-50 transition hover:transform hover:-translate-y-2 hover:shadow-xl">
-          <Replace className="w-16 h-16 mx-auto mb-4 text-rose-500" />
-          <div>
-            <h2 className="text-2xl font-bold mb-2">One Word Substitution</h2>
-            <p className="text-gray-600 font-sans">Replace a phrase with a single word.</p>
-          </div>
-        </Link>
-
-        <Link to="/quiz-list.html?category=Idioms and Phrases" className="category-card p-8 bg-sky-50 transition hover:transform hover:-translate-y-2 hover:shadow-xl">
-          <Quote className="w-16 h-16 mx-auto mb-4 text-sky-500" />
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Idioms & Phrases</h2>
-            <p className="text-gray-600 font-sans">Understand the meaning of common idioms.</p>
-          </div>
-        </Link>
-
-        <Link to="/quiz-list.html?category=SSC PYQs" className="category-card p-8 bg-green-50 transition hover:transform hover:-translate-y-2 hover:shadow-xl">
-          <FileQuestion className="w-16 h-16 mx-auto mb-4 text-green-500" />
-          <div>
-            <h2 className="text-2xl font-bold mb-2">SSC PYQ's Practice</h2>
-            <p className="text-gray-600 font-sans">Practice with previous year questions.</p>
-          </div>
-        </Link>
-
       </div>
     </main>
   );
 };
 
 export default EnglishPage;
+

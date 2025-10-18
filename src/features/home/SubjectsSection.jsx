@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Draggable } from 'gsap/Draggable';
 import { Link } from 'react-router-dom';
 import { Calculator, BookOpenText, Keyboard, ArrowRight } from 'lucide-react';
 
@@ -11,36 +12,36 @@ const SubjectsSection = () => {
     const containerRef = useRef(null);
 
     useEffect(() => {
-        gsap.registerPlugin(ScrollTrigger);
+        gsap.registerPlugin(ScrollTrigger, Draggable);
         let cleanupFuncs = [];
         
-        // Use a timeout to ensure the DOM is fully ready, especially for complex layouts
+        // Use a timeout to ensure the DOM is fully ready
         const timeoutId = setTimeout(() => {
             const container = containerRef.current;
             if (!container) return;
             
-            const cards = gsap.utils.toArray(".subject-card");
+            let cards = gsap.utils.toArray(".subject-card");
             if(cards.length === 0) return;
 
             if (window.innerWidth < 1024) {
-                // --- Mobile Swipe Animation ---
+                // --- Mobile Swipe Animation using GSAP Draggable for smoothness ---
                 let currentIndex = 0;
-                let startX = 0;
-                let currentX = 0;
-                let isDragging = false;
-                let didDrag = false;
+                const totalCards = cards.length;
                 const topCardRotation = -4;
 
-                const updateCardPositions = (animated = false) => {
+                const positionCards = (animated = true) => {
                     cards.forEach((card, i) => {
-                        const cardElement = card;
-                        const positionIndex = (i - currentIndex + cards.length) % cards.length;
+                        const positionIndex = (i - currentIndex + totalCards) % totalCards;
                         const isVisible = positionIndex < 3;
-                        gsap.to(cardElement, {
-                            x: 0,
+                        
+                        if (!isVisible) {
+                            gsap.set(card, { opacity: 0, scale: 0.8 });
+                        }
+
+                        gsap.to(card, {
                             y: positionIndex * 20,
                             rotation: positionIndex === 0 ? topCardRotation : (positionIndex === 1 ? 0 : 4),
-                            zIndex: cards.length - positionIndex,
+                            zIndex: totalCards - positionIndex,
                             opacity: isVisible ? 1 : 0,
                             scale: 1 - positionIndex * 0.05,
                             duration: animated ? 0.4 : 0,
@@ -49,94 +50,73 @@ const SubjectsSection = () => {
                     });
                 };
 
-                const onDragStart = (e) => {
-                    isDragging = true;
-                    didDrag = false;
-                    startX = e.pageX || e.touches[0].pageX;
-                    gsap.killTweensOf(cards[currentIndex]);
-                    
-                    container.addEventListener('mousemove', onDragMove);
-                    container.addEventListener('touchmove', onDragMove, { passive: true });
+                positionCards(false);
 
-                    window.addEventListener('mouseup', onDragEnd, { once: true });
-                    window.addEventListener('touchend', onDragEnd, { once: true });
-                };
-
-                const onDragMove = (e) => {
-                    if (!isDragging) return;
-                    
-                    const moveX = e.pageX || e.touches[0].pageX;
-                    currentX = moveX - startX;
-
-                    if (Math.abs(currentX) > 5) { // Threshold to consider it a drag
-                        didDrag = true;
-                    }
-                    
-                    // Directly set properties for buttery smooth dragging
-                    gsap.set(cards[currentIndex], { 
-                        x: currentX, 
-                        rotation: topCardRotation + currentX / 20,
-                    });
-                };
-
-                const onDragEnd = () => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    
-                    container.removeEventListener('mousemove', onDragMove);
-                    container.removeEventListener('touchmove', onDragMove);
-                    
-                    const topCard = cards[currentIndex];
-                    const swipeThreshold = 80;
-
-                    if (currentX < -swipeThreshold) { // Swipe Left
-                        gsap.to(topCard, {
-                            x: -400, opacity: 0, rotation: -20, duration: 0.3, ease: 'power2.in',
-                            onComplete: () => {
-                                gsap.set(topCard, { x: 0, opacity: 1, rotation: topCardRotation }); // Reset for reuse
-                                currentIndex = (currentIndex + 1) % cards.length;
-                                updateCardPositions(true);
-                            }
+                const draggables = cards.map((card) => Draggable.create(card, {
+                    type: "x",
+                    edgeResistance: 0.8,
+                    onPress: function() {
+                        this.wasDragged = false;
+                    },
+                    onDrag: function() {
+                        this.wasDragged = true;
+                        gsap.set(this.target, {
+                            rotation: topCardRotation + (this.x / 20)
                         });
-                    } else if (currentX > swipeThreshold) { // Swipe Right
-                        gsap.to(topCard, {
-                            x: 400, opacity: 0, rotation: 20, duration: 0.3, ease: 'power2.in',
-                            onComplete: () => {
-                                gsap.set(topCard, { x: 0, opacity: 1, rotation: topCardRotation }); // Reset for reuse
-                                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-                                updateCardPositions(true);
-                            }
-                        });
-                    } else { // Not a full swipe, snap back
-                        gsap.to(topCard, { x: 0, rotation: topCardRotation, duration: 0.4, ease: 'back.out(1.7)' });
-                    }
-                    currentX = 0;
-                };
+                    },
+                    onDragEnd: function() {
+                        const swipeThreshold = this.target.offsetWidth * 0.3;
+                        
+                        if (Math.abs(this.x) > swipeThreshold) {
+                            this.disable();
+                            const direction = this.x > 0 ? 1 : -1;
 
-                updateCardPositions();
-                
-                container.addEventListener('mousedown', onDragStart);
-                container.addEventListener('touchstart', onDragStart, { passive: true });
-                
-                // Prevent click on links after a drag
-                const clickHandler = (e) => {
-                    if (didDrag) {
-                        e.preventDefault();
-                    }
-                };
-                container.addEventListener('click', clickHandler);
+                            gsap.to(this.target, {
+                                x: direction * (window.innerWidth / 2 + this.target.offsetWidth / 2),
+                                opacity: 0,
+                                rotation: direction * 25,
+                                duration: 0.3,
+                                ease: 'power2.in',
+                                onComplete: () => {
+                                    gsap.set(this.target, { x: 0, opacity: 1, rotation: 0 });
 
+                                    if (direction < 0) { // Swiped left (next)
+                                        currentIndex = (currentIndex + 1) % totalCards;
+                                    } else { // Swiped right (previous)
+                                        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+                                    }
+                                    
+                                    positionCards(true);
+
+                                    if (draggables[currentIndex]) {
+                                        draggables[currentIndex].enable();
+                                    }
+                                }
+                            });
+                        } else {
+                            gsap.to(this.target, { x: 0, rotation: topCardRotation, duration: 0.4, ease: 'back.out(1.7)' });
+                        }
+                    },
+                    allowEventDefault: true
+                })[0]);
+
+                draggables.forEach((d, i) => {
+                    if (i !== currentIndex) d.disable();
+                });
+
+                const links = container.querySelectorAll('a.subject-card');
+                links.forEach((link, i) => {
+                    const clickHandler = (e) => {
+                        if (draggables[i] && draggables[i].wasDragged) {
+                            e.preventDefault();
+                        }
+                    };
+                    link.addEventListener('click', clickHandler);
+                    cleanupFuncs.push(() => link.removeEventListener('click', clickHandler));
+                });
 
                 cleanupFuncs.push(() => {
-                    if(container) {
-                        container.removeEventListener('mousedown', onDragStart);
-                        container.removeEventListener('touchstart', onDragStart);
-                        container.removeEventListener('mousemove', onDragMove);
-                        container.removeEventListener('touchmove', onDragMove);
-                        window.removeEventListener('mouseup', onDragEnd);
-                        window.removeEventListener('touchend', onDragEnd);
-                        container.removeEventListener('click', clickHandler);
-                    }
+                    draggables.forEach(d => d.kill());
                 });
 
             } else {
@@ -181,7 +161,6 @@ const SubjectsSection = () => {
         return () => {
             clearTimeout(timeoutId);
             cleanupFuncs.forEach(func => func());
-            // Kill all GSAP animations and ScrollTriggers associated with this component
             gsap.killTweensOf(".subject-card");
             ScrollTrigger.getAll().forEach(t => t.kill());
         };
@@ -271,4 +250,3 @@ const SubjectsSection = () => {
 };
 
 export default SubjectsSection;
-

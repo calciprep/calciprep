@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { Timer, Swords, Zap } from 'lucide-react';
+import { Timer, Swords, Zap, ArrowRight } from 'lucide-react';
 import AdSenseBlock from '../components/common/AdSenseBlock';
 import SettingsModal from '../features/maths/SettingsModal';
 
@@ -37,15 +37,16 @@ const MathsPage = () => {
         <meta name="description" content="Enhance your maths skills for competitive exams. Practice with timed challenges focusing on speed and accuracy in arithmetic, algebra, and more." />
       </Helmet>
       <style>{`
-        .game-mode-card {
-            background-color: #FFFFFF;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #F3F4F6;
-            border-radius: 1.5rem;
-            text-align: center;
-            cursor: pointer;
+        .category-card {
+          border: 1px solid #F3F4F6;
+          border-radius: 1.5rem;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
         }
-        .game-mode-card:hover {
+        .category-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
         }
@@ -63,20 +64,44 @@ const MathsPage = () => {
       </div>
 
       <div id="game-selection" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-12">
-        <div onClick={() => openSettingsModal('1-minute')} className="game-mode-card bg-purple-50 p-8">
-          <Timer className="w-16 h-16 mx-auto mb-4 text-purple-500" strokeWidth={1.5} />
-          <h2 className="text-2xl font-bold mb-2">1-Minute Challenge</h2>
-          <p className="text-gray-600 font-sans">Solve as many problems as you can in 60 seconds. Go!</p>
+        <div onClick={() => openSettingsModal('1-minute')} className="category-card bg-purple-100">
+           <div className="p-8 text-center flex flex-col flex-grow">
+                <div className="bg-white/60 text-purple-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <Timer size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">1-Minute Challenge</h2>
+                <p className="text-gray-600 font-sans text-sm">Solve as many problems as you can in 60 seconds.</p>
+            </div>
+            <div className="p-5 bg-white flex justify-between items-center mt-auto">
+                <span className="font-semibold text-gray-800">Select</span>
+                <ArrowRight className="text-gray-400" />
+            </div>
         </div>
-        <div onClick={() => openSettingsModal('bitter-end')} className="game-mode-card bg-blue-50 p-8">
-          <Swords className="w-16 h-16 mx-auto mb-4 text-indigo-500" strokeWidth={1.5} />
-          <h2 className="text-2xl font-bold mb-2">To the Bitter End</h2>
-          <p className="text-gray-600 font-sans">One wrong answer ends the game.</p>
+        <div onClick={() => openSettingsModal('bitter-end')} className="category-card bg-blue-100">
+          <div className="p-8 text-center flex flex-col flex-grow">
+                <div className="bg-white/60 text-blue-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <Swords size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">To the Bitter End</h2>
+                <p className="text-gray-600 font-sans text-sm">One wrong answer ends the game.</p>
+            </div>
+            <div className="p-5 bg-white flex justify-between items-center mt-auto">
+                <span className="font-semibold text-gray-800">Select</span>
+                <ArrowRight className="text-gray-400" />
+            </div>
         </div>
-        <div onClick={() => openSettingsModal('speed-challenge')} className="game-mode-card bg-amber-50 p-8">
-          <Zap className="w-16 h-16 mx-auto mb-4 text-amber-500" strokeWidth={1.5} />
-          <h2 className="text-2xl font-bold mb-2">Speed Challenge</h2>
-          <p className="text-gray-600 font-sans">Solve 20 problems as fast as you can.</p>
+        <div onClick={() => openSettingsModal('speed-challenge')} className="category-card bg-amber-100">
+          <div className="p-8 text-center flex flex-col flex-grow">
+                <div className="bg-white/60 text-amber-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <Zap size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">Speed Challenge</h2>
+                <p className="text-gray-600 font-sans text-sm">Solve 20 problems as fast as you can.</p>
+            </div>
+            <div className="p-5 bg-white flex justify-between items-center mt-auto">
+                <span className="font-semibold text-gray-800">Select</span>
+                <ArrowRight className="text-gray-400" />
+            </div>
         </div>
       </div>
 
@@ -95,4 +120,3 @@ const MathsPage = () => {
 };
 
 export default MathsPage;
-

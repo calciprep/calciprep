@@ -59,9 +59,14 @@ const Header = () => {
       return '/';
   };
 
-  // Scroll handler for mobile header visibility
+  // Scroll handler for mobile header visibility and closing the menu
   useEffect(() => {
     const handleScroll = () => {
+      // Close the menu on scroll if it's open
+      if (isMenuOpen) {
+        setMenuOpen(false);
+      }
+
       if (window.innerWidth >= 768) {
         setIsVisible(true);
         return;
@@ -77,14 +82,14 @@ const Header = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMenuOpen]); // Re-attach listener when isMenuOpen changes
 
   return (
     <header 
       id="app-header" 
       className={`fixed top-4 inset-x-0 z-50 px-4 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-[120%]'}`}
     >
-      <div className={`max-w-7xl mx-auto bg-white/40 backdrop-blur-xl border border-white/20 shadow-lg transition-all duration-500 ${isMenuOpen ? 'rounded-3xl' : 'rounded-full'}`}>
+      <div className={`max-w-7xl mx-auto bg-white/40 backdrop-blur-xl border border-white/20 shadow-lg transition-all duration-300 ease-in-out ${isMenuOpen ? 'rounded-3xl' : 'rounded-full'}`}>
         <div className="flex justify-between items-center h-14 px-4 sm:px-6 py-2">
             
             <div className="flex-1 flex justify-start items-center space-x-2">
@@ -131,7 +136,7 @@ const Header = () => {
             </div>
         </div>
 
-        <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMenuOpen ? 'max-h-96' : 'max-h-0'}`}>
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
             <div className="pt-2 pb-4 px-4 font-sans">
                 {isSubPage && (
                     <div className="pb-2 mb-2 border-b border-gray-200/80">
@@ -149,8 +154,10 @@ const Header = () => {
                   {currentUser ? (
                     <div>
                       <p className="px-3 py-2 text-sm text-gray-500 truncate">{currentUser.email}</p>
-                      <Link to="/account.html" onClick={() => setMenuOpen(false)} className="block w-full text-left font-semibold text-gray-700 py-2 px-3 hover:bg-gray-100/50 rounded-md">My Account</Link>
-                      <button onClick={() => { logout(); setMenuOpen(false); }} className="block w-full text-left font-semibold text-red-600 px-3 py-2 hover:bg-red-50/50 rounded-md">Logout</button>
+                      <div className="flex gap-3 mt-2">
+                        <Link to="/account.html" onClick={() => setMenuOpen(false)} className="flex-1 text-center text-gray-700 bg-gray-100 hover:bg-gray-200/80 font-medium py-3 rounded-xl border border-gray-200 text-base">My Account</Link>
+                        <button onClick={() => { logout(); setMenuOpen(false); }} className="flex-1 text-center bg-red-600 text-white py-3 rounded-xl transition-opacity hover:bg-red-700 text-base font-medium">Logout</button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex gap-3 mt-2">
@@ -167,3 +174,4 @@ const Header = () => {
 };
 
 export default Header;
+

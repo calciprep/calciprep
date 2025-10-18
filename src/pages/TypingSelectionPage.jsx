@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { GraduationCap, FileCheck, Keyboard } from 'lucide-react';
+import { GraduationCap, FileCheck, Keyboard, ArrowRight } from 'lucide-react';
 
 const TypingSelectionPage = () => {
   return (
@@ -11,12 +11,15 @@ const TypingSelectionPage = () => {
         <meta name="description" content="Choose your typing practice mode. Learn typing, take tests, or practice number typing to prepare for government exams." />
       </Helmet>
       <style>{`
-        .mode-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 1.5rem;
-            border: 1px solid #F3F4F6;
+        .category-card {
+          border: 1px solid #F3F4F6;
+          border-radius: 1.5rem;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .mode-card:not(.disabled):hover {
+        .category-card:not(.disabled):hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
         }
@@ -34,22 +37,45 @@ const TypingSelectionPage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-12">
-        <Link to="/learn-typing.html" className="mode-card p-8 text-center bg-purple-50">
-          <GraduationCap className="w-16 h-16 mx-auto mb-4 text-purple-500" strokeWidth={1.5} />
-          <h2 className="text-2xl font-bold mb-2">Learn Typing</h2>
-          <p className="text-gray-600 font-sans">Start with basics and build your skills.</p>
+        <Link to="/learn-typing.html" className="category-card bg-purple-100">
+            <div className="p-8 text-center flex flex-col flex-grow">
+                <div className="bg-white/60 text-purple-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <GraduationCap size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">Learn Typing</h2>
+                <p className="text-gray-600 font-sans text-sm">Start with basics and build your skills.</p>
+            </div>
+            <div className="p-5 bg-white flex justify-between items-center mt-auto">
+                <span className="font-semibold text-gray-800">Explore</span>
+                <ArrowRight className="text-gray-400" />
+            </div>
         </Link>
         
-        <Link to="/typing.html" className="mode-card p-8 text-center bg-blue-50">
-          <FileCheck className="w-16 h-16 mx-auto mb-4 text-blue-500" strokeWidth={1.5} />
-          <h2 className="text-2xl font-bold mb-2">Take Tests</h2>
-          <p className="text-gray-600 font-sans">Practice with exam-like tests.</p>
+        <Link to="/typing.html" className="category-card bg-blue-100">
+            <div className="p-8 text-center flex flex-col flex-grow">
+                <div className="bg-white/60 text-blue-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <FileCheck size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">Take Tests</h2>
+                <p className="text-gray-600 font-sans text-sm">Practice with exam-like tests.</p>
+            </div>
+            <div className="p-5 bg-white flex justify-between items-center mt-auto">
+                <span className="font-semibold text-gray-800">Explore</span>
+                <ArrowRight className="text-gray-400" />
+            </div>
         </Link>
 
-        <div className="mode-card disabled p-8 text-center opacity-60 cursor-not-allowed bg-gray-100">
-          <Keyboard className="w-16 h-16 mx-auto mb-4 text-gray-400" strokeWidth={1.5} />
-          <h2 className="text-2xl font-bold mb-2">SSC Interface Typing</h2>
-          <p className="text-gray-600 font-sans">Practice in an SSC-like interface. <br/> (Coming Soon)</p>
+        <div className="category-card disabled bg-gray-100 opacity-60 cursor-not-allowed">
+           <div className="p-8 text-center flex flex-col flex-grow">
+                <div className="bg-white/60 text-gray-500 w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <Keyboard size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2 text-gray-900">SSC Interface</h2>
+                <p className="text-gray-600 font-sans text-sm">Practice in an SSC-like interface.</p>
+            </div>
+            <div className="p-5 bg-white flex justify-between items-center mt-auto">
+                <span className="font-semibold text-gray-500">Coming Soon</span>
+            </div>
         </div>
       </div>
     </main>
@@ -57,4 +83,3 @@ const TypingSelectionPage = () => {
 };
 
 export default TypingSelectionPage;
-

@@ -4,6 +4,7 @@ import Layout from './components/common/Layout';
 import AuthModal from './components/common/AuthModal';
 import Notification from './components/common/Notification';
 import ProtectedRoute from './components/common/ProtectedRoute'; // Import the guard
+import ScrollToTop from './components/common/ScrollToTop.jsx';
 import HomePage from './pages/HomePage';
 import EnglishPage from './pages/EnglishPage';
 import MathsPage from './pages/MathsPage';
@@ -21,6 +22,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+      <ScrollToTop />
         <Layout>
           <Routes>
             <Route path="/" element={<HomePage />} />
