@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer theme {
+  :root {
+    --font-sans: 'EB Garamond', serif;
+    --font-serif: 'Oswald', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+  }
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: #F9FAFB;
+    color: #1F2937;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+}
+
+/* Hide header when auth modal or quiz results are open */
+body.auth-modal-open #app-header,
+body.quiz-results-open #app-header {
+  display: none;
+}

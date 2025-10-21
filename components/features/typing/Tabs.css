@@ -1,0 +1,106 @@
+/* The content of this file is provided in the prompt and remains unchanged. */
+.tabs {
+	--r: calc(var(--u)*1px);
+	display: grid;
+	grid-gap: 0 Max(.375em, calc(2*var(--r)));
+	grid-template: 
+		repeat(2, max-content)/ 
+		Max(5%, 3*var(--r)) 
+		repeat(var(--n), max-content) 
+		1fr;
+	font-family: var(--font-mono);
+    color: #ededed;
+}
+
+[role='tablist'] {
+    display: grid;
+	z-index: 2;
+	grid-area: 1/ 1/ span 1/ -1;
+	grid-template-columns: subgrid;
+}
+
+[role*='tab'] {
+	--dif: var(--k) - var(--i);
+	--not: Min(1, Max(var(--dif), -1*(var(--dif))));
+	--sel: calc(1 - var(--not));
+	--prc: calc(var(--sel)*100%);
+	color: 
+		color-mix(in srgb, 
+			#0AE448 var(--prc), 
+			color-mix(in srgb, 
+					#0AE448, 
+					#0AE448 50%));
+}
+
+[role='tab'] {
+    grid-area: 1/calc(var(--i, 0) + 2);
+	overflow: hidden;
+	outline-offset: Min(-4px, calc(-1*sqrt(1.5*var(--u))*1px));
+	margin-bottom: var(--r);
+	border: none;
+	padding: .5em .75em;
+	max-width: Max(3em, 100vw/(var(--n) + 1));
+	background: none;
+	font: inherit;
+	font-weight: 700;
+	text-overflow: ellipsis;
+	text-transform: capitalize;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+[role='tab']:nth-of-type(1) { --i: 0 }
+[role='tab']:nth-of-type(2) { --i: 1 }
+[role='tab']:nth-of-type(3) { --i: 2 }
+
+
+[role='tabpanel'] {
+    display: grid;
+	grid-area: 1/ 1/ -1/ -1;
+	grid-template: subgrid/ subgrid;
+	z-index: var(--sel);
+}
+
+.tabs [role=tabpanel]:nth-of-type(1) { --i: 0; }
+.tabs [role=tabpanel]:nth-of-type(2) { --i: 1; }
+.tabs [role=tabpanel]:nth-of-type(3) { --i: 2; }
+
+
+.back {
+    display: grid;
+	grid-area: 1/ 1/ -1/ -1;
+	grid-template: subgrid/ subgrid;
+	margin: calc(-1*var(--r));
+	padding: var(--r);
+	background: color-mix(in srgb, currentcolor, #0000);
+	filter: url(#roundstroke);
+}
+	
+.back::before, .back::after {
+    background: 
+        color-mix(in srgb, 
+            #ffffff var(--prc), 
+            #ffffff );
+    content: '';
+}
+	
+.back::before { grid-area: 1/ calc(var(--i, 0) + 2) }
+	
+.back::after { grid-area: 2/ 1/ -1/ -1 }
+
+.content {
+    display: grid;
+	grid-area: 2/ 1/ span 1/ -1;
+	align-content: start;
+	z-index: 1;
+	padding: 1.5em;
+	min-height: 20em;
+	color: #36371f;
+	background: #fff;
+    border-radius: 0 0 1rem 1rem;
+}
+	
+[role='tabpanel'][aria-hidden='true'] .content {
+	display: none;
+}
+
