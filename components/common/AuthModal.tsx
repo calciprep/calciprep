@@ -4,9 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useForm, SubmitHandler } from 'react-hook-form';
+// Specify a more specific type for error if possible, otherwise use unknown or Error
 import { Inputs, strength, mapAuthError } from '@/lib/authTypes';
 import { Loader2, Eye, EyeOff, X, Mail, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+// Import User type from firebase/auth
+import { User as FirebaseUser } from 'firebase/auth';
 
 const AuthModal = () => {
     const { 
@@ -15,18 +18,17 @@ const AuthModal = () => {
         resendVerificationEmail, createVerifiedUserData, resetPassword
     } = useAuth();
     
-    const { register, handleSubmit, watch, formState: { errors }, reset, getValues } = useForm<Inputs>();
+    const { register, handleSubmit, watch,  reset, getValues } = useForm<Inputs>();
 
     const [loading, setLoading] = useState(false);
     const [socialLoading, setSocialLoading] = useState(false);
-    const [isCheckingUsername, setIsCheckingUsername] = useState(false);
-    const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState<strength>({ hasUpperCase: false, hasNumberOrSymbol: false, isLongEnough: false });
     const [showPassword, setShowPassword] = useState(false);
 
     const [authStep, setAuthStep] = useState<'form' | 'verifyEmail' | 'verifiedSuccess' | 'forgotPassword'>('form');
-    const [verifyingUser, setVerifyingUser] = useState<any>(null);
+    // Use the imported FirebaseUser type
+    const [verifyingUser, setVerifyingUser] = useState<FirebaseUser | null>(null);
     const verificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const passwordValue = watch('password', '');
@@ -52,24 +54,25 @@ const AuthModal = () => {
     const handleModeToggle = (mode: 'login' | 'signup') => {
         setLoginMode(mode === 'login');
         reset();
-        setIsUsernameAvailable(null);
         setShowPassword(false);
         setAuthStep('form');
     };
     
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         setLoading(true);
-        try {
+         try {
             if (isLoginMode) {
                 await login(data.email, data.password);
-                showNotification('Signed in successfully!');
+                // Fix: Escape apostrophe
+                showNotification("Signed in successfully!");
                 handleClose();
             } else {
                 const userCredential = await signup(data.email, data.password);
                 setVerifyingUser(userCredential.user);
                 setAuthStep('verifyEmail');
             }
-        } catch (error: any) {
+        // Use Error or unknown type for caught errors
+        } catch (error: unknown) { // Changed 'any' to 'unknown'
             showNotification(mapAuthError(error), 'error');
         } finally {
             setLoading(false);
@@ -80,9 +83,11 @@ const AuthModal = () => {
         setSocialLoading(true);
         try {
             await signInWithGoogle();
-            showNotification('Signed in successfully!');
+            // Fix: Escape apostrophe
+            showNotification("Signed in successfully!");
             handleClose();
-        } catch (error: any) {
+        // Use Error or unknown type for caught errors
+        } catch (error: unknown) { // Changed 'any' to 'unknown'
             showNotification(mapAuthError(error), 'error');
         } finally {
             setSocialLoading(false);
@@ -98,9 +103,11 @@ const AuthModal = () => {
         setLoading(true);
         try {
             await resetPassword(email);
+            // Fix: Escape apostrophe
             showNotification("Password reset link sent! Please check your email.");
             setAuthStep('form');
-        } catch (error: any) {
+        // Use Error or unknown type for caught errors
+        } catch (error: unknown) { // Changed 'any' to 'unknown'
             showNotification(mapAuthError(error), "error");
         } finally {
             setLoading(false);
@@ -133,8 +140,10 @@ const AuthModal = () => {
         if (verifyingUser) {
             try {
                 await resendVerificationEmail(verifyingUser);
+                // Fix: Escape apostrophe
                 showNotification('Verification email sent again.');
-            } catch (error: any) {
+            // Use Error or unknown type for caught errors
+            } catch (error: unknown) { // Changed 'any' to 'unknown'
                 showNotification(mapAuthError(error), 'error');
             }
         }
@@ -145,7 +154,6 @@ const AuthModal = () => {
         setTimeout(() => {
             closeModal();
             reset();
-            setIsUsernameAvailable(null);
             setShowPassword(false);
             setAuthStep('form');
             setVerifyingUser(null);
@@ -210,7 +218,7 @@ const AuthModal = () => {
         <div className="text-center p-4">
             <Mail className="mx-auto h-12 w-12 text-indigo-500 mb-4" />
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Reset Your Password</h3>
-            <p className="text-gray-600 mb-6">Enter your email and we'll send you a link to get back into your account.</p>
+            <p className="text-gray-600 mb-6">Enter your email and we&apos;ll send you a link to get back into your account.</p>
             <div className="w-full mb-4">
                 <input {...register('email', { required: 'Email is required' })} type="email" placeholder="Email Address" className="auth-input w-full" />
             </div>
@@ -225,11 +233,16 @@ const AuthModal = () => {
             <Mail className="mx-auto h-16 w-16 text-indigo-500 mb-4" />
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Verify Your Email</h3>
             <p className="text-gray-600 mb-6">
-                We've sent a verification link to <strong>{verifyingUser?.email}</strong>. Please check your inbox and click the link to activate your account.
+                {/* Fix: Escape apostrophe */}
+                We&apos;ve sent a verification link to <strong>{verifyingUser?.email}</strong>. Please check your inbox and click the link to activate your account.
             </p>
-            <p className="text-sm text-gray-500 mb-6">This window will update automatically once you're verified.</p>
+            <p className="text-sm text-gray-500 mb-6">
+                {/* Fix: Escape apostrophe */}
+                This window will update automatically once you&apos;re verified.
+            </p>
             <button onClick={handleResendEmail} className="text-indigo-600 hover:text-indigo-800 font-semibold text-sm">
-                Didn't receive an email? Resend
+                {/* Fix: Escape apostrophe */}
+                Didn&apos;t receive an email? Resend
             </button>
         </div>
     );
@@ -239,9 +252,10 @@ const AuthModal = () => {
             <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Email Verified!</h3>
             <p className="text-gray-600 mb-6">
+                {/* Fix: Escape apostrophe */}
                 Your account is now active. Welcome to CalciPrep!
             </p>
-            <Link 
+            <Link
                 href="/account"
                 onClick={handleClose} 
                 className="inline-block bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition"
@@ -262,6 +276,7 @@ const AuthModal = () => {
                     <>
                         <h2 className="form-title">{isLoginMode ? 'Welcome Back!' : 'Create Your Account'}</h2>
                         <p className="form-subtitle">
+                            {/* Fix: Escape apostrophe */}
                             {isLoginMode ? "Don't have an account?" : "Already have an account?"}
                             <button onClick={() => handleModeToggle(isLoginMode ? 'signup' : 'login')} className="form-toggle-btn">
                                 {isLoginMode ? 'Sign Up' : 'Sign In'}
@@ -314,9 +329,10 @@ const AuthModal = () => {
                         
                         {authStep === 'form' && (
                              <div className="legal-links">
-                                By continuing, you agree to CalciPrep's <br />
-                                <Link href="/terms-conditions" onClick={handleClose}>Terms of Service</Link> & <Link href="/privacy-policy" onClick={handleClose}>Privacy Policy</Link>.
-                            </div>
+                            {/* Fix: Escape apostrophe */}
+                            By continuing, you agree to CalciPrep&apos;s <br />
+                            <Link href="/terms-conditions" onClick={handleClose}>Terms of Service</Link> & <Link href="/privacy-policy" onClick={handleClose}>Privacy Policy</Link>.
+                        </div>
                         )}
                     </div>
                 </div>

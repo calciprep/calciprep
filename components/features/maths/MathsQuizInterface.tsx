@@ -45,29 +45,37 @@ const MathsQuizInterface = () => {
             setTimeTaken(prev => prev + 1);
         }, 1000);
     };
-    
+
     useEffect(() => {
         if (gameStatus === 'playing') {
             inputRef.current?.focus();
         }
     }, [currentQuestion, gameStatus]);
 
-    // Timer logic
-    useEffect(() => {
-        if (gameStatus === 'playing' && mode === '1-minute' && timeLeft > 0) {
-            const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
-            return () => clearInterval(timer);
-        } else if (gameStatus === 'playing' && mode === '1-minute' && timeLeft === 0) {
-            finishGame();
-        }
-    }, [timeLeft, gameStatus, mode]);
-
+    // Moved finishGame definition before its use in the useEffect
     const finishGame = useCallback(() => {
+        if (gameStatus === 'finished') return; // Prevent multiple calls
         setGameStatus('finished');
         if (timerRef.current) {
             clearInterval(timerRef.current);
         }
-    }, []);
+    // FIX: Added gameStatus to dependency array as it's used inside
+    }, [gameStatus]);
+
+    // Timer logic
+    useEffect(() => {
+        let timer: NodeJS.Timeout | undefined; // Define timer locally
+        if (gameStatus === 'playing' && mode === '1-minute' && timeLeft > 0) {
+            timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
+        } else if (gameStatus === 'playing' && mode === '1-minute' && timeLeft === 0) {
+            finishGame();
+        }
+        return () => {
+            if (timer) clearInterval(timer); // Clear interval on cleanup
+        };
+    // FIX: Added finishGame to dependency array
+    }, [timeLeft, gameStatus, mode, finishGame]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value);
@@ -79,7 +87,7 @@ const MathsQuizInterface = () => {
 
         const userAnswer = parseFloat(inputValue);
         const isCorrect = userAnswer === currentQuestion.answer;
-        
+
         setAnswerStatus(isCorrect ? 'correct' : 'incorrect');
 
         const newQuestionRecord: MathsQuestion = {
@@ -107,7 +115,7 @@ const MathsQuizInterface = () => {
                 finishGame();
                 return;
             }
-            
+
             setInputValue('');
             setCurrentQuestion(generateMathsQuestion(types, difficulty));
             setQuestionKey(prev => prev + 1);
@@ -165,7 +173,7 @@ const MathsQuizInterface = () => {
                     >
                          <h2 className="text-2xl font-bold text-center text-gray-800 mb-1">{getModeTitle(mode)}</h2>
                          <p className="text-center text-gray-500 mb-6 capitalize">{difficulty} &middot; {types.join(', ')}</p>
-                        
+
                         {gameStatus === 'ready' ? (
                             <div className="text-center">
                                 <p className="text-5xl font-bold text-gray-800 my-10">Get Ready...</p>
@@ -190,9 +198,9 @@ const MathsQuizInterface = () => {
                                     )}
                                     <div className="text-lg font-bold text-indigo-600">Score: {score}</div>
                                 </div>
-                                
+
                                 <p className="text-5xl md:text-6xl font-bold text-center text-gray-800 mb-8 select-none bg-gray-100 py-4 rounded-lg">{currentQuestion.question}</p>
-                                
+
                                 <form onSubmit={handleSubmit} className="flex items-center space-x-3">
                                     <input
                                         ref={inputRef}
@@ -224,4 +232,3 @@ const MathsQuizInterface = () => {
 };
 
 export default MathsQuizInterface;
-

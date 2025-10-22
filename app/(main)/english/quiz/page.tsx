@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { getQuizData } from '@/services/dataService';
 import QuizInterface from '@/components/features/english/QuizInterface';
-import type { Question, QuizData, } from '@/lib/quizTypes';
+
 
 interface QuizPageProps {
   searchParams: {

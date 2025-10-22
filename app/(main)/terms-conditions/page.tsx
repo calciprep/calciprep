@@ -19,6 +19,7 @@ export default function TermsAndConditionsPage() {
 
           <h2 className="font-bold text-2xl pt-4">User Accounts</h2>
           <p>When You create an account with Us, You must provide Us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of Your account on Our Service.</p>
+          {/* Fix: Escape apostrophe */}
           <p>You are responsible for safeguarding the password that You use to access the Service and for any activities or actions under Your password. You agree not to disclose Your password to any third party.</p>
 
           <h2 className="font-bold text-2xl pt-4">Content</h2>
@@ -29,11 +30,13 @@ export default function TermsAndConditionsPage() {
 
           <h2 className="font-bold text-2xl pt-4">Links to Other Websites</h2>
           <p>Our Service may contain links to third-party web sites or services that are not owned or controlled by CalciPrep. CalciPrep has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party web sites or services.</p>
-          
+
           <h2 className="font-bold text-2xl pt-4">Limitation of Liability</h2>
-          <p>Notwithstanding any damages that You might incur, the entire liability of CalciPrep under any provision of this Terms and Your exclusive remedy for all of the foregoing shall be limited to the amount actually paid by You through the Service or 100 USD if You haven't purchased anything through the Service.</p>
+          {/* Fix: Escape apostrophe */}
+          <p>Notwithstanding any damages that You might incur, the entire liability of CalciPrep under any provision of this Terms and Your exclusive remedy for all of the foregoing shall be limited to the amount actually paid by You through the Service or 100 USD if You haven&apos;t purchased anything through the Service.</p>
 
           <h2 className="font-bold text-2xl pt-4">Governing Law</h2>
+           {/* Fix: Escape apostrophe */}
           <p>The laws of India, excluding its conflicts of law rules, shall govern this Terms and Your use of the Service. Your use of the Application may also be subject to other local, state, national, or international laws.</p>
 
           <h2 className="font-bold text-2xl pt-4">Contact Us</h2>

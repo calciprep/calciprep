@@ -49,19 +49,27 @@ export default function AuthActionPage() {
                         setMessage('Unsupported action. Please check the link.');
                         setStatus('error');
                 }
-            } catch (error: any) {
+           // Use Error or unknown type for caught errors
+            } catch (error: unknown) { // Changed 'any' to 'unknown'
                 console.error("Firebase Auth Action Error:", error);
-                if (error.code === 'auth/expired-action-code') {
-                    setMessage('This verification link has expired. Please request a new one.');
-                } else if (error.code === 'auth/invalid-action-code') {
-                    setMessage('This verification link is invalid. It may have already been used.');
+                // Check if error is an object with a 'code' property before accessing it
+                if (typeof error === 'object' && error !== null && 'code' in error) {
+                    const firebaseError = error as { code: string }; // Type assertion
+                    if (firebaseError.code === 'auth/expired-action-code') {
+                        // Fix: Escape apostrophe
+                        setMessage('This verification link has expired. Please request a new one.');
+                    } else if (firebaseError.code === 'auth/invalid-action-code') {
+                         // Fix: Escape apostrophe
+                        setMessage('This verification link is invalid. It may have already been used.');
+                    } else {
+                        setMessage('An unexpected error occurred. Please try again.');
+                    }
                 } else {
-                    setMessage('An unexpected error occurred. Please try again.');
+                     setMessage('An unexpected error occurred. Please try again.');
                 }
                 setStatus('error');
             }
         };
-
         handleAction();
     }, [searchParams, router]);
 

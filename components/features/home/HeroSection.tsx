@@ -1,6 +1,5 @@
 "use client"; // This component uses client-side event handlers (onClick)
 
-import Link from 'next/link';
 import Image from 'next/image';
 import heroIllustration from '@/public/media/hero-illustration.svg';
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useEffect } from 'react';
+import React, { createContext, } from 'react';
 import { ReactLenis, useLenis } from "@studio-freight/react-lenis";
 import type Lenis from '@studio-freight/lenis';
 

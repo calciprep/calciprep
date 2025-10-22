@@ -5,21 +5,25 @@ import TypingInterface from './TypingInterface';
 import './Tabs.css';
 import { TypingMode } from '@/lib/typing-types';
 
+// Define a more specific type for the exercises data structure
+type ExerciseData = Record<string, string[]> | string[] | null;
+
 interface LearnTypingClientProps {
-  learnKeysExercises: Record<string, any>;
-  practiceWords: Record<string, any>;
-  typeParagraphs: any;
+  learnKeysExercises: ExerciseData;
+  practiceWords: ExerciseData;
+  typeParagraphs: ExerciseData;
 }
 
-const LearnTypingClient: React.FC<LearnTypingClientProps> = ({ 
-  learnKeysExercises, 
-  practiceWords, 
-  typeParagraphs 
+const LearnTypingClient: React.FC<LearnTypingClientProps> = ({
+  learnKeysExercises,
+  practiceWords,
+  typeParagraphs
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const tabsData = [
+  // Define the structure for tabs data more explicitly
+  const tabsData: { name: string; data: ExerciseData; type: TypingMode }[] = [
     { name: 'Learn Keys', data: learnKeysExercises, type: 'learn-keys' },
     { name: 'Practice Words', data: practiceWords, type: 'practice-words' },
     { name: 'Type Paragraphs', data: typeParagraphs, type: 'type-paragraphs' },
@@ -49,7 +53,7 @@ const LearnTypingClient: React.FC<LearnTypingClientProps> = ({
     } else if (key === 'End') {
       nextTab = tabsData.length - 1;
     }
-    
+
     if (nextTab !== activeTab) {
       handleTabClick(nextTab);
     }
@@ -57,9 +61,9 @@ const LearnTypingClient: React.FC<LearnTypingClientProps> = ({
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-28" onKeyUp={handleKeyUp}>
-      <section 
-        className="tabs" 
-        ref={tabsRef} 
+      <section
+        className="tabs"
+        ref={tabsRef}
         style={{ '--n': tabsData.length, '--k': activeTab, '--u': 5 } as React.CSSProperties}
       >
         <nav className="tablist" role="tablist" aria-label="Typing Modes">
@@ -87,17 +91,23 @@ const LearnTypingClient: React.FC<LearnTypingClientProps> = ({
           >
             <div className="back" aria-hidden="true"></div>
             <div className="content">
-              {activeTab === i && (
-                <TypingInterface 
+              {/* Render only if data is not null */}
+              {activeTab === i && tab.data !== null && (
+                <TypingInterface
                   key={tab.type} // Re-mount component on tab change to reset state
-                  exercises={tab.data} 
-                  mode={tab.type as TypingMode} 
+                  exercises={tab.data}
+                  mode={tab.type} // Type is already correct
                 />
+              )}
+               {/* Optionally show a message if data is null */}
+              {activeTab === i && tab.data === null && (
+                <p>Exercises for this section could not be loaded.</p>
               )}
             </div>
           </div>
         ))}
       </section>
+      {/* SVG filter remains unchanged */}
       <svg width="0" height="0" aria-hidden="true">
         <filter id="roundstroke" colorInterpolationFilters="sRGB">
           <feComponentTransfer>

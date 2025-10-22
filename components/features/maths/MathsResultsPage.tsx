@@ -3,7 +3,7 @@
 import React from 'react';
 import type { MathsQuestion } from '@/lib/maths-utils';
 import { motion } from 'framer-motion';
-import { Check, X, Repeat, Clock } from 'lucide-react';
+import { Check, X, Repeat, } from 'lucide-react';
 import Link from 'next/link';
 
 interface MathsResultsPageProps {

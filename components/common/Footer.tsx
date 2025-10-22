@@ -134,7 +134,7 @@ const Footer = () => {
 
             {/* Social Media */}
             <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-white mb-4">Join the Conversation - Let's Connect!</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Join the Conversation - Let&apos;s Connect!</h3>
               <ul className="social-icons-list">
                 <li data-tooltip="Twitter" style={{ '--bg': '#1DA1F2' } as React.CSSProperties}>
                   <a href="https://x.com/calciprep?s=21" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
@@ -182,7 +182,8 @@ const Footer = () => {
           </div>
 
           {/* Copyright */}
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm">
+           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm">
+            {/* Fix: Use copyright symbol entity */}
             <p>Copyright &copy; 2024 | Privacy Policy</p>
           </div>
         </div>
