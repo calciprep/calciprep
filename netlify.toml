@@ -1,0 +1,12 @@
+# Netlify build configuration
+[build]
+  # Command to build your Next.js site
+  command = "npm run build"
+  # The directory Next.js builds to
+  publish = ".next"
+
+# This ensures Netlify uses its specialized Next.js Runtime
+# which is essential for App Router, Server Components, API routes, etc.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
