@@ -307,8 +307,9 @@ const FeaturesSection = () => {
             const pos = new Float32Array(this.pCount * 3);
             const opacities = new Float32Array(this.pCount); // For varying opacity
 
-            const halfWidth = featuresSection.offsetWidth / 2;
-            const halfHeight = featuresSection.offsetHeight / 2;
+            // FIX: Remove unused variables
+            // const halfWidth = featuresSection.offsetWidth / 2;
+            // const halfHeight = featuresSection.offsetHeight / 2;
 
             for (let i = 0; i < this.pCount; i++) {
                 // Distribute particles across a wider horizontal area initially
@@ -469,4 +470,3 @@ const FeaturesSection = () => {
 };
 
 export default FeaturesSection;
-

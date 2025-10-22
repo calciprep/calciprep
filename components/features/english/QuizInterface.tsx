@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // Import useCallback
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import './QuizInterface.css';
@@ -35,6 +35,17 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizData }) => {
     };
   }, [showResult]);
 
+  // FIX: Wrap submitQuiz in useCallback to satisfy exhaustive-deps
+  const submitQuiz = useCallback(() => {
+    const correctAnswers = questions.filter(q => q.status === 'correct').length;
+    const answeredQuestions = questions.filter(q => q.status === 'correct' || q.status === 'incorrect').length;
+    
+    const calculatedPassPercentage = answeredQuestions > 0 ? (correctAnswers / answeredQuestions) * 100 : 0;
+    
+    setPassPercentage(calculatedPassPercentage);
+    setShowResult(true);
+  }, [questions]); // Dependency array includes 'questions'
+
   useEffect(() => {
     if (timeLimit > 0 && !showResult) {
       const timer = setInterval(() => {
@@ -49,7 +60,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizData }) => {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timeLimit, showResult]);
+  }, [timeLimit, showResult, submitQuiz]); // FIX: Add submitQuiz to the dependency array
 
   const handleOptionSelect = (option: string) => {
     if (selectedOption) return; // Prevent multiple selections
@@ -82,16 +93,6 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizData }) => {
     } else {
       submitQuiz();
     }
-  };
-
-  const submitQuiz = () => {
-    const correctAnswers = questions.filter(q => q.status === 'correct').length;
-    const answeredQuestions = questions.filter(q => q.status === 'correct' || q.status === 'incorrect').length;
-    
-    const calculatedPassPercentage = answeredQuestions > 0 ? (correctAnswers / answeredQuestions) * 100 : 0;
-    
-    setPassPercentage(calculatedPassPercentage);
-    setShowResult(true);
   };
 
   const currentQuestion = questions[currentQuestionIndex];
