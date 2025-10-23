@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration using environment variables
 const firebaseConfig = {
@@ -14,13 +14,49 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-// This check prevents re-initializing the app on hot reloads in development
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// --- Declare variables, allowing 'app' to be potentially undefined initially ---
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
+let storage: FirebaseStorage | undefined;
+let appInitialized = false;
 
-// Export Firebase services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+try {
+    // --- Initialize Firebase App ---
+    if (!getApps().length) {
+        app = initializeApp(firebaseConfig);
+        console.log("Firebase initialized successfully.");
+    } else {
+        app = getApp();
+        console.log("Firebase app already exists.");
+    }
 
+    // --- Initialize services *only if* app was successfully assigned ---
+    if (app) {
+        auth = getAuth(app);
+        db = getFirestore(app);
+        storage = getStorage(app);
+        appInitialized = true;
+    } else {
+        // This case should ideally not happen if getApp/initializeApp works,
+        // but it covers edge cases.
+        console.error("Firebase app object could not be obtained.");
+        appInitialized = false;
+    }
+
+} catch (error) {
+    console.error("Firebase initialization error:", error);
+    // Ensure appInitialized is false if any error occurs
+    appInitialized = false;
+    // Services (auth, db, storage) will remain undefined
+}
+
+// --- Export Firebase services and initialization status ---
+// Consumers should check appInitialized before using these services.
+export { app, auth, db, storage, appInitialized };
+
+// --- Default export ---
+// This should now be valid as 'app' is declared in the outer scope,
+// even if its value might be 'undefined' after the try/catch.
 export default app;
+
