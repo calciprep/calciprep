@@ -1,19 +1,20 @@
 "use client";
 
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react';
 import { User } from 'firebase/auth';
-import { 
-    signUp, 
-    signIn, 
-    logout, 
-    resetPassword, 
+import { auth, db } from '@/lib/firebase';
+import {
+    signUp,
+    signIn,
+    logout,
+    resetPassword,
     subscribeToAuthChanges,
     signInWithGoogle,
     resendVerificationEmail,
-    createVerifiedUserData
+    createUserDataIfNeeded
 } from '@/services/authService';
+import { mapAuthError } from '@/lib/authTypes'; // *** FIX: Import mapAuthError ***
 
-// Define the shape of the context data
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
@@ -31,7 +32,7 @@ interface AuthContextType {
   resetPassword: typeof resetPassword;
   signInWithGoogle: typeof signInWithGoogle;
   resendVerificationEmail: typeof resendVerificationEmail;
-  createVerifiedUserData: typeof createVerifiedUserData;
+  ensureUserData: (user: User, name?: string | null, username?: string | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,7 +51,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isLoginMode, setLoginMode] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '', visible: false });
-  const notificationTimer = React.useRef<NodeJS.Timeout | undefined>(undefined);
+  const notificationTimer = useRef<NodeJS.Timeout | undefined>(undefined);
+  const initialUserDataCheckDone = useRef(false);
 
 
   const openModal = (loginMode = false) => {
@@ -75,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const hideNotification = () => {
     setNotification(prev => ({ ...prev, visible: false }));
   };
-  
+
   useEffect(() => {
     if (isModalOpen) {
       document.body.classList.add('auth-modal-open');
@@ -87,15 +89,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [isModalOpen]);
 
-
   useEffect(() => {
+    if (!auth || !db) {
+        console.error("Firebase not fully initialized!");
+        setLoading(false);
+        return;
+    }
+
+    console.log("Setting up Firebase Auth listener...");
     const unsubscribe = subscribeToAuthChanges(user => {
+      console.log("Auth state changed:", user ? `User UID: ${user.uid}` : "No user");
       setCurrentUser(user);
       setLoading(false);
+      initialUserDataCheckDone.current = false;
     });
 
-    return unsubscribe;
+    return () => {
+        console.log("Cleaning up Firebase Auth listener...");
+        unsubscribe();
+    }
   }, []);
+
+  useEffect(() => {
+    if (currentUser && !initialUserDataCheckDone.current) {
+        console.log(`User ${currentUser.uid} detected, ensuring user data...`);
+        initialUserDataCheckDone.current = true;
+
+        const ensureData = async () => {
+            try {
+                await createUserDataIfNeeded(currentUser, currentUser.displayName, null);
+                console.log(`User data check/creation successful for ${currentUser.uid}`);
+            } catch (error) {
+                console.error(`Failed to ensure user data for ${currentUser.uid}:`, error);
+            }
+        };
+
+        const timerId = setTimeout(() => {
+            ensureData();
+        }, 1500);
+
+        return () => clearTimeout(timerId);
+    } else if (!currentUser) {
+        initialUserDataCheckDone.current = false;
+    }
+  }, [currentUser]);
+
+   const ensureUserData = async (user: User, name?: string | null, username?: string | null) => {
+        try {
+            await createUserDataIfNeeded(user, name, username);
+        } catch (error) {
+            console.error("Manual ensureUserData call failed:", error);
+            // *** FIX: Now mapAuthError is available ***
+            showNotification(mapAuthError(error), "error");
+        }
+   };
 
   const value: AuthContextType = {
     currentUser,
@@ -114,7 +161,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     resetPassword,
     signInWithGoogle,
     resendVerificationEmail,
-    createVerifiedUserData
+    ensureUserData
   };
 
   return (
@@ -123,3 +170,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
