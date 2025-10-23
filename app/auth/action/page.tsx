@@ -26,6 +26,13 @@ export default function AuthActionPage() {
 
         const handleAction = async () => {
             try {
+                // Ensure Firebase Auth is available
+                if (!auth) {
+                    console.error('Firebase Auth not initialized.');
+                    setMessage('Unable to verify link right now. Please try again later.');
+                    setStatus('error');
+                    return;
+                }
                 switch (mode) {
                     case 'verifyEmail':
                         // First, check if the code is valid to provide a better error message if it's expired.

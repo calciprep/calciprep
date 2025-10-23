@@ -1,10 +1,10 @@
 "use client";
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useRef } from 'react';
-import { User, UserCredential } from 'firebase/auth';
-import { appInitialized, db } from '@/lib/firebase'; // Import db and appInitialized
+import { User } from 'firebase/auth';
+import { appInitialized, } from '@/lib/firebase'; 
 import {
-    signUp as fbSignUp,
+      signUp as fbSignUp,
     signIn as fbSignIn,
     logout as fbLogout,
     resetPassword as fbResetPassword,
@@ -16,8 +16,9 @@ import {
     updateUserPassword as fbUpdateUserPassword,
     getUserData as fbGetUserData,
     checkUsernameAvailability as fbCheckUsernameAvailability
-} from '@/services/authService';
-import { mapAuthError } from '@/lib/authTypes';
+} from '../services/authService'; // Changed to relative
+import { mapAuthError } from '../lib/authTypes'; // Changed to relative
+import { DocumentData } from 'firebase/firestore'; // Import DocumentData
 
 // Define type for additional user data from Firestore
 interface UserData {
@@ -25,11 +26,11 @@ interface UserData {
     phoneNumber?: string | null;
     name?: string;
     photoURL?: string | null;
-    createdAt?: any;
+    createdAt?: unknown; // Could be Timestamp or ServerTimestampFieldValue
     // Add other fields as needed
 }
 
-// Update context type
+// Update context type - Ensure function signatures match the implementation
 interface AuthContextType {
   currentUser: User | null;
   userData: UserData | null;
@@ -44,17 +45,18 @@ interface AuthContextType {
   setLoginMode: (isLogin: boolean) => void;
   showNotification: (message: string, type?: 'success' | 'error') => void;
   hideNotification: () => void;
-  signup: (email: string, password: string) => Promise<UserCredential>;
-  login: (email: string, password: string) => Promise<UserCredential>;
-  logout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  signInWithGoogle: () => Promise<UserCredential>;
-  resendVerificationEmail: (user: User) => Promise<void>;
-  createVerifiedUserData: (user: User, name: string, username: string) => Promise<void>;
-  updateUserProfile: (user: User, updates: { name?: string; username?: string; phoneNumber?: string }) => Promise<void>;
-  updateUserPassword: (currentPassword?: string, newPassword?: string) => Promise<void>;
-  fetchUserData: () => Promise<void>; // Kept return type as Promise<void>
-  checkUsernameAvailability: (username: string) => Promise<boolean>;
+  // Use specific types matching fbSignUp etc.
+  signup: typeof fbSignUp;
+  login: typeof fbSignIn;
+  logout: typeof fbLogout;
+  resetPassword: typeof fbResetPassword;
+  signInWithGoogle: typeof fbSignInWithGoogle;
+  resendVerificationEmail: typeof fbResendVerificationEmail;
+  createVerifiedUserData: typeof createVerifiedUserData;
+  updateUserProfile: typeof fbUpdateUserProfile;
+  updateUserPassword: typeof fbUpdateUserPassword;
+  fetchUserData: () => Promise<void>; // This one is defined locally
+  checkUsernameAvailability: typeof fbCheckUsernameAvailability;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -76,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isLoginMode, setLoginMode] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '', visible: false });
-  const notificationTimer = useRef<NodeJS.Timeout | undefined>(undefined);
+  const notificationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // --- Modal and Notification Handlers --- (Keep useCallback)
   const openModal = useCallback((loginMode = false) => {
@@ -126,7 +128,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserDataLoading(false); // Ensure loading stops if no user
         return;
     }
-    if (!firebaseReady || !db) { // Added db check
+    if (!firebaseReady) {
         console.log("Auth Context: Skipping fetchUserData - Firebase not ready.");
         setUserData(null);
         setUserDataLoading(false); // Ensure loading stops if not ready
@@ -136,12 +138,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log("Auth Context: Starting to fetch user data for", currentUser.uid);
     setUserDataLoading(true); // Start loading user data
     try {
-      const data = await fbGetUserData(currentUser.uid);
+      const data: DocumentData | null = await fbGetUserData(currentUser.uid);
       console.log("Auth Context: Fetched user data:", data);
       setUserData(data ? data as UserData : null);
     } catch (error) {
       console.error("Auth Context: Error fetching user data:", error);
-       if (!mapAuthError(error).includes('offline')) {
+       // Check if the error is network related before showing notification
+       // Simple check for offline or network error messages
+       const errorString = mapAuthError(error).toLowerCase();
+       if (!errorString.includes('offline') && !errorString.includes('network')) {
             showNotification("Could not load profile details.", "error");
        }
       setUserData(null);
@@ -149,8 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log("Auth Context: Finished fetching user data for", currentUser.uid);
         setUserDataLoading(false); // ALWAYS stop loading user data
     }
-  // Added db to dependencies
-  }, [currentUser, firebaseReady, showNotification, db]);
+  }, [currentUser, firebaseReady, showNotification]);
 
 
   // --- Auth State Subscription ---
@@ -159,16 +163,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (firebaseReady) {
         console.log("Auth Context: Firebase ready, subscribing to auth changes.");
-        // Keep authLoading true until the *first* auth state is received
-        // setAuthLoading(true); // Already true initially
         unsubscribe = subscribeToAuthChanges(async (user) => {
             console.log("Auth Context: Auth state received. User:", user ? user.uid : null);
             const userChanged = currentUser?.uid !== user?.uid;
             setCurrentUser(user);
 
+            // Fetch data ONLY if the user object itself has changed (login/logout/token refresh with new UID)
             if (user && userChanged) {
+                 console.log("Auth Context: User changed, fetching user data...");
                  await fetchUserData(); // Fetch data if user logs in or changes
-            } else if (!user) {
+            } else if (!user && currentUser) { // Only clear if there WAS a user before
+                console.log("Auth Context: User logged out, clearing user data.");
                 setUserData(null); // Clear data on logout
             }
              // Set authLoading to false ONLY after the first check completes
@@ -187,8 +192,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         unsubscribe();
       }
     };
-  // Adjusted dependency array - fetchUserData is called internally
-  }, [firebaseReady, fetchUserData, currentUser?.uid]); // Re-added currentUser?.uid
+  // Ensure fetchUserData is stable or included if its dependencies might change currentUser
+  }, [firebaseReady, fetchUserData, currentUser]); // currentUser?.uid might cause unnecessary refetches if token refreshes
 
 
   // --- Modal Body Class ---
@@ -204,33 +209,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [isModalOpen]);
 
   // --- Context Value ---
-  // safeServiceCall wrapper remains the same as previous correct version
-  const safeServiceCall = <T extends (...args: any[]) => Promise<any>>(
-        serviceFn: T | undefined,
-        serviceNameForError: string
-    ): T => {
-        return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-            if (!firebaseReady || !serviceFn) {
-                console.error(`Attempted to call ${serviceNameForError} before ready.`);
-                showNotification(`${serviceNameForError} not ready. Please try again.`, "error");
-                throw new Error(`${serviceNameForError} not ready.`);
-            }
-            try {
-                return await serviceFn(...args);
-            } catch (error) {
-                console.error(`Error in ${serviceNameForError}:`, error);
-                showNotification(mapAuthError(error), "error");
-                throw error;
-            }
-        }) as T;
-    };
+  // FIX: Reverted 'args' type to 'unknown[]' but used 'as any[]' when spreading to satisfy TS/ESLint
+  const safeServiceCall = <T extends (...args: any[]) => Promise<any>>(serviceFn: T | undefined, serviceNameForError: string): (...args: Parameters<T>) => ReturnType<T> => {
+    // If service isn't provided, return a function that immediately rejects with a helpful error
+    if (!serviceFn) {
+      return (((..._args: Parameters<T>) => {
+        const errorMsg = `${serviceNameForError} service not ready. Please try again.`;
+        showNotification(errorMsg, 'error');
+        return Promise.reject(new Error(errorMsg));
+      }) as unknown) as (...args: Parameters<T>) => ReturnType<T>;
+    }
+
+    // Otherwise return a wrapper that preserves parameter and return types of the original function
+    return (async (...args: Parameters<T>): Promise<any> => {
+      if (!firebaseReady) {
+        console.error(`Attempted to call ${serviceNameForError} before ready.`);
+        const errorMsg = `${serviceNameForError} service not ready. Please try again.`;
+        showNotification(errorMsg, 'error');
+        throw new Error(errorMsg);
+      }
+      try {
+        // Call the original function and return its result
+        return await serviceFn(...(args as any[]));
+      } catch (error) {
+        console.error(`Error in ${serviceNameForError}:`, error);
+        showNotification(mapAuthError(error), 'error');
+        throw error;
+      }
+    }) as (...args: Parameters<T>) => ReturnType<T>;
+  };
 
 
   const value: AuthContextType = {
     currentUser,
     userData,
-    authLoading, // Use separate state
-    userDataLoading, // Use separate state
+    authLoading,
+    userDataLoading,
     firebaseReady,
     isModalOpen,
     isLoginMode,
@@ -240,7 +254,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoginMode,
     showNotification,
     hideNotification,
-    // Wrapped functions remain the same
+    // Wrap the imported functions safely
     signup: safeServiceCall(fbSignUp, 'Signup'),
     login: safeServiceCall(fbSignIn, 'Login'),
     logout: safeServiceCall(fbLogout, 'Logout'),
@@ -250,6 +264,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     createVerifiedUserData: safeServiceCall(createVerifiedUserData, 'Create User Data'),
     updateUserProfile: safeServiceCall(fbUpdateUserProfile, 'Update Profile'),
     updateUserPassword: safeServiceCall(fbUpdateUserPassword, 'Update Password'),
+    // fetchUserData is defined in this hook, wrap it too for consistency
     fetchUserData: safeServiceCall(fetchUserData, 'Fetch User Data'),
     checkUsernameAvailability: safeServiceCall(fbCheckUsernameAvailability, 'Check Username'),
   };
@@ -257,8 +272,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider value={value}>
       {/* Render children only after initial auth check is done */}
-      {!authLoading && children}
+      {!authLoading ? children : null /* Optionally show a loader here */}
     </AuthContext.Provider>
   );
 };
-

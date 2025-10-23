@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
-import { User as UserIcon, Mail, CheckCircle, AlertCircle, Phone, Edit3, Loader2 } from 'lucide-react'; // Added Loader2
+import { Mail, CheckCircle, AlertCircle, Phone, Loader2 } from 'lucide-react'; // Added Loader2
+import AnimatedButton from '@/components/ui/AnimatedButton';
 
 // Define props for the component, including the function to open the modal
 interface ProfileTabProps {
@@ -107,13 +108,13 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ onOpenUpdateModal }) => {
 
              {/* Moved Update Profile Button Here */}
              <div className="flex justify-end pt-6 mt-6 border-t border-gray-200">
-                 <button
+                 <AnimatedButton
                     onClick={onOpenUpdateModal}
-                    // Mimic Security Tab Button Style
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-indigo-600 text-white hover:bg-indigo-700 h-10 px-4 py-2"
-                >
+                    color="primary"
+                    className="px-5 py-2 text-sm rounded-lg min-w-[120px]"
+                 >
                     Update Profile
-                </button>
+                 </AnimatedButton>
             </div>
         </div>
     );

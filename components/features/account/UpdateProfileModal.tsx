@@ -96,6 +96,12 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ isOpen, onClose
 
             try {
                 console.log(`Checking username availability for: ${currentUsernameValue}`);
+                if (!firebaseReady) {
+                    console.warn('Firebase not ready for username check');
+                    setUsernameStatus({ status: 'error', message: 'Service not ready' });
+                    setError('username', { type: 'manual', message: 'Service not ready' });
+                    return;
+                }
                 const isAvailable = await checkUsernameAvailability(currentUsernameValue);
                 // Update status only if the checked username matches the current input
                 if (currentUsernameValue === getValuesRef.current().username) { // Re-check against latest value
@@ -109,9 +115,9 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ isOpen, onClose
                    }
                 }
                  console.log(`Username "${currentUsernameValue}" available: ${isAvailable}`);
-            } catch (error) {
+          } catch (error) {
                  console.error("Username check failed:", error);
-                 if (currentUsernameValue === getValuesRef.current().username) { // Re-check against latest value
+                      if (currentUsernameValue === getValuesRef.current().username) { // Re-check against latest value
                     setCheckedUsername(currentUsernameValue); // Still record what was checked
                     setUsernameStatus({ status: 'error', message: 'Error checking username.' });
                     setError("username", { type: "manual", message: "Error checking username" });
@@ -123,7 +129,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ isOpen, onClose
             clearTimeout(handler);
         };
     // Added initialUsername to dependencies
-    }, [watchedUsername, checkUsernameAvailability, userData?.username, clearErrors, dirtyFields.username, setError]);
+    }, [watchedUsername, checkUsernameAvailability, userData?.username, clearErrors, dirtyFields.username, setError, firebaseReady]);
 
 
     const onSubmit: SubmitHandler<ProfileFormInputs> = async (data) => {
@@ -133,11 +139,13 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ isOpen, onClose
         }
 
         const updates: Partial<ProfileFormInputs> = {};
-        let usernameChanged = false;
+        // FIX: Removed unused 'usernameChanged' variable
+        // let usernameChanged = false;
 
         if (dirtyFields.name) updates.name = data.name;
         if (dirtyFields.username) {
-            usernameChanged = true;
+            // FIX: Removed assignment to unused 'usernameChanged'
+            // usernameChanged = true;
             // Strict check: Only proceed if the *last checked username* matches the *current value* AND its status is 'available'
             if (usernameStatus.status !== 'available' || watchedUsername !== checkedUsername) {
                  showNotification("Please choose an available username and wait for the check to complete.", "error");
@@ -158,6 +166,14 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ isOpen, onClose
         }
 
         setIsLoading(true);
+        // Safety fallback: ensure loading doesn't spin forever
+        const safetyTimer = setTimeout(() => {
+            if (isLoading) {
+                console.error('Profile update taking too long, clearing loading state.');
+                setIsLoading(false);
+                showNotification('Update taking too long. Please try again.', 'error');
+            }
+        }, 20000);
         console.log("Submitting profile update with:", updates);
 
         try {
@@ -175,6 +191,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ isOpen, onClose
                  setError("username", { type: "manual", message: "Username already taken" });
              }
         } finally {
+            clearTimeout(safetyTimer);
             setIsLoading(false);
             console.log("Finished profile update attempt.");
         }
@@ -330,4 +347,3 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ isOpen, onClose
 };
 
 export default UpdateProfileModal;
-

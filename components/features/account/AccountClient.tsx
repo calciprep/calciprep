@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, ShieldCheck, User as UserIcon } from 'lucide-react';
+import { Loader2, ShieldCheck, User as UserIcon } from 'lucide-react'; // Kept UserIcon import as it's used in tabsData
 import Link from 'next/link';
 import ProfileTab from './ProfileTab';
 import SecurityTab from './SecurityTab';
@@ -10,13 +10,14 @@ import UpdateProfileModal from './UpdateProfileModal';
 import '@/components/features/typing/Tabs.css';
 
 const AccountClient = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- userData is used indirectly by child components via context
   const { currentUser, authLoading, userDataLoading, userData } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
   const tabsRef = useRef<HTMLDivElement>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const tabsData = [
-    { name: 'Profile', icon: UserIcon },
+    { name: 'Profile', icon: UserIcon }, // UserIcon is used here
     { name: 'Security', icon: ShieldCheck },
   ];
 
@@ -170,4 +171,3 @@ const AccountClient = () => {
 };
 
 export default AccountClient;
-

@@ -18,7 +18,17 @@ const AuthModal = () => {
         firebaseReady
     } = useAuth();
 
-    const { register, handleSubmit, watch,  reset, getValues, formState: { errors } } = useForm<Inputs>();
+    const { register, handleSubmit, watch,  reset, getValues, formState: { errors }, setError, clearErrors } = useForm<Inputs>();
+    const [usernameStatus, setUsernameStatus] = useState<'idle'|'checking'|'available'|'unavailable'|'error'>('idle');
+    // checkedUsername not needed in signup flow here (we only show availability)
+    // keep state minimal
+    const usernameRef = useRef(getValues);
+    useEffect(() => { usernameRef.current = getValues; }, [getValues]);
+
+    // get checkUsernameAvailability from the already-destructured context above
+    // (we destructured many items earlier from useAuth)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const checkUsernameAvailability: ((u: string) => Promise<boolean>) | undefined = (useAuth() as any).checkUsernameAvailability;
 
     const [loading, setLoading] = useState(false);
     const [socialLoading, setSocialLoading] = useState(false);
@@ -31,6 +41,43 @@ const AuthModal = () => {
     const verificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const passwordValue = watch('password', '');
+
+    const watchedSignupUsername = watch('username');
+
+    // Debounced check for signup username availability
+    useEffect(() => {
+        if (isLoginMode) return; // only for signup
+        if (!watchedSignupUsername || watchedSignupUsername.length < 3) {
+            setUsernameStatus('idle');
+            clearErrors('username');
+            return;
+        }
+        // Start checking
+        setUsernameStatus('checking');
+        const h = setTimeout(async () => {
+            // If firebase not ready, skip check and show idle
+            if (!firebaseReady || !checkUsernameAvailability) {
+                setUsernameStatus('idle');
+                return;
+            }
+            try {
+                const available = await checkUsernameAvailability(watchedSignupUsername.toLowerCase());
+                if (available) {
+                    setUsernameStatus('available');
+                    clearErrors('username');
+                } else {
+                    setUsernameStatus('unavailable');
+                    setError('username', { type: 'manual', message: 'Username not available' });
+                }
+            } catch (error) {
+                console.error('Signup username check failed:', error);
+                setUsernameStatus('error');
+                setError('username', { type: 'manual', message: 'Error checking username' });
+            }
+        }, 450);
+
+        return () => clearTimeout(h);
+    }, [watchedSignupUsername, firebaseReady, checkUsernameAvailability, isLoginMode, clearErrors, setError]);
 
     // --- Effects ---
     useEffect(() => {
@@ -220,7 +267,7 @@ const AuthModal = () => {
     const renderFormContent = () => (
       <form id="auth-form" onSubmit={handleSubmit(onSubmit)} className="auth-form">
           {/* Sign Up Fields */}
-          <div className={`signup-fields-wrapper ${!isLoginMode ? 'open' : ''}`}>
+                    <div className={`signup-fields-wrapper ${!isLoginMode ? 'open' : ''}`}>
               <input
                 {...register('name', { required: !isLoginMode && 'Name is required' })}
                 type="text"
@@ -230,18 +277,25 @@ const AuthModal = () => {
               />
                {errors.name && !isLoginMode && <p className="text-red-500 text-xs -mt-3">{errors.name.message}</p>}
 
-              <input
-                {...register('username', {
-                    required: !isLoginMode && 'Username is required',
-                    minLength: !isLoginMode ? { value: 3, message: 'Min 3 characters' } : undefined,
-                    pattern: !isLoginMode ? { value: /^[a-zA-Z0-9_]+$/, message: 'Only letters, numbers, _ allowed' } : undefined,
-                 })}
-                type="text"
-                placeholder="Username"
-                className="auth-input lowercase"
-                disabled={loading || socialLoading}
-                onChange={(e) => { e.target.value = e.target.value.toLowerCase(); }}
-             />
+                  <div style={{ position: 'relative' }}>
+                  <input
+                     {...register('username', {
+                          required: !isLoginMode && 'Username is required',
+                          minLength: !isLoginMode ? { value: 3, message: 'Min 3 characters' } : undefined,
+                          pattern: !isLoginMode ? { value: /^[a-z0-9_]+$/i, message: 'Only letters, numbers, _ allowed' } : undefined,
+                      })}
+                     type="text"
+                     placeholder="Username"
+                     className="auth-input lowercase"
+                     disabled={loading || socialLoading}
+                     onChange={(e) => { e.target.value = e.target.value.toLowerCase(); }}
+                 />
+                 <div style={{ position: 'absolute', right: 10, top: 10 }}>
+                     {usernameStatus === 'checking' && <small className="text-gray-500">Checking...</small>}
+                     {usernameStatus === 'available' && <small className="text-green-600">Available</small>}
+                     {usernameStatus === 'unavailable' && <small className="text-red-600">Taken</small>}
+                 </div>
+                 </div>
               {errors.username && !isLoginMode && <p className="text-red-500 text-xs -mt-3">{errors.username.message}</p>}
           </div>
 

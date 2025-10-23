@@ -33,9 +33,12 @@ const SecurityTab: React.FC = () => {
       await updateUserPassword(data.currentPassword, data.newPassword);
       showNotification('Password updated successfully!', 'success');
       reset(); // Clear form on success
-    } catch (error: any) {
+    // FIX: Catch error as 'unknown' and then check its type
+    } catch (error: unknown) {
       console.error("Password Update Error:", error);
-      showNotification(error.message || 'Failed to update password. Check your current password.', 'error');
+      // Assuming error has a 'message' property, common for Error objects
+      const errorMessage = (error instanceof Error) ? error.message : 'Failed to update password. Check your current password.';
+      showNotification(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }

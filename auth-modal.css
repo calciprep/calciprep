@@ -76,15 +76,15 @@
 .form-inner-content {
     width: 100%;
     max-width: 380px;
-    margin: auto 0; /* Vertical margin auto for flex centering */
+    /* Let inner content take available height and layout vertically */
     display: flex;
     flex-direction: column;
-    /* Allow inner content to shrink if needed, prevent pushing legal links */
-    flex-shrink: 0;
+    flex: 1 1 auto; /* Allow growth and shrink within form-content */
+    min-height: 0; /* Important for children to allow scrolling inside */
 }
 
-/* Push legal links to the bottom ONLY in the form step */
-#form + .legal-links {
+/* Ensure legal links are pushed to the bottom of the inner content */
+.form-inner-content .legal-links {
     margin-top: auto; /* Push legal links down */
     padding-top: 1rem; /* Add some space above legal links */
     flex-shrink: 0; /* Prevent legal links from shrinking */
