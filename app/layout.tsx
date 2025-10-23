@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Oswald, EB_Garamond, Roboto_Mono } from "next/font/google";
+import Script from 'next/script'; // Import the Script component
 import { AuthProvider } from "@/contexts/AuthContext";
 import Notification from "@/components/common/Notification";
 import AuthModal from "@/components/common/AuthModal";
@@ -34,6 +35,9 @@ export const metadata: Metadata = {
     apple: '/media/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
+  other: {
+    "google-adsense-account": "ca-pub-2382040431534049",
+  },
 };
 
 export default function RootLayout({
@@ -43,11 +47,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* --- ADD ADSENSE SCRIPT SNIPPET HERE --- */}
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049`}
+          crossOrigin="anonymous"
+          strategy="lazyOnload" // Or "afterInteractive" if needed sooner
+        />
+        {/* --- END ADSENSE SCRIPT SNIPPET --- */}
+      </head>
       <body
         className={`${oswald.variable} ${ebGaramond.variable} ${robotoMono.variable}`}
       >
         <AuthProvider>
-          {/* LenisProvider now wraps the main content to enable global smooth scrolling */}
           <LenisProvider>
             {children}
           </LenisProvider>
