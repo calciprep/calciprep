@@ -26,9 +26,6 @@
     { "question": "Select the word which means the same as the group of words given: A person who is skilled in telling stories.", "options": ["Raconteur", "Orator", "Narrator", "Author"], "answer": "Raconteur" },
     { "question": "Select the most appropriate synonym of the given word: DILIGENT", "options": ["Lazy", "Industrious", "Idle", "Inactive"], "answer": "Industrious" },
     { "question": "Select the most appropriate antonym of the given word: FLEXIBLE", "options": ["Rigid", "Supple", "Pliant", "Elastic"], "answer": "Rigid" },
-    { "question": "Select the most appropriate meaning of the given idiom: To be on cloud nine", "options": ["To be extremely happy", "To be very sad", "To be angry", "To be confused"], "answer": "To be extremely happy" },
-    { "question": "Select the word which means the same as the group of words given: A person who is an expert in matters of taste.", "options": ["Connoisseur", "Amateur", "Novice", "Dilettante"], "answer": "Connoisseur" },
-    { "question": "Select the most appropriate synonym of the given word: EMINENT", "options": ["Famous", "Unknown", "Obscure", "Insignificant"], "answer": "Famous" },
     { "question": "Select the most appropriate antonym of the given word: GENUINE", "options": ["Authentic", "Spurious", "Real", "Original"], "answer": "Spurious" }
   ]
 ]
