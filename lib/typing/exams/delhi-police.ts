@@ -1,0 +1,29 @@
+import { ExamData } from '../types';
+
+export const delhiPoliceHcm: ExamData = {
+  rules: {
+    id: 'delhi_police_hcm',
+    name: 'Delhi Police HCM',
+    // Pointing to your local DP logo
+    logo: '/media/delhi-police-logo.png',
+    duration: 10 * 60, // 10 minutes
+    allowBackspace: true, 
+    highlightCurrentWord: false, // Strict exam environment
+    showLiveErrors: false,
+    targetWpm: 30, // 30 WPM English requirement
+    description: "Head Constable (Ministerial) format: 10 mins, minimum 30 WPM English requirement on computer. Accuracy is strictly evaluated."
+  },
+  passages: [
+    {
+      id: 'dp_1',
+      title: 'Delhi Police HCM (DP HCM) Passage 1',
+      text: "In the modern era, the landscape of crime has evolved significantly, transcending physical boundaries into the digital realm. Cyber security has thus emerged as a paramount concern for law enforcement agencies worldwide, including the Delhi Police. Cybercrimes range from financial frauds and identity theft to cyber terrorism and data breaches. Criminals exploit vulnerabilities in networks and software to gain unauthorized access to sensitive information. To combat these sophisticated threats, police departments must continually upgrade their technological infrastructure and analytical capabilities. Training personnel in digital forensics, ethical hacking, and open source intelligence is essential. Furthermore, establishing specialized cyber crime units equipped with advanced tools enables rapid response and effective investigation. Collaboration with international agencies and private tech companies is also crucial for tracking cyber criminals across jurisdictions. Public awareness campaigns play a vital role in preventing cyber crimes by educating citizens about safe online practices. As the reliance on digital systems grows, ensuring robust cyber security measures is not just a technological requirement but a fundamental aspect of maintaining law and order in the contemporary world. A well trained police force is the first line of defense against digital threats."
+    },
+    {
+  id: 'dp_2',
+  title: 'Delhi Police HCM (DP HCM) Passage 2',
+  text: "On May 7, 2025, India launched precision military strikes across nine locations in Pakistan and Pakistan-occupied Kashmir, codenamed Operation Sindoor, targeting terrorist infrastructure in response to the April 22 Pahalgam attack that killed 26 civilians, mostly Hindu tourists, in Jammu and Kashmir. The strikes hit key strongholds, including Bahawalpur, the headquarters of Jaish-e-Mohammed, and Muridke, a nerve center of Lashkar-e-Taiba, both Pakistan-bred outfits responsible for decades of anti-India terrorism. India described the operation as measured, non-escalatory, and proportionate, aimed at destroying terrorist training camps and deterring future cross-border attacks like Pahalgam, where assailants targeted victims based on religious identity. Unlike the 2019 Balakot strikes in Khyber Pakhtunkhwa following the Pulwama attack, which killed 40 Indian paramilitary personnel, Operation Sindoor was sharper and more resolute, striking deep into Punjab, Pakistan's political heartland. The Indian government emphasized that no civilian, economic, or military targets were hit, with satellite imagery from Maxar Technologies showing damage confined to terrorist sites like the Markaz Subhan Allah compound in Bahawalpur and the Markaz Taiba complex in Muridke. This operation marks a significant evolution in India's strategy under Prime Minister Narendra Modi, signaling a readiness to respond overtly with military force to Pakistan-sponsored terrorism, alongside diplomatic and economic measures like the suspension of the Indus Waters Treaty. Pakistan, which has long used terrorism as a low-cost instrument of war against India under the shadow of nuclear blackmail, faces a clear message: India will not tolerate such attacks. However, Pakistan's denial of involvement in Pahalgam, coupled with claims of 31 civilian deaths in the strikes, highlights its duplicity, a pattern seen when it harbored Osama bin Laden while posing as a U.S. ally in the war on terror. The strikes, executed between 1:05 and 1:30 a.m. IST by all three branches of the Indian Armed Forces, were praised domestically, with all political parties, including Congress and AIMIM, backing the operation. Foreign Secretary Vikram Misri underscored that the Pahalgam attack, linked to Lashkar-e-Taiba's proxy The Resistance Front, was the initial escalation, and India's response was solely to counter terrorism, not to provoke war. The investigation into Pahalgam, led by the National Investigation Agency, has identified key Lashkar-e-Taiba figures like Hafiz Saeed and Saifullah Khalid Kasuri in Pakistan, alongside local collaborators, with security forces killing three terrorists in a July 2025 operation in Harwan. Yet, the long-term impact on Pakistan's behavior remains uncertain. The perennial supply of radicalized youths and state-backed terrorist groups like Jaish-e-Mohammed and Lashkar-e-Taiba suggests that destroyed bases may be rebuilt. Pakistan's history of double-dealing-supporting terrorism while claiming victimhood-requires a fundamental shift in its character, a change unlikely without global pressure. India has briefed nations like the U.S., U.K., and Saudi Arabia, urging world powers to leverage their influence to compel Pakistan to act responsibly. National Security Advisor Ajit Doval emphasized India's non-escalatory intent but readiness to respond if provoked, as seen when Indian air defenses thwarted Pakistani drone and missile attacks on May 8. The Centre has also warned against domestic elements exploiting the situation to sow communal discord, noting that the Pahalgam attackers aimed to disrupt Kashmir's normalcy and incite religious strife.",
+  pdfUrl: "/pdfs/DELHI POLICE HCM PASSAGE - 2.pdf"
+}
+  ]
+};

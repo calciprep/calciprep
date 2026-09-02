@@ -1,32 +1,16 @@
+export type TypingMode = 'learn' | 'practice' | 'test';
+
 export interface TypingResult {
-  wpm: number;
-  accuracy: number;
-  errorPercentage: number;
-  netWpm?: number;
-  totalWordsTyped: number;
-  actualKeyDepressions: number;
-  keyStrokesByCandidate: number;
-  fullMistakes: number;
-  halfMistakes: number;
-  errorDetails: ErrorDetails;
   testName?: string;
-  backspacePresses?: number;
-  timeTakenInSeconds?: number;
+  keyStrokesByCandidate?: number;
+  fullMistakes?: number;
   totalErrors?: number;
-  marks?: number;
+  errorPercentage?: number;
+  backspacePresses?: number;
+  wpm?: number;
+  netWpm?: number;
+  accuracy?: number;
+  timeTakenInSeconds?: number;
   qualified?: boolean;
+  marks?: number;
 }
-
-export type TypingMode = 'learn-keys' | 'practice-words' | 'type-paragraphs' | 'take-tests';
-
-export interface ErrorDetails {
-  omission: number;
-  substitution: number;
-  addition: number;
-  spelling: number;
-  repetition: number;
-  incomplete: number;
-  capitalization: number;
-  spacing: number;
-}
-

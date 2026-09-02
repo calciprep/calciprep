@@ -1,452 +1,473 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import TypingResult from './TypingResult';
-import { calculateTypingResult } from '@/lib/typing-utils';
-import useTypingSound from '@/hooks/useTypingSound';
-import { TypingMode, TypingResult as TypingResultType } from '@/lib/typing-types';
-import { UserService } from '@/services/userService';
-import { Timer, ChevronDown, CheckCircle, RefreshCw } from 'lucide-react';
-import './TypingInterface.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { ExamRules, Passage } from '@/lib/typing/types';
+import { TypingResult as TypingResultType } from '@/lib/typing-types';
 
-// Define exercise lengths for practice words
-const PRACTICE_WORD_COUNTS = [50, 100, 150, 200];
-
-
-// Define a more specific type for the exercises prop based on the mode
-type ExerciseData =
-  | Record<string, string[]> // For learn-keys and practice-words
-  | string[] // For type-paragraphs
-  | { title?: string; passage?: string }[] // For take-tests
-  | null;
-
-interface TypingInterfaceProps {
-  exercises: ExerciseData;
-  mode: TypingMode;
+interface ClassicTypingProps {
+  passage: Passage;
+  examRules: ExamRules;
+  onFinish: (stats: TypingResultType) => void;
+  onCancel: () => void;
 }
 
-const TIMER_OPTIONS = [1, 3, 5, 10, 15, 30, 60]; // In minutes
-
-const TypingInterface: React.FC<TypingInterfaceProps> = ({ exercises, mode }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedExerciseIndex, setSelectedExerciseIndex] = useState(0);
-  // NEW state for practice words count
-  const [selectedWordCount, setSelectedWordCount] = useState<number>(PRACTICE_WORD_COUNTS[1]); // Default to 100 words
-  const [text, setText] = useState('');
+export default function TypingInterface({
+  passage,
+  examRules,
+  onFinish,
+  onCancel,
+}: ClassicTypingProps) {
+  // --- TEST STATE ---
   const [userInput, setUserInput] = useState('');
-  const [gameState, setGameState] = useState<'waiting' | 'running' | 'finished'>('waiting');
-  const [time, setTime] = useState(60); // Time state in seconds
-  const [selectedTime, setSelectedTime] = useState(60); // Selected duration in seconds
+  const [timeLeft, setTimeLeft] = useState(examRules.duration);
+  const [isStarted, setIsStarted] = useState(false);
 
-  const [result, setResult] = useState<TypingResultType | null>(null);
-  const [backspacePresses, setBackspacePresses] = useState(0);
+  // --- SETTINGS STATE ---
+  const [showSettings, setShowSettings] = useState(false);
+  const [backspaceEnabled, setBackspaceEnabled] = useState(
+    examRules.allowBackspace
+  );
+  const [showPassage, setShowPassage] = useState(false);
+  const [textSize, setTextSize] = useState(15);
+  const [fontFamily, setFontFamily] = useState('Times New Roman, serif');
+  const [nightMode, setNightMode] = useState(false);
 
-  const timerInterval = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const playTypingSound = useTypingSound();
-  const wordContainerRef = useRef<HTMLDivElement>(null);
-  const latestUserInputRef = useRef(userInput);
-  const hasFinishedRef = useRef(false);
+  // --- TRACKING REFS ---
+  const backspaceCount = useRef(0);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-   useEffect(() => {
-    latestUserInputRef.current = userInput;
-  }, [userInput]);
+  // --- TIMER LOGIC ---
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
 
-  const stopTimer = useCallback(() => {
-    if (timerInterval.current) {
-      clearInterval(timerInterval.current);
-      timerInterval.current = null;
+    if (isStarted && timeLeft > 0) {
+      interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    } else if (isStarted && timeLeft === 0) {
+      submitTest();
     }
-  }, []);
 
-  const finishTest = useCallback(() => {
-    if (hasFinishedRef.current) return;
-    if (gameState === 'waiting' && latestUserInputRef.current === '') return;
+    return () => clearInterval(interval);
+  }, [isStarted, timeLeft]);
 
-    hasFinishedRef.current = true;
-    stopTimer();
-    setGameState('finished');
+  // --- TYPING HANDLERS ---
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!isStarted) setIsStarted(true);
 
-    const endTime = Date.now();
-    let timeTakenInSeconds: number;
+    if (e.key === 'Backspace') {
+      backspaceCount.current += 1;
 
-    if (time === 0 && gameState === 'running') {
-        timeTakenInSeconds = selectedTime;
-    } else if (startTimeRef.current) {
-        timeTakenInSeconds = Math.max(0.1, (endTime - startTimeRef.current) / 1000);
+      if (!backspaceEnabled) {
+        e.preventDefault();
+      }
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserInput(e.target.value);
+  };
+
+  // --- FULL SCREEN LOGIC ---
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.warn('Fullscreen error:', err);
+      });
     } else {
-        timeTakenInSeconds = 0.1;
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  // --- SUBMIT EVALUATION ---
+  const submitTest = () => {
+    const timeTaken = examRules.duration - timeLeft;
+    const timeInMinutes = timeTaken / 60;
+
+    // Evaluate standard words separated by space
+    const typedWords = userInput.trim().split(/\s+/);
+    const originalWords = passage.text.trim().split(/\s+/);
+
+    let errors = 0;
+
+    for (let i = 0; i < typedWords.length; i++) {
+      if (typedWords[i] !== originalWords[i] && typedWords[i] !== '') {
+        errors++;
+      }
     }
 
-    const finalUserInput = latestUserInputRef.current;
-    
-    // Determine test name
-    const modeLabels: Record<TypingMode, string> = {
-      'learn-keys': 'Learn Keys',
-      'practice-words': 'Practice Words',
-      'type-paragraphs': 'Paragraphs',
-      'take-tests': 'SSC Tests',
+    const totalKeystrokes = userInput.length;
+
+    // Calculations based on typical SSC / NTA logic (5 characters = 1 word)
+    const grossWpm =
+      timeInMinutes > 0
+        ? Math.round((totalKeystrokes / 5) / timeInMinutes)
+        : 0;
+
+    const netWpm =
+      timeInMinutes > 0
+        ? Math.max(0, grossWpm - Math.round(errors / timeInMinutes))
+        : 0;
+
+    const accuracy =
+      grossWpm > 0
+        ? Math.max(0, Math.round((netWpm / grossWpm) * 100))
+        : 0;
+
+    const errorPercentage =
+      totalKeystrokes > 0
+        ? (errors / (totalKeystrokes / 5)) * 100
+        : 0;
+
+    // Assemble payload for TypingResult page
+    const stats: TypingResultType = {
+      testName: `Typing Test - ${examRules.name} ${passage.title}`,
+      keyStrokesByCandidate: totalKeystrokes,
+      fullMistakes: errors,
+      totalErrors: errors,
+      errorPercentage: errorPercentage,
+      backspacePresses: backspaceCount.current,
+      wpm: grossWpm,
+      netWpm: netWpm,
+      accuracy: accuracy,
+      timeTakenInSeconds: timeTaken,
+      qualified: netWpm >= (examRules.targetWpm || 30),
+      marks: netWpm,
     };
-    let testName = `Exercise ${selectedExerciseIndex + 1}`;
-    if (mode === 'practice-words') {
-      testName = `${selectedWordCount} Words`;
-    } else if (mode === 'type-paragraphs') {
-      testName = `Paragraph ${selectedExerciseIndex + 1}`;
-    } else if (mode === 'take-tests' && Array.isArray(exercises)) {
-      const item = exercises[selectedExerciseIndex] as { title?: string } | undefined;
-      testName = item?.title || `Test ${selectedExerciseIndex + 1}`;
-    }
-    
-    const calculatedResult = text ? calculateTypingResult(text, finalUserInput, timeTakenInSeconds, backspacePresses, testName) : null;
-    setResult(calculatedResult);
 
-    if (calculatedResult) {
-      const uid = UserService.getCurrentUid();
-      if (uid) {
-        const modeLabels: Record<TypingMode, string> = {
-          'learn-keys': 'Learn Keys',
-          'practice-words': 'Practice Words',
-          'type-paragraphs': 'Paragraphs',
-          'take-tests': 'SSC Tests',
-        };
-
-        UserService.addHistory(uid, 'typing_history', {
-          category: selectedCategory || modeLabels[mode],
-          name: calculatedResult.testName || testName,
-          netWpm: calculatedResult.netWpm ?? 0,
-          grossWpm: calculatedResult.wpm,
-          accuracy: calculatedResult.accuracy,
-        }).catch((error) => {
-          console.error('Failed to save typing history:', error);
-        });
-      }
-    }
-
-  }, [gameState, selectedTime, time, text, stopTimer, selectedCategory, selectedExerciseIndex, selectedWordCount, mode, exercises]);
-
-
-  const resetState = useCallback((newSelectedTime?: number) => {
-    stopTimer();
-    hasFinishedRef.current = false;
-    const timeToSet = newSelectedTime ?? selectedTime;
-    setGameState('waiting');
-    setUserInput('');
-    latestUserInputRef.current = '';
-    setTime(timeToSet);
-    setResult(null);
-    setBackspacePresses(0);
-    startTimeRef.current = null;
-    if (wordContainerRef.current) {
-      wordContainerRef.current.scrollTop = 0;
-    }
-    setTimeout(() => inputRef.current?.focus(), 0);
-  }, [selectedTime, stopTimer]);
-
-   const generateAndSetText = useCallback((category: string, indexOrWordCount: number) => {
-    if (!exercises || typeof exercises !== 'object') {
-        setText('');
-        resetState(selectedTime);
-        return;
-    }
-
-    let newText = '';
-    if (mode === 'learn-keys' && typeof exercises === 'object' && !Array.isArray(exercises) && exercises !== null) {
-      const categoryExercises = exercises[category] as string[] | undefined;
-      newText = categoryExercises?.[indexOrWordCount] || ''; // indexOrWordCount is the exercise index here
-    } else if (mode === 'practice-words' && typeof exercises === 'object' && !Array.isArray(exercises) && exercises !== null) {
-      const words = exercises[category] as string[] | undefined;
-      const count = indexOrWordCount; // indexOrWordCount is the word count here
-      if (words && words.length > 0) {
-        newText = Array.from({ length: count }, () => words[Math.floor(Math.random() * words.length)]).join(' ');
-      } else {
-        newText = '';
-      }
-    } else if (mode === 'type-paragraphs' && Array.isArray(exercises) && typeof exercises[0] === 'string') {
-        newText = (exercises as string[])[indexOrWordCount] || ''; // indexOrWordCount is the exercise index here
-    } else if (mode === 'take-tests' && Array.isArray(exercises) && typeof exercises[0] === 'object') {
-        newText = (exercises as { passage?: string }[])[indexOrWordCount]?.passage || ''; // indexOrWordCount is the exercise index here
-    }
-
-    setText(newText);
-    resetState(selectedTime);
-}, [mode, exercises, resetState, selectedTime]);
-
-
-  // Initialize categories and exercises, and focus input
-  useEffect(() => {
-    if (!exercises || typeof exercises !== 'object') return;
-
-    let initialCategory = '';
-    let initialIndexOrWordCount = 0; // Default index
-
-    if ((mode === 'learn-keys' || mode === 'practice-words') && !Array.isArray(exercises) && exercises !== null) {
-      initialCategory = Object.keys(exercises)[0] || '';
-      if (initialCategory) {
-        setSelectedCategory(initialCategory);
-        if (mode === 'practice-words') {
-             initialIndexOrWordCount = selectedWordCount; // Use selected word count for initial generation
-        }
-      }
-    } else if ((mode === 'type-paragraphs' || mode === 'take-tests') && Array.isArray(exercises)) {
-        initialIndexOrWordCount = 0; // Use index 0 for paragraphs/tests
-    }
-
-
-    generateAndSetText(initialCategory, initialIndexOrWordCount);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, exercises]); // Rerun only if mode/exercises change fundamentally
-
-
-  const startTimer = useCallback(() => {
-    if (gameState === 'waiting' && text && text.length > 0) {
-      setGameState('running');
-      startTimeRef.current = Date.now();
-      timerInterval.current = setInterval(() => {
-        setTime(prevTime => {
-          const nextTime = prevTime - 1;
-          if (nextTime <= 0) {
-            stopTimer();
-            // Use a slight delay for finishTest to allow state update if needed, though ref should handle it
-            setTimeout(finishTest, 0);
-            return 0;
-          }
-          return nextTime;
-        });
-      }, 1000);
-    }
-  }, [gameState, text, stopTimer, finishTest]);
-
-
-    useEffect(() => {
-        return () => stopTimer();
-    }, [stopTimer]);
-
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (gameState === 'finished' || (text && e.target.value.length > text.length)) return;
-
-    const newValue = e.target.value;
-    
-    // Track backspace presses
-    if (newValue.length < userInput.length) {
-      setBackspacePresses(prev => prev + (userInput.length - newValue.length));
-    }
-    
-    setUserInput(newValue);
-
-    if (gameState === 'waiting' && newValue.length === 1 && text && text.length > 0) {
-        startTimer();
-    }
-
-    if (newValue.length > userInput.length || newValue.length > 0) {
-        playTypingSound();
-    }
-
-     if (text && newValue.length === text.length && gameState === 'running') {
-        setTimeout(finishTest, 0);
-    }
+    onFinish(stats);
   };
 
-  const chars = useMemo(() => text ? text.split('').map((char, index) => {
-    let state = 'pending';
-    if (index < userInput.length) {
-      state = char === userInput[index] ? 'correct' : 'incorrect';
-    }
-    return { char, state };
-  }) : [], [text, userInput]);
-
-  const currentCharlIndex = userInput.length;
-
-  useEffect(() => {
-    const cursor = document.getElementById('cursor');
-    const wordContainer = wordContainerRef.current;
-    if (!cursor || !wordContainer || !text) return;
-
-    let targetSpan: HTMLElement | null = null;
-
-    if (currentCharlIndex >= text.length) {
-      targetSpan = document.getElementById(`char-${text.length - 1}`);
-       if (targetSpan) {
-            const charRect = targetSpan.getBoundingClientRect();
-            const containerRect = wordContainer.getBoundingClientRect();
-            cursor.style.left = `${charRect.right - containerRect.left + wordContainer.scrollLeft}px`;
-            cursor.style.top = `${charRect.top - containerRect.top + wordContainer.scrollTop}px`;
-       } else if (text.length === 0) {
-            cursor.style.left = `0px`;
-            cursor.style.top = `0px`;
-       }
-    } else {
-      targetSpan = document.getElementById(`char-${currentCharlIndex}`);
-      if (targetSpan) {
-          const charRect = targetSpan.getBoundingClientRect();
-          const containerRect = wordContainer.getBoundingClientRect();
-          cursor.style.left = `${charRect.left - containerRect.left + wordContainer.scrollLeft}px`;
-          cursor.style.top = `${charRect.top - containerRect.top + wordContainer.scrollTop}px`;
-      }
-    }
-
-    if (targetSpan && (gameState === 'running' || gameState === 'waiting')) {
-        const spanRect = targetSpan.getBoundingClientRect();
-        const containerRect = wordContainer.getBoundingClientRect();
-
-       const isVisible =
-         spanRect.top >= containerRect.top &&
-         spanRect.bottom <= containerRect.bottom;
-
-        if (!isVisible) {
-            targetSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-        }
-    } else if (currentCharlIndex === 0) {
-        wordContainer.scrollTop = 0;
-    }
-
-  }, [currentCharlIndex, text, gameState]);
-
-
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newCategory = e.target.value;
-    setSelectedCategory(newCategory);
-    setSelectedExerciseIndex(0); // Reset index for learn-keys/paragraphs/tests
-    const countOrIndex = mode === 'practice-words' ? selectedWordCount : 0; // Use word count or index 0
-    generateAndSetText(newCategory, countOrIndex);
-  };
-
-  // Handler specifically for exercise index (learn-keys, paragraphs, tests)
-  const handleExerciseIndexChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newIndex = parseInt(e.target.value, 10);
-    setSelectedExerciseIndex(newIndex);
-    generateAndSetText(selectedCategory, newIndex); // Use selected category and new index
-  };
-
-  // Handler specifically for word count (practice-words)
-  const handleWordCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newCount = parseInt(e.target.value, 10);
-      setSelectedWordCount(newCount);
-      generateAndSetText(selectedCategory, newCount); // Use selected category and new count
-  };
-
-
+  // --- FORMAT UTILS ---
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+
+    return `${m.toString().padStart(2, '0')}:${s
+      .toString()
+      .padStart(2, '0')}`;
   };
 
-  const handleRestartFromResults = () => {
-     // Use the appropriate value based on the mode for regeneration
-    const countOrIndex = mode === 'practice-words' ? selectedWordCount : selectedExerciseIndex;
-    generateAndSetText(selectedCategory, countOrIndex);
-  };
-
-  if (gameState === 'finished' && result) {
-    return <TypingResult result={result} onRestart={handleRestartFromResults} />;
-  }
-   if (gameState === 'finished' && !result) {
-       return <div className="typing-result-wrapper"><p>Calculating results...</p></div>;
-   }
-
-  const canRenderCategorySelect = (mode === 'learn-keys' || mode === 'practice-words') && exercises && typeof exercises === 'object' && !Array.isArray(exercises) && exercises !== null;
-
+  // --- RENDER ---
   return (
-    <div className="typing-interface-container" onClick={() => inputRef.current?.focus()}>
-      <div className="options-bar">
-        {/* Category Dropdown (Learn Keys & Practice Words) */}
-        { canRenderCategorySelect && (
-          <div className="select-wrapper">
-             <select value={selectedCategory} onChange={handleCategoryChange} disabled={gameState === 'running'}>
-              {Object.keys(exercises).map(cat => <option key={cat} value={cat}>{cat.replace(/_/g, ' ')}</option>)}
-            </select>
-            <ChevronDown size={16} />
+    <div
+      className={`flex flex-col min-h-screen ${
+        nightMode
+          ? 'bg-[#1e1e1e] text-white'
+          : 'bg-gray-100 text-black'
+      }`}
+    >
+      {/* 1. Header (Blue) */}
+      <div className="bg-[#4c75c3] text-white text-center py-2 px-4 text-xl font-bold tracking-wide">
+        Typing Test - {examRules.name} {passage.title}
+      </div>
+
+      {/* 2. Toolbar (Dark) */}
+      <div className="bg-[#333333] text-white px-4 py-2 flex flex-wrap justify-between items-center text-sm gap-2">
+        <div className="flex items-center gap-4">
+          <span>{examRules.name}</span>
+
+          <a
+            href={passage.pdfUrl || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-gray-300"
+          >
+            Click to Download Passage PDF
+          </a>
+        </div>
+
+        <div className="flex items-center gap-4 ml-auto">
+          <span className="font-bold text-yellow-400 text-base mr-2">
+            Time left: {formatTime(timeLeft)}
+          </span>
+
+          <button
+            onClick={() => setShowSettings(true)}
+            className="bg-[#10b981] hover:bg-[#0d9668] px-4 py-1.5 rounded text-white font-medium shadow transition-colors"
+          >
+            Settings
+          </button>
+
+          <button
+            onClick={toggleFullScreen}
+            className="bg-[#10b981] hover:bg-[#0d9668] px-4 py-1.5 rounded text-white font-medium shadow transition-colors"
+          >
+            Full Screen
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Main Typing Area */}
+      <div className="flex-1 p-2 md:p-6 lg:px-12 flex flex-col mx-auto w-full max-w-7xl">
+        {/* Info Bar */}
+        <div className="bg-[#5b87c6] text-white px-3 py-1 text-sm border border-[#5b87c6]">
+          Keyboard Layout: QWERTY Language: English
+        </div>
+
+        {/* Optional Passage Viewer */}
+        {showPassage && (
+          <div
+            className={`p-4 border-l border-r border-t overflow-y-auto max-h-48 leading-relaxed select-none ${
+              nightMode
+                ? 'bg-gray-800 border-gray-700 text-gray-200'
+                : 'bg-white border-gray-400 text-gray-800'
+            }`}
+            style={{
+              fontSize: `${textSize}pt`,
+              fontFamily,
+            }}
+          >
+            {passage.text}
           </div>
         )}
 
-        {/* Exercise Index Dropdown (Learn Keys, Paragraphs, Tests) */}
-        {(mode === 'learn-keys' || mode === 'type-paragraphs' || mode === 'take-tests') && exercises && (
-          <div className="select-wrapper">
-            <select value={selectedExerciseIndex} onChange={handleExerciseIndexChange} disabled={gameState === 'running'}>
-              {mode === 'learn-keys' && canRenderCategorySelect
-                ? (exercises[selectedCategory] as string[] | undefined)?.map((_, i: number) => <option key={i} value={i}>Exercise {i + 1}</option>)
-                : (mode === 'type-paragraphs' || mode === 'take-tests') && Array.isArray(exercises) && exercises.map((item: string | { title?: string; passage?: string }, i: number) => (
-                    <option key={i} value={i}>
-                      {mode === 'take-tests' && typeof item === 'object' ? item.title || `Test ${i + 1}` : `Paragraph ${i + 1}`}
-                    </option>
-                  ))
-              }
-            </select>
-            <ChevronDown size={16} />
-          </div>
-        )}
+        {/* Text Area */}
+        <textarea
+          ref={textareaRef}
+          className={`w-full flex-1 min-h-[400px] p-4 border resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-inner ${
+            nightMode
+              ? 'bg-[#121212] border-gray-700 text-white'
+              : 'bg-white border-gray-400 text-black'
+          }`}
+          style={{
+            fontSize: `${textSize}pt`,
+            fontFamily,
+            lineHeight: '1.6',
+          }}
+          placeholder={
+            !isStarted ? 'Start typing here to begin the test...' : ''
+          }
+          value={userInput}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onPaste={(e) => e.preventDefault()}
+          autoComplete="off"
+          spellCheck="false"
+          disabled={timeLeft === 0}
+        />
 
-         {/* Word Count Dropdown (Practice Words ONLY) */}
-         {mode === 'practice-words' && exercises && (
-            <div className="select-wrapper">
-                <select value={selectedWordCount} onChange={handleWordCountChange} disabled={gameState === 'running'}>
-                {PRACTICE_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} Words</option>)}
-                </select>
-                <ChevronDown size={16} />
-            </div>
-        )}
+        {/* Footer Actions */}
+        <div className="mt-6 flex gap-4">
+          <button
+            onClick={onCancel}
+            className="bg-[#dc3545] hover:bg-[#c82333] text-white px-6 py-2.5 rounded font-medium shadow-md transition-colors"
+          >
+            Cancel
+          </button>
 
+          <button
+            onClick={submitTest}
+            className="bg-[#4c75c3] hover:bg-[#3b5b99] text-white px-6 py-2.5 rounded font-medium shadow-md transition-colors"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
 
-        {/* Timer Options */}
-        <div className="timer-options">
-            <Timer size={16} className="timer-icon" />
-            {TIMER_OPTIONS.map(t => (
-                <button
-                    key={t}
-                    className={selectedTime / 60 === t ? 'active' : ''}
-                    onClick={() => {
-                        const newTimeSeconds = t * 60;
-                        setSelectedTime(newTimeSeconds);
-                        setTime(newTimeSeconds);
-                        resetState(newTimeSeconds);
-                    }}
-                    disabled={gameState === 'running'}
+      {/* 4. Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center backdrop-blur-sm p-4">
+          <div className="bg-white text-black w-full max-w-md rounded shadow-2xl flex flex-col max-h-full">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-bold">Test Settings</h2>
+
+              <button
+                onClick={() => setShowSettings(false)}
+                className="text-gray-400 hover:text-gray-700"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                    {t}
-                </button>
-            ))}
-        </div>
-
-        {/* Timer Display */}
-        { (gameState === 'running' || gameState === 'finished') && (
-            <div className='options-bar-timer-display'>
-              {formatTime(time)}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
             </div>
-        )}
-      </div>
 
-      {/* Typing Area */}
-      <div className="typing-area">
-        <div className={`word-container`} ref={wordContainerRef}>
-           {text && <div id="cursor" className={`cursor ${gameState === 'running' || gameState === 'waiting' ? 'blinking' : ''}`}></div>}
-           {chars.map(({ char, state }, index) => (
-            <span key={index} id={`char-${index}`} className={`char ${state} ${index === currentCharlIndex ? 'current' : ''}`}>
-               {char}
-            </span>
-          ))}
-           {text && <span id={`char-${text.length}`} className="char pending">&#8203;</span>}
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-6">
+              {/* Backspace Toggle */}
+              <div className="flex justify-between items-center">
+                <span className="font-bold">Backspace:</span>
+
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={backspaceEnabled}
+                      onChange={() =>
+                        setBackspaceEnabled(!backspaceEnabled)
+                      }
+                    />
+
+                    <div
+                      className={`block w-14 h-8 rounded-full transition-colors ${
+                        backspaceEnabled
+                          ? 'bg-blue-500'
+                          : 'bg-gray-300'
+                      }`}
+                    />
+
+                    <div
+                      className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
+                        backspaceEnabled
+                          ? 'transform translate-x-6'
+                          : ''
+                      }`}
+                    />
+                  </div>
+
+                  <span className="ml-3 font-medium text-sm text-gray-700">
+                    {backspaceEnabled ? 'Enabled' : 'Disabled'}
+                  </span>
+                </label>
+              </div>
+
+              {/* Show Passage Toggle */}
+              <div className="flex justify-between items-center">
+                <span className="font-bold">Show Passage:</span>
+
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={showPassage}
+                      onChange={() => setShowPassage(!showPassage)}
+                    />
+
+                    <div
+                      className={`block w-14 h-8 rounded-full transition-colors ${
+                        showPassage
+                          ? 'bg-blue-500'
+                          : 'bg-gray-300'
+                      }`}
+                    />
+
+                    <div
+                      className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
+                        showPassage
+                          ? 'transform translate-x-6'
+                          : ''
+                      }`}
+                    />
+                  </div>
+
+                  <span className="ml-3 font-medium text-sm text-gray-700">
+                    {showPassage ? 'Shown' : 'Hidden'}
+                  </span>
+                </label>
+              </div>
+
+              {/* Text Size */}
+              <div className="flex justify-between items-center">
+                <span className="font-bold">Text Size:</span>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() =>
+                      setTextSize(Math.max(10, textSize - 1))
+                    }
+                    className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold hover:bg-blue-600"
+                  >
+                    -
+                  </button>
+
+                  <span className="w-10 text-center">
+                    {textSize}pt
+                  </span>
+
+                  <button
+                    onClick={() =>
+                      setTextSize(Math.min(30, textSize + 1))
+                    }
+                    className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold hover:bg-blue-600"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Font Select */}
+              <div className="flex flex-col gap-2">
+                <span className="font-bold">Font:</span>
+
+                <select
+                  value={fontFamily}
+                  onChange={(e) => setFontFamily(e.target.value)}
+                  className="border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="Times New Roman, serif">
+                    Times New Roman
+                  </option>
+                  <option value="Arial, sans-serif">
+                    Arial
+                  </option>
+                  <option value="Courier New, monospace">
+                    Courier New
+                  </option>
+                </select>
+              </div>
+
+              {/* Screen Layout Select */}
+              <div className="flex flex-col gap-2">
+                <span className="font-bold">Screen Layout:</span>
+
+                <select className="border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="nta">NTA Mode</option>
+                  <option value="standard">Standard Mode</option>
+                </select>
+              </div>
+
+              {/* Night Mode Toggle */}
+              <div className="flex justify-between items-center">
+                <span className="font-bold">Night Mode:</span>
+
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={nightMode}
+                      onChange={() => setNightMode(!nightMode)}
+                    />
+
+                    <div
+                      className={`block w-14 h-8 rounded-full transition-colors ${
+                        nightMode
+                          ? 'bg-blue-500'
+                          : 'bg-gray-300'
+                      }`}
+                    />
+
+                    <div
+                      className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
+                        nightMode
+                          ? 'transform translate-x-6'
+                          : ''
+                      }`}
+                    />
+                  </div>
+
+                  <span className="ml-3 font-medium text-sm text-gray-700">
+                    {nightMode ? 'Enabled' : 'Disabled'}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
-        <input ref={inputRef} type="text" value={userInput} onChange={handleInputChange} autoFocus onBlur={(e) => {if(gameState !== 'finished') e.target.focus()}} className="hidden-input"/>
-      </div>
-
-      {/* Bottom Bar */}
-       <div className="bottom-bar">
-        <button className="restart-btn" onClick={handleRestartFromResults} title="Restart Test / New Words">
-            <RefreshCw size={16} />
-        </button>
-        {gameState === 'running' && (
-            <button className="submit-btn" onClick={finishTest} title="Finish Test">
-                <CheckCircle size={16} />
-                <span>Submit</span>
-            </button>
-        )}
-       </div>
+      )}
     </div>
   );
-};
-
-export default TypingInterface;
-
+}
