@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+        }
+        #drop-zone {
+            width: 80%;
+            max-width: 600px;
+            height: 300px;
+            border: 3px dashed #3b82f6;
+            border-radius: 20px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        #drop-zone:hover, #drop-zone.dragover {
+            background-color: #eff6ff;
+            border-color: #2563eb;
+            transform: scale(1.02);
+        }
+        h2 { color: #1e293b; margin-bottom: 10px; }
+        p { color: #64748b; font-size: 1.1rem; }
+        .icon { font-size: 48px; margin-bottom: 20px; }
+        #status { margin-top: 20px; font-weight: bold; color: #059669; min-height: 24px;}
+        .hidden-input { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="drop-zone" onclick="document.getElementById('fileInput').click()">
+        <div class="icon">📂</div>
+        <h2>Click or Drag File Here</h2>
+        <p>Upload your <strong>one_word_substitution.json</strong> file</p>
+        <p style="font-size: 0.9rem; color: #94a3b8;">(Processing happens instantly on your computer)</p>
+        <div id="status"></div>
+    </div>
+    <input type="file" id="fileInput" class="hidden-input" accept=".json" onchange="handleFile(this.files[0])">
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            document.getElementById('status').innerText = "Reading file...";
+
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    formatAndDownload(json);
+                } catch (error) {
+                    alert("Error: Invalid JSON file. " + error.message);
+                    document.getElementById('status').innerText = "Error reading file ❌";
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function formatAndDownload(data) {
+            document.getElementById('status').innerText = `Formatting ${countQuestions(data)} questions...`;
+
+            // Custom Formatter to put objects on one line
+            let formattedString = "[\n";
+            
+            data.forEach((chunk, i) => {
+                formattedString += "  [\n";
+                chunk.forEach((item, j) => {
+                    // JSON.stringify creates the one-line representation
+                    formattedString += "    " + JSON.stringify(item);
+                    if (j < chunk.length - 1) formattedString += ",\n";
+                    else formattedString += "\n";
+                });
+                formattedString += "  ]";
+                if (i < data.length - 1) formattedString += ",\n";
+                else formattedString += "\n";
+            });
+            formattedString += "]";
+
+            download("one_word_substitution_formatted.json", formattedString);
+        }
+
+        function countQuestions(data) {
+            return data.reduce((acc, chunk) => acc + chunk.length, 0);
+        }
+
+        function download(filename, text) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            document.getElementById('status').innerText = "Download Started! ✅";
+        }
+    </script>
+</body>
+</html>

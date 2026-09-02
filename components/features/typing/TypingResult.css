@@ -1,0 +1,144 @@
+.typing-result-wrapper {
+  background-color: #fff;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  width: 100%; /* Changed to fill the container */
+  margin: 0; /* Removed auto margin */
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.result-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+.stats-grid {
+  display: grid;
+  /* Using a more robust value for better landscape layout */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+  gap: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.1;
+}
+
+.stat-item.main-stat .stat-value {
+  font-size: 3rem;
+}
+
+.stat-value.wpm {
+  color: #4f46e5;
+}
+
+.stat-value.accuracy {
+  color: #16a34a;
+}
+
+.stat-item.error-stat .stat-value.error {
+  color: #dc2626;
+}
+
+.stat-cutoff {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.mistake-details {
+  margin-bottom: 2rem;
+}
+
+.detail-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+.detail-title span {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.detail-grid .stat-item {
+  background-color: transparent;
+  padding: 0;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.detail-grid .stat-label {
+  color: #4b5563;
+}
+.detail-grid .stat-value {
+  font-size: 2rem;
+  color: #111827;
+}
+
+.detail-grid.half {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+
+.result-actions {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.restart-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #10b981;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.restart-button:hover {
+  background-color: #059669;
+}
+

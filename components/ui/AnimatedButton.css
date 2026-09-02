@@ -1,0 +1,109 @@
+.animated-btn {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  outline: none;
+  overflow: hidden;
+  transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.animated-btn .btn-content {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* This is the animated fill-up layer */
+.animated-btn::after {
+  position: absolute;
+  content: "";
+  inset: 100% 0 0;
+  background: var(--bg, #070707);
+  pointer-events: none;
+  transition: inset 0.3s ease-in-out;
+}
+
+.animated-btn:hover .btn-content,
+.animated-btn:focus-visible .btn-content {
+    transform: scale(1.05);
+}
+
+.animated-btn:hover::after,
+.animated-btn:focus-visible::after {
+  inset-block-start: 0;
+}
+
+/* Disabled State */
+.animated-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.animated-btn:disabled:hover::after {
+    inset-block-start: 100%;
+}
+
+.animated-btn:disabled:hover {
+    color: initial;
+}
+
+/* === COLOR VARIANTS === */
+
+/* Primary (Sign Up: Blue -> Black) */
+.animated-btn.btn-primary {
+    background-color: #3B82F6; /* blue-500 */
+    color: white;
+    border-color: #3B82F6;
+    --bg: #111827; /* black */
+}
+.animated-btn.btn-primary:hover {
+    color: white;
+}
+.animated-btn.btn-primary:disabled {
+    background-color: #60A5FA; /* a lighter blue */
+    border-color: #60A5FA;
+}
+.animated-btn.btn-primary:disabled:hover {
+    color: white;
+}
+
+
+/* Secondary (Sign In: Transparent -> Red) */
+.animated-btn.btn-secondary {
+    background-color: transparent;
+    color: #1F2937; /* gray-800 */
+    border-color: #D1D5DB; /* gray-300 */
+    --bg: #EF4444; /* red-500 */
+}
+.animated-btn.btn-secondary:hover {
+    color: white;
+    border-color: transparent;
+}
+
+/* Dark Button */
+.animated-btn.btn-dark {
+  background-color: #111827; /* gray-900 */
+  color: #FFFFFF;
+  --bg: #374151; /* gray-700 */
+}
+.animated-btn.btn-dark:hover {
+    color: white;
+}
+
+/* Light Button (for Auth Modal) */
+.animated-btn.btn-light {
+    background-color: white;
+    color: #1F2937; /* gray-800 */
+    --bg: #E5E7EB; /* gray-200 */
+}
+.animated-btn.btn-light:hover {
+    color: #1F2937;
+}
+
