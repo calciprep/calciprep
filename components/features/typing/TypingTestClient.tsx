@@ -16,10 +16,6 @@ const TypingTestClient: React.FC<TypingTestClientProps> = ({ typingTests }) => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-gray-800">
-        SSC Typing Tests
-      </h1>
-      
       {/* We reuse the existing TypingInterface component, 
         passing the transformed passages array and specifying the correct mode.
       */}

@@ -9,6 +9,12 @@ export interface TypingResult {
   fullMistakes: number;
   halfMistakes: number;
   errorDetails: ErrorDetails;
+  testName?: string;
+  backspacePresses?: number;
+  timeTakenInSeconds?: number;
+  totalErrors?: number;
+  marks?: number;
+  qualified?: boolean;
 }
 
 export type TypingMode = 'learn-keys' | 'practice-words' | 'type-paragraphs' | 'take-tests';

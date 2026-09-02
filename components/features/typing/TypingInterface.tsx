@@ -39,6 +39,7 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({ exercises, mode }) =>
   const [selectedTime, setSelectedTime] = useState(60); // Selected duration in seconds
 
   const [result, setResult] = useState<TypingResultType | null>(null);
+  const [backspacePresses, setBackspacePresses] = useState(0);
 
   const timerInterval = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -79,7 +80,25 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({ exercises, mode }) =>
     }
 
     const finalUserInput = latestUserInputRef.current;
-    const calculatedResult = text ? calculateTypingResult(text, finalUserInput, timeTakenInSeconds) : null;
+    
+    // Determine test name
+    const modeLabels: Record<TypingMode, string> = {
+      'learn-keys': 'Learn Keys',
+      'practice-words': 'Practice Words',
+      'type-paragraphs': 'Paragraphs',
+      'take-tests': 'SSC Tests',
+    };
+    let testName = `Exercise ${selectedExerciseIndex + 1}`;
+    if (mode === 'practice-words') {
+      testName = `${selectedWordCount} Words`;
+    } else if (mode === 'type-paragraphs') {
+      testName = `Paragraph ${selectedExerciseIndex + 1}`;
+    } else if (mode === 'take-tests' && Array.isArray(exercises)) {
+      const item = exercises[selectedExerciseIndex] as { title?: string } | undefined;
+      testName = item?.title || `Test ${selectedExerciseIndex + 1}`;
+    }
+    
+    const calculatedResult = text ? calculateTypingResult(text, finalUserInput, timeTakenInSeconds, backspacePresses, testName) : null;
     setResult(calculatedResult);
 
     if (calculatedResult) {
@@ -91,19 +110,10 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({ exercises, mode }) =>
           'type-paragraphs': 'Paragraphs',
           'take-tests': 'SSC Tests',
         };
-        let testName = `Exercise ${selectedExerciseIndex + 1}`;
-        if (mode === 'practice-words') {
-          testName = `${selectedWordCount} Words`;
-        } else if (mode === 'type-paragraphs') {
-          testName = `Paragraph ${selectedExerciseIndex + 1}`;
-        } else if (mode === 'take-tests' && Array.isArray(exercises)) {
-          const item = exercises[selectedExerciseIndex] as { title?: string } | undefined;
-          testName = item?.title || `Test ${selectedExerciseIndex + 1}`;
-        }
 
         UserService.addHistory(uid, 'typing_history', {
           category: selectedCategory || modeLabels[mode],
-          name: testName,
+          name: calculatedResult.testName || testName,
           netWpm: calculatedResult.netWpm ?? 0,
           grossWpm: calculatedResult.wpm,
           accuracy: calculatedResult.accuracy,
@@ -125,6 +135,7 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({ exercises, mode }) =>
     latestUserInputRef.current = '';
     setTime(timeToSet);
     setResult(null);
+    setBackspacePresses(0);
     startTimeRef.current = null;
     if (wordContainerRef.current) {
       wordContainerRef.current.scrollTop = 0;
@@ -217,6 +228,12 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({ exercises, mode }) =>
     if (gameState === 'finished' || (text && e.target.value.length > text.length)) return;
 
     const newValue = e.target.value;
+    
+    // Track backspace presses
+    if (newValue.length < userInput.length) {
+      setBackspacePresses(prev => prev + (userInput.length - newValue.length));
+    }
+    
     setUserInput(newValue);
 
     if (gameState === 'waiting' && newValue.length === 1 && text && text.length > 0) {

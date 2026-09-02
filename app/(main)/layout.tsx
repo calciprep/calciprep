@@ -1,5 +1,7 @@
-import Header from "@/components/common/Header";
-import Footer from "@/components/common/Footer";
+import Navigation from '@/components/common/Navigation';
+import Footer from '@/components/common/Footer';
+import Notification from '@/components/common/Notification';
+import LenisProvider from '@/components/common/LenisProvider';
 
 export default function MainLayout({
   children,
@@ -7,10 +9,26 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow">{children}</main>
-      <Footer />
-    </div>
+    <LenisProvider>
+      <div className="flex min-h-screen bg-slate-50">
+        
+        <Navigation />
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0">
+          
+          {/* 
+            Applied minimal top padding to reduce gap between fixed header and content.
+          */}
+          <main className="flex-1 pt-6">
+            {children}
+          </main>
+
+          <Footer />
+        </div>
+
+        <Notification />
+      </div>
+    </LenisProvider>
   );
 }

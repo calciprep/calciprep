@@ -1,16 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
 import { 
   User, Shield, LayoutDashboard, Calculator, BookOpen, Keyboard, 
-  CheckCircle2, Mail, Loader2
+  CheckCircle2, Mail, Loader2, Eye, BarChart3
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HistoryCollection, HistoryEntry, UserService } from '@/services/userService';
 import SecurityTab from './SecurityTab';
+
+type DashboardRecord = {
+  id: string;
+  subject: 'Typing' | 'Mathematics' | 'English';
+  exam: string;
+  passage: string;
+  speed: number;
+  accuracy: number;
+  status: 'Qualified' | 'Needs Work';
+  date: string;
+  time: string;
+  createdAt: number;
+  raw: HistoryEntry;
+};
 
 // --- MAIN COMPONENT ---
 export default function AccountClient() {
@@ -185,6 +199,56 @@ function DashboardTab({
 }) {
   const [activeSubject, setActiveSubject] = useState<'typing' | 'maths' | 'english'>('typing');
   const [timeFilter, setTimeFilter] = useState<'today' | '7days' | '15days' | '30days'>('30days');
+  const [selectedRecord, setSelectedRecord] = useState<DashboardRecord | null>(null);
+
+  const allRecords = useMemo<DashboardRecord[]>(() => {
+    const mapToRecord = (
+      item: HistoryEntry,
+      subject: 'Typing' | 'Mathematics' | 'English',
+      exam: string,
+      passage: string
+    ): DashboardRecord => {
+      const speed = subject === 'Typing'
+        ? Number(item.netWpm ?? item.grossWpm ?? 0)
+        : Number(item.score ?? 0);
+      const accuracy = Number(item.accuracy ?? item.score ?? 0);
+      const status = subject === 'Typing'
+        ? (Number(item.netWpm ?? 0) >= 30 ? 'Qualified' : 'Needs Work')
+        : (Number(item.score ?? 0) >= 60 ? 'Qualified' : 'Needs Work');
+
+      return {
+        id: item.id,
+        subject,
+        exam,
+        passage: passage || item.name || `${subject} Test`,
+        speed,
+        accuracy,
+        status,
+        date: item.date || 'Unknown date',
+        time: item.time || 'Unknown time',
+        createdAt: item.createdAt || 0,
+        raw: item,
+      };
+    };
+
+    return [
+      ...typingHistory.map((item) => mapToRecord(item, 'Typing', 'Delhi Police', item.name || 'HCM Typing')),
+      ...mathsHistory.map((item) => mapToRecord(item, 'Mathematics', 'Mathematics', item.name || 'Maths Challenge')),
+      ...englishHistory.map((item) => mapToRecord(item, 'English', 'English', item.name || 'English Quiz')),
+    ].sort((a, b) => b.createdAt - a.createdAt);
+  }, [typingHistory, mathsHistory, englishHistory]);
+
+  const subjectRecords = useMemo(() => {
+    const subjectMap = {
+      typing: 'Typing',
+      maths: 'Mathematics',
+      english: 'English',
+    } as const;
+
+    return allRecords.filter((record) => record.subject === subjectMap[activeSubject]);
+  }, [activeSubject, allRecords]);
+
+  const recordValueLabel = activeSubject === 'typing' ? 'Speed (WPM)' : 'Score';
 
   // Calculate Averages for Maths
   const avgMathsScore = mathsHistory.length > 0 
@@ -227,38 +291,129 @@ function DashboardTab({
         />
       </div>
 
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-white/15">
+              <BarChart3 size={20} />
+            </div>
+            <h3 className="text-2xl font-bold">Test Records ({subjectRecords.length})</h3>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-left">
+            <thead>
+              <tr className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">
+                <th className="px-5 py-4">#</th>
+                <th className="px-5 py-4">Exam</th>
+                <th className="px-5 py-4">Test</th>
+                <th className="px-5 py-4">{recordValueLabel}</th>
+                <th className="px-5 py-4">Accuracy</th>
+                <th className="px-5 py-4">Status</th>
+                <th className="px-5 py-4">Date</th>
+                <th className="px-5 py-4 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {subjectRecords.length > 0 ? subjectRecords.map((row, index) => (
+                <tr key={`${row.subject}-${row.id}`} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="px-5 py-4 font-semibold text-slate-600">{index + 1}</td>
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                      <div className="text-sm font-semibold text-slate-800">{row.subject}</div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{row.passage}</td>
+                  <td className="px-5 py-4 text-sm font-bold text-slate-800">
+                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-blue-700">
+                      {row.speed}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 text-sm font-semibold text-slate-700">{row.accuracy}%</td>
+                  <td className="px-5 py-4">
+                    <span className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold ${row.status === 'Qualified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                      {row.status}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 text-sm text-slate-600">
+                    <div className="font-medium">{row.date}</div>
+                    <div className="text-xs text-slate-400">{row.time}</div>
+                  </td>
+                  <td className="px-5 py-4 text-right">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRecord(row)}
+                      className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
+                    >
+                      <Eye size={15} />
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan={8} className="px-5 py-10 text-center text-slate-500">
+                    No {activeSubject} records found yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {selectedRecord && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Result details</p>
+                <h4 className="mt-1 text-2xl font-bold text-slate-900">{selectedRecord.subject}</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedRecord(null)}
+                className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-200"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Speed</p>
+                  <p className="mt-2 text-2xl font-bold text-blue-700">{selectedRecord.speed} WPM</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Accuracy</p>
+                  <p className="mt-2 text-2xl font-bold text-emerald-600">{selectedRecord.accuracy}%</p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Test</p>
+                <p className="mt-2 text-lg font-semibold text-slate-800">{selectedRecord.passage}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-slate-500">Status</p>
+                  <p className={`mt-2 font-semibold ${selectedRecord.status === 'Qualified' ? 'text-emerald-600' : 'text-amber-600'}`}>{selectedRecord.status}</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-slate-500">Date</p>
+                  <p className="mt-2 font-semibold text-slate-800">{selectedRecord.date}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Conditional Analytics View */}
-      {activeSubject === 'typing' && (
-        <TypingAnalytics
-          history={typingHistory}
-          timeFilter={timeFilter}
-          setTimeFilter={setTimeFilter}
-          onDelete={(id) => onDelete('typing_history', id)}
-        />
-      )}
-      
-      {activeSubject === 'maths' && (
-        <SubjectAnalytics 
-          subjectName="Mathematics" 
-          totalTests={mathsHistory.length.toString()} 
-          avgScore={avgMathsScore} 
-          bestScore={bestMathsScore} 
-          history={mathsHistory}
-          onDelete={(id) => onDelete('maths_history', id)} 
-        />
-      )}
-
-      {activeSubject === 'english' && (
-        <SubjectAnalytics 
-          subjectName="English" 
-          totalTests={englishHistory.length.toString()} 
-          avgScore={avgEnglishScore} 
-          bestScore={bestEnglishScore} 
-          history={englishHistory}
-          onDelete={(id) => onDelete('english_history', id)} 
-        />
-      )}
-
     </div>
   );
 }
