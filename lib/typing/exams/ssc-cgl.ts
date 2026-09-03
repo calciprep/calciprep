@@ -3,7 +3,7 @@ import { ExamData } from '../types';
 export const sscCgl: ExamData = {
   rules: {
     id: 'ssc_cgl',
-    name: 'SSC CGL Typing',
+    name: 'SSC CGL TYPING',
     // Pointing to your local image in the public/media folder
     logo: '/media/ssc-logo.png',
     duration: 15 * 60, // 15 minutes
@@ -11,7 +11,7 @@ export const sscCgl: ExamData = {
     highlightCurrentWord: false, 
     showLiveErrors: false,
     targetWpm: 27, 
-    description: "SSC CGL Typing Test 2025 on Computer (Maximum 25 marks): Candidates who qualify will be called for the Typing Test. Minimum qualifying speed is 27 w.p.m. The Typing Test shall be of 15 minutes duration."
+    description: "Key Depression: The skill test will involve passages with approximately 2000 key depressions in the text. Time Required: Candidates will have 15 minutes to complete the typing test. DEST will be mandatory for all the posts; however, it will be qualifying in nature. For English Typing: 35 Words Per Minute (WPM) and for Hindi Typing: 30 Words Per Minute (WPM)."
   },
   passages: [
     {

@@ -65,7 +65,7 @@ export default function TypingInterface({
     }
   };
 
-  const handleChange = (e: React.ChangeEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserInput(e.target.value);
   };
 

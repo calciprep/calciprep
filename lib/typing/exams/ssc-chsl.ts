@@ -3,7 +3,7 @@ import { ExamData } from '../types';
 export const sscChsl: ExamData = {
   rules: {
     id: 'ssc_chsl',
-    name: 'SSC CHSL',
+    name: 'SSC CHSL TYPING',
     // Using the exact same SSC logo here
     logo: '/media/ssc-logo.png',
     duration: 10 * 60, // 10 minutes
@@ -11,7 +11,7 @@ export const sscChsl: ExamData = {
     highlightCurrentWord: false,
     showLiveErrors: false,
     targetWpm: 35, // LDC/JSA requirement
-    description: "LDC/JSA format: 10 mins, 35 WPM English requirement. Backspace is allowed. Accuracy is crucial; focus on minimizing errors rather than raw speed."
+    description: "Candidates who want to do English Typing will be required to type at a speed of 35 words per minute (10,500 key depressions/hour) and candidates who want to do Hindi typing will be typed at 30 words per minute (9,000 key depressions/hour) within 10 minutes (15 minutes for PwD candidates). During application, you are supposed to choose either English or Hindi as your typing language. Nothing to be changed afterwards. The text passage to be typed will be on the screen in the test. You have to type without stopping in 10 minutes (15 minutes in case of PwD)."
   },
   passages: [
     {

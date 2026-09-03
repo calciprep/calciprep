@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import './QuizInterface.css';
 import type { QuizData, Question } from '@/lib/quizTypes';
 import { UserService } from '@/services/userService';
 import { Clock, Check, X, SkipForward, Send } from 'lucide-react';
-import QuizReviewSection from './QuizReviewSection';
-import ResultActionButtons from '@/components/common/ResultActionButtons';
+
+import EnglishResult from './EnglishResult';
 
 interface QuizInterfaceProps {
   quizData: QuizData;
@@ -38,10 +37,11 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizData }) => {
     };
   }, [showResult]);
 
-  // FIX: Wrap submitQuiz in useCallback to satisfy exhaustive-deps
   const submitQuiz = useCallback(() => {
     const correctAnswers = questions.filter(q => q.status === 'correct').length;
-    const answeredQuestions = questions.filter(q => q.status === 'correct' || q.status === 'incorrect').length;
+    const incorrectAnswers = questions.filter(q => q.status === 'incorrect').length;
+    const skippedAnswers = questions.filter(q => q.status === 'skipped').length;
+    const answeredQuestions = correctAnswers + incorrectAnswers;
     
     const calculatedPassPercentage = answeredQuestions > 0 ? (correctAnswers / answeredQuestions) * 100 : 0;
     
@@ -51,12 +51,20 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizData }) => {
     if (!historySavedRef.current) {
       historySavedRef.current = true;
       const uid = UserService.getCurrentUid();
+      
       if (uid) {
+        const questionsToSave = JSON.parse(JSON.stringify(questions));
+
         UserService.addHistory(uid, 'english_history', {
           category,
           name: quizData.title,
           score: Number(calculatedPassPercentage.toFixed(1)),
           accuracy: Number(calculatedPassPercentage.toFixed(1)),
+          totalQuestions: questions.length,
+          correctAnswers: correctAnswers,
+          incorrectAnswers: incorrectAnswers,
+          skippedAnswers: skippedAnswers,
+          questionsState: questionsToSave,
         }).catch((error) => {
           console.error('Failed to save English history:', error);
         });
@@ -78,10 +86,10 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizData }) => {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timeLimit, showResult, submitQuiz]); // FIX: Add submitQuiz to the dependency array
+  }, [timeLimit, showResult, submitQuiz]);
 
   const handleOptionSelect = (option: string) => {
-    if (selectedOption) return; // Prevent multiple selections
+    if (selectedOption) return;
 
     setSelectedOption(option);
     const updatedQuestions = [...questions];
@@ -128,53 +136,22 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizData }) => {
 
   if (showResult) {
     const answeredCount = questions.filter(q => q.status === 'correct' || q.status === 'incorrect').length;
-
+    
     return (
-      // REMOVED: ReactLenis is now global, so it's removed from here.
-      <div className="bg-gray-50">
-          <header className="results-nav">
-              <div className="results-nav-content">
-                  <h2 className="text-lg font-bold text-gray-800">Results: <span className="text-indigo-600">{category}</span></h2>
-                  <div className="flex items-center space-x-4">
-                      <Link href="/" className="results-nav-link">Home</Link>
-                      <Link href="/english" className="results-nav-link">English</Link>
-                      <Link href={`/english/quiz-list?category=${encodeURIComponent(category)}`} className="results-nav-link">Back to Quizzes</Link>
-                  </div>
-              </div>
-          </header>
-
-          <main className="max-w-4xl mx-auto py-8">
-              <div className="bg-white p-6 rounded-2xl shadow-md mb-8 mx-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                      <div>
-                          <p className="text-sm font-medium text-gray-500">Accuracy</p>
-                          <p className="text-3xl font-bold text-indigo-600">{passPercentage.toFixed(0)}%</p>
-                      </div>
-                      <div>
-                          <p className="text-sm font-medium text-gray-500">Status</p>
-                          <p className={`text-3xl font-bold ${passPercentage >= 40 ? 'text-green-500' : 'text-red-500'}`}>
-                              {passPercentage >= 40 ? 'Passed' : 'Failed'}
-                          </p>
-                      </div>
-                      <div>
-                          <p className="text-sm font-medium text-gray-500">Answered</p>
-                          <p className="text-3xl font-bold text-gray-800">
-                              {answeredCount}
-                              <span className="text-lg text-gray-500">/{questions.length}</span>
-                          </p>
-                      </div>
-                  </div>
-                  <ResultActionButtons onRetake={handleRetake} />
-              </div>
-
-              <QuizReviewSection questions={questions} totalQuestions={questions.length} />
-          </main>
-      </div>
+      <EnglishResult 
+        category={category}
+        quizName={quizData.title} // <-- NEW PROP ADDED HERE
+        passPercentage={passPercentage}
+        totalQuestions={questions.length}
+        answeredCount={answeredCount}
+        questionsState={questions}
+        onRetake={handleRetake}
+      />
     );
   }
 
   return (
-    <div className="quiz-container">
+    <div className="quiz-container pt-20"> {/* Safety padding for live quiz view */}
       <div className="quiz-card">
         <div className="quiz-header">
           <div className="quiz-title-section">

@@ -19,34 +19,49 @@ const AdSenseBlock: React.FC<AdSenseBlockProps> = ({
   adLayoutKey,
   className = ""
 }) => {
-  const adRef = useRef<HTMLModElement>(null); // Use HTMLModElement for <ins>
+  const adRef = useRef<HTMLModElement>(null);
 
   useEffect(() => {
-    // Check if the ad slot already has content or has the 'adsbygoogle-no-fill' class
-    if (adRef.current && (adRef.current.innerHTML.trim() !== "" || adRef.current.dataset.adsbygoogleStatus === 'done')) {
-        // console.log(`Ad slot ${adSlot} already filled or marked as done. Skipping push.`);
-        return; // Don't push again if already filled or processed
-    }
+    let timeoutId: NodeJS.Timeout;
 
-    try {
-      // The push({}) method tells AdSense to look for and fill an ad slot.
-      // Explicitly type window
-      ((window as Window & typeof globalThis & { adsbygoogle?: unknown[] }).adsbygoogle = (window as Window & typeof globalThis & { adsbygoogle?: unknown[] }).adsbygoogle || []).push({});
+    const pushAd = () => {
+      if (!adRef.current) return;
 
-      // Optionally mark the slot as processed
-       if (adRef.current) {
-           adRef.current.dataset.adsbygoogleStatus = 'done';
-       }
+      // FIX 1: Prevent "availableWidth=0" error
+      // If the ad container is hidden or hasn't painted its width yet, wait and try again.
+      if (adRef.current.clientWidth === 0) {
+        timeoutId = setTimeout(pushAd, 200);
+        return;
+      }
 
-    } catch (err) {
-      console.error("AdSense execution error:", err as Error);
-    }
-  }, [adSlot]); // Dependency array still just needs adSlot
+      // FIX 2: Prevent double-pushing in React Strict Mode
+      // Only push if AdSense hasn't already marked this exact slot as "done"
+      if (!adRef.current.hasAttribute('data-adsbygoogle-status')) {
+        try {
+          ((window as Window & typeof globalThis & { adsbygoogle?: unknown[] }).adsbygoogle = 
+            (window as Window & typeof globalThis & { adsbygoogle?: unknown[] }).adsbygoogle || []).push({});
+        } catch (err: unknown) {
+          const error = err as Error;
+          // Safely ignore the "already have ads" error in development
+          if (!error.message.includes('already have ads')) {
+            console.error("AdSense execution error:", error);
+          }
+        }
+      }
+    };
+
+    // Small delay ensures the DOM layout is completely finished before AdSense calculates the responsive width
+    timeoutId = setTimeout(pushAd, 100);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [adSlot]); 
 
   return (
     <div className={`ad-placeholder w-full bg-gray-50 flex items-center justify-center text-gray-400 text-sm min-h-[100px] rounded-lg ${className}`}>
       <ins
-        ref={adRef} // Add ref to the ins tag
+        ref={adRef}
         className="adsbygoogle"
         style={{ display: 'block', width: '100%' }}
         data-ad-client={adClient}

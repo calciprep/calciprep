@@ -22,7 +22,7 @@ export default function TypingExamSelectionPage() {
         {/* Header Section */}
         <div className="text-center mb-10">
           <h1 className="text-[2.5rem] font-bold text-[#6466f1] mb-2 tracking-tight">
-            All Exams
+            All Typing Exams
           </h1>
 
           <p className="text-gray-500 text-lg">

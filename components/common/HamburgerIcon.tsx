@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
@@ -16,24 +16,29 @@ const HamburgerIcon: React.FC<HamburgerIconProps> = ({ isOpen, onClick }) => {
   const closeRightRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Animate to 'X' (close icon)
-    if (isOpen) {
-      gsap.to(topBarRef.current, { x: 80, y: -80, duration: 0.4, ease: 'power4.in' });
-      gsap.to(middleBarRef.current, { x: 80, y: -80, duration: 0.4, ease: 'power4.in' });
-      gsap.to(bottomBarRef.current, { x: 80, y: -80, duration: 0.4, delay: 0.1, ease: 'power4.in' });
-      gsap.to(closeLeftRef.current, { x: 0, y: 0, duration: 0.8, delay: 0.3, ease: 'power4.out' });
-      gsap.to(closeRightRef.current, { x: 0, y: 0, duration: 0.8, delay: 0.5, ease: 'power4.out' });
-    }
-    // Animate back to hamburger
-    else {
-      gsap.to(closeLeftRef.current, { x: 100, y: -100, duration: 0.2, ease: 'power4.in' });
-      gsap.to(closeRightRef.current, { x: -100, y: -100, duration: 0.2, delay: 0.1, ease: 'power4.in' });
-      gsap.to(topBarRef.current, { x: 0, y: 0, duration: 1, delay: 0.3, ease: 'power4.out' });
-      gsap.to(middleBarRef.current, { x: 0, y: 0, duration: 1, delay: 0.3, ease: 'power4.out' });
-      gsap.to(bottomBarRef.current, { x: 0, y: 0, duration: 1, delay: 0.4, ease: 'power4.out' });
-    }
-  }, [isOpen]);
+    // Wrap animations in a context to prevent memory leaks and choppiness
+    const ctx = gsap.context(() => {
+      // Animate to 'X' (close icon)
+      if (isOpen) {
+        gsap.to(topBarRef.current, { x: 80, y: -80, duration: 0.4, ease: 'power4.in' });
+        gsap.to(middleBarRef.current, { x: 80, y: -80, duration: 0.4, ease: 'power4.in' });
+        gsap.to(bottomBarRef.current, { x: 80, y: -80, duration: 0.4, delay: 0.1, ease: 'power4.in' });
+        gsap.to(closeLeftRef.current, { x: 0, y: 0, duration: 0.8, delay: 0.3, ease: 'power4.out' });
+        gsap.to(closeRightRef.current, { x: 0, y: 0, duration: 0.8, delay: 0.5, ease: 'power4.out' });
+      }
+      // Animate back to hamburger
+      else {
+        gsap.to(closeLeftRef.current, { x: 100, y: -100, duration: 0.2, ease: 'power4.in' });
+        gsap.to(closeRightRef.current, { x: -100, y: -100, duration: 0.2, delay: 0.1, ease: 'power4.in' });
+        gsap.to(topBarRef.current, { x: 0, y: 0, duration: 1, delay: 0.3, ease: 'power4.out' });
+        gsap.to(middleBarRef.current, { x: 0, y: 0, duration: 1, delay: 0.3, ease: 'power4.out' });
+        gsap.to(bottomBarRef.current, { x: 0, y: 0, duration: 1, delay: 0.4, ease: 'power4.out' });
+      }
+    });
 
+    // Cleanup function completely destroys old animations before starting new ones
+    return () => ctx.revert();
+  }, [isOpen]);
 
   return (
     <>
@@ -90,4 +95,3 @@ const HamburgerIcon: React.FC<HamburgerIconProps> = ({ isOpen, onClick }) => {
 };
 
 export default HamburgerIcon;
-

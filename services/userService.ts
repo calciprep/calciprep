@@ -35,6 +35,24 @@ export interface HistoryEntry {
   netWpm?: number;
   grossWpm?: number;
   score?: number;
+  
+  // Typing Specifics
+  keyStrokesByCandidate?: number;
+  fullMistakes?: number;
+  totalErrors?: number;
+  errorPercentage?: number;
+  backspacePresses?: number;
+  timeTakenInSeconds?: number;
+  originalText?: string;
+  typedText?: string;
+
+  // --- NEW: English/Maths Specifics for Dashboards ---
+  totalQuestions?: number;
+  correctAnswers?: number;
+  incorrectAnswers?: number;
+  skippedAnswers?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  questionsState?: any[]; // Stores the array of questions with the user's answers
 }
 
 type HistoryPayload = Omit<HistoryEntry, "id" | "createdAt" | "date" | "time"> &

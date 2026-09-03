@@ -16,12 +16,15 @@ interface TypingResultProps {
   result: TypingResultType;
   onRestart: () => void;
   onTakeAnother?: () => void;
+  // NEW: Flag to know if we are in the dashboard review modal
+  isHistoryView?: boolean; 
 }
 
-const TypingResult: React.FC = ({
+const TypingResult: React.FC<TypingResultProps> = ({
   result,
   onRestart,
   onTakeAnother,
+  isHistoryView = false,
 }) => {
   // Toggle state for formulas
   const [showFormulas, setShowFormulas] = useState(false);
@@ -518,24 +521,26 @@ const TypingResult: React.FC = ({
         )}
       </div>
 
-      {/* Perfectly Aligned Button Row */}
-      <div className="result-actions-container">
-        <div className="buttons-row flex-row-align">
-          <ResultActionButtons
-            onRetake={onRestart}
-          />
+      {/* Only render action buttons if we are NOT in the dashboard history view */}
+      {!isHistoryView && (
+        <div className="result-actions-container">
+          <div className="buttons-row flex-row-align">
+            <ResultActionButtons
+              onRetake={onRestart}
+            />
 
-          {onTakeAnother && (
-            <button
-              onClick={onTakeAnother}
-              className="take-another-button"
-            >
-              <FileText size={18} />
-              <span>Take Another Test</span>
-            </button>
-          )}
+            {onTakeAnother && (
+              <button
+                onClick={onTakeAnother}
+                className="take-another-button"
+              >
+                <FileText size={18} />
+                <span>Take Another Test</span>
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
