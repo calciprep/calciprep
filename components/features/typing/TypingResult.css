@@ -152,30 +152,149 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* COMPARISON SECTION STYLES */
+.comparison-section {
+  max-width: 1300px;
+  margin: 0 auto 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.text-box-container {
+  background-color: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.text-box-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.text-box-content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #374151;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  white-space: pre-wrap;
+}
+
+/* Highlight Colors for Errors */
+.error-highlight {
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: 0 2px;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.addition {
+  background-color: #fde047; /* Yellow */
+  color: #111827;
+}
+
+.full-error {
+  background-color: #ef4444; /* Red */
+  color: white;
+}
+
+.capitalization-error {
+  background-color: #ec4899; /* Pink */
+  color: white;
+}
+
+.spacing-error {
+  background-color: #7dd3fc; /* Light Blue */
+  color: #111827;
+}
+
+/* Legend Styling */
+.error-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.legend-item {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.legend-addition {
+  background-color: #fde047;
+  color: #111827;
+}
+
+.legend-full {
+  background-color: #ef4444;
+  color: white;
+}
+
+.legend-caps {
+  background-color: #ec4899;
+  color: white;
+}
+
+.legend-spacing {
+  background-color: #7dd3fc;
+  color: #111827;
+}
+
+/* FORMULA SECTION (Accordion) */
 .formula-section {
+  max-width: 1300px;
+  margin: 0 auto 3rem;
   background-color: white;
   border-radius: 1rem;
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   box-shadow:
     0 1px 3px 0 rgb(0 0 0 / 0.1),
     0 1px 2px -1px rgb(0 0 0 / 0.1);
   border: 1px solid #e5e7eb;
 }
 
-.formula-title {
+.formula-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.formula-title-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.formula-title-text {
   font-size: 1.25rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  font-family: inherit;
 }
 
 .formula-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .formula-item {
@@ -197,9 +316,28 @@
   margin-top: 0.25rem;
 }
 
-.result-actions {
-  text-align: center;
-  margin-top: 2rem;
+/* BUTTON ALIGNMENT FIX */
+.result-actions-container {
+  max-width: 1300px;
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.flex-row-align {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Targets the elements inside ResultActionButtons if it renders multiple wrapping divs */
+.flex-row-align > * {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 !important; /* Overrides margin set by ResultActionButtons if any */
 }
 
 .restart-button {
@@ -215,8 +353,31 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  font-family: inherit;
+  height: 44px; /* Ensure uniform height across all buttons */
 }
 
 .restart-button:hover {
   background-color: #059669;
+}
+
+.take-another-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #3b82f6; /* Blue to differentiate */
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: inherit;
+  height: 44px; /* Matches standard UI button heights */
+}
+
+.take-another-button:hover {
+  background-color: #2563eb;
 }

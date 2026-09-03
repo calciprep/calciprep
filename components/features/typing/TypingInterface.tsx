@@ -27,21 +27,24 @@ export default function TypingInterface({
   const [backspaceEnabled, setBackspaceEnabled] = useState(
     examRules.allowBackspace
   );
-  const [showPassage, setShowPassage] = useState(false);
+  const [showPassage, setShowPassage] = useState(false); // Default hidden as per typical paper-to-screen
   const [textSize, setTextSize] = useState(15);
   const [fontFamily, setFontFamily] = useState('Times New Roman, serif');
   const [nightMode, setNightMode] = useState(false);
 
-  // --- TRACKING REFS ---
+  // --- TRACKING REFS (Doesn't cause re-renders) ---
   const backspaceCount = useRef(0);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const textareaRef = useRef(null);
 
   // --- TIMER LOGIC ---
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
     if (isStarted && timeLeft > 0) {
-      interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+      interval = setInterval(
+        () => setTimeLeft((prev) => prev - 1),
+        1000
+      );
     } else if (isStarted && timeLeft === 0) {
       submitTest();
     }
@@ -50,19 +53,19 @@ export default function TypingInterface({
   }, [isStarted, timeLeft]);
 
   // --- TYPING HANDLERS ---
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isStarted) setIsStarted(true);
 
     if (e.key === 'Backspace') {
       backspaceCount.current += 1;
 
       if (!backspaceEnabled) {
-        e.preventDefault();
+        e.preventDefault(); // Block deletion completely
       }
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent) => {
     setUserInput(e.target.value);
   };
 
@@ -91,7 +94,10 @@ export default function TypingInterface({
     let errors = 0;
 
     for (let i = 0; i < typedWords.length; i++) {
-      if (typedWords[i] !== originalWords[i] && typedWords[i] !== '') {
+      if (
+        typedWords[i] !== originalWords[i] &&
+        typedWords[i] !== ''
+      ) {
         errors++;
       }
     }
@@ -104,10 +110,10 @@ export default function TypingInterface({
         ? Math.round((totalKeystrokes / 5) / timeInMinutes)
         : 0;
 
-    const netWpm =
-      timeInMinutes > 0
-        ? Math.max(0, grossWpm - Math.round(errors / timeInMinutes))
-        : 0;
+    const netWpm = Math.max(
+      0,
+      grossWpm - Math.round(errors / timeInMinutes)
+    );
 
     const accuracy =
       grossWpm > 0
@@ -118,6 +124,25 @@ export default function TypingInterface({
       totalKeystrokes > 0
         ? (errors / (totalKeystrokes / 5)) * 100
         : 0;
+
+    // --- MARKS CALCULATION LOGIC ---
+    let calculatedMarks = 0;
+
+    if (netWpm > 50) {
+      calculatedMarks = 25;
+    } else if (netWpm >= 46) {
+      calculatedMarks = 21;
+    } else if (netWpm >= 41) {
+      calculatedMarks = 18;
+    } else if (netWpm >= 36) {
+      calculatedMarks = 15;
+    } else if (netWpm >= 31) {
+      calculatedMarks = 12;
+    } else if (netWpm >= 30) {
+      calculatedMarks = 10;
+    } else {
+      calculatedMarks = 0; // Below qualifying
+    }
 
     // Assemble payload for TypingResult page
     const stats: TypingResultType = {
@@ -132,7 +157,11 @@ export default function TypingInterface({
       accuracy: accuracy,
       timeTakenInSeconds: timeTaken,
       qualified: netWpm >= (examRules.targetWpm || 30),
-      marks: netWpm,
+      marks: calculatedMarks,
+
+      // Passing the texts for the comparison diff visual
+      originalText: passage.text,
+      typedText: userInput,
     };
 
     onFinish(stats);
@@ -236,7 +265,9 @@ export default function TypingInterface({
             lineHeight: '1.6',
           }}
           placeholder={
-            !isStarted ? 'Start typing here to begin the test...' : ''
+            !isStarted
+              ? 'Start typing here to begin the test...'
+              : ''
           }
           value={userInput}
           onChange={handleChange}
@@ -288,7 +319,7 @@ export default function TypingInterface({
                     strokeLinejoin="round"
                     strokeWidth="2"
                     d="M6 18L18 6M6 6l12 12"
-                  />
+                  ></path>
                 </svg>
               </button>
             </div>
@@ -316,7 +347,7 @@ export default function TypingInterface({
                           ? 'bg-blue-500'
                           : 'bg-gray-300'
                       }`}
-                    />
+                    ></div>
 
                     <div
                       className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
@@ -324,7 +355,7 @@ export default function TypingInterface({
                           ? 'transform translate-x-6'
                           : ''
                       }`}
-                    />
+                    ></div>
                   </div>
 
                   <span className="ml-3 font-medium text-sm text-gray-700">
@@ -352,7 +383,7 @@ export default function TypingInterface({
                           ? 'bg-blue-500'
                           : 'bg-gray-300'
                       }`}
-                    />
+                    ></div>
 
                     <div
                       className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
@@ -360,7 +391,7 @@ export default function TypingInterface({
                           ? 'transform translate-x-6'
                           : ''
                       }`}
-                    />
+                    ></div>
                   </div>
 
                   <span className="ml-3 font-medium text-sm text-gray-700">
@@ -410,9 +441,7 @@ export default function TypingInterface({
                   <option value="Times New Roman, serif">
                     Times New Roman
                   </option>
-                  <option value="Arial, sans-serif">
-                    Arial
-                  </option>
+                  <option value="Arial, sans-serif">Arial</option>
                   <option value="Courier New, monospace">
                     Courier New
                   </option>
@@ -448,7 +477,7 @@ export default function TypingInterface({
                           ? 'bg-blue-500'
                           : 'bg-gray-300'
                       }`}
-                    />
+                    ></div>
 
                     <div
                       className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
@@ -456,7 +485,7 @@ export default function TypingInterface({
                           ? 'transform translate-x-6'
                           : ''
                       }`}
-                    />
+                    ></div>
                   </div>
 
                   <span className="ml-3 font-medium text-sm text-gray-700">

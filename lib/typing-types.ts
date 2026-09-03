@@ -13,4 +13,8 @@ export interface TypingResult {
   timeTakenInSeconds?: number;
   qualified?: boolean;
   marks?: number;
+  
+  // NEW ADDITIONS for Text Comparison
+  originalText?: string;
+  typedText?: string;
 }
