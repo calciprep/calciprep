@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Mail, Phone, Loader2 } from 'lucide-react';
-import Image from 'next/image';
-import contactIllustration from '@/public/media/contact-illustration.svg';
 import { useAuth } from '@/contexts/AuthContext'; // To show notifications
 
 type FormInputs = {
@@ -127,9 +125,6 @@ const ContactSection = () => {
                         </form>
                     </div>
                 </div>
-            </div>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-0 hidden lg:block w-full max-w-6xl">
-                <Image src={contactIllustration} alt="Contact Illustration" className="w-full h-auto" />
             </div>
         </section>
     );
