@@ -7,12 +7,16 @@ import { ArrowLeft } from 'lucide-react';
 
 import { exams } from '@/lib/typing';
 import { TypingResult as TypingResultType } from '@/lib/typing-types';
-import TypingResult from '@/components/features/typing/TypingResult';
 
-// --- Import all our modular interfaces ---
+// --- Import Modular Interfaces ---
 import HCMInterface from '@/components/features/typing/interfaces/HCMInterface';
 import CGLInterface from '@/components/features/typing/interfaces/CGLInterface';
 import CHSLInterface from '@/components/features/typing/interfaces/CHSLInterface';
+
+// --- Import Modular Result Pages ---
+import HCMResult from '@/components/features/typing/results/HCMResult';
+import CGLResult from '@/components/features/typing/results/CGLResult';
+import CHSLResult from '@/components/features/typing/results/CHSLResult';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { UserService } from '@/services/userService';
@@ -33,6 +37,7 @@ export default function TypingTestPage() {
 
   const examData = exams[examId];
 
+  // Fallback if exam isn't found
   if (!examData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
@@ -48,6 +53,7 @@ export default function TypingTestPage() {
 
   const passage = examData.passages.find((p) => p.id === passageId);
 
+  // Fallback if passage isn't found
   if (!passage) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
@@ -61,6 +67,7 @@ export default function TypingTestPage() {
     );
   }
 
+  // Handle test completion and save to database
   const handleTestFinish = async (stats: TypingResultType) => {
     setFinalStats(stats);
     setTestState('finished');
@@ -97,7 +104,6 @@ export default function TypingTestPage() {
   // --- DYNAMIC INTERFACE RENDERER ---
   const renderExamInterface = () => {
     switch (examId) {
-      
       case 'ssc_cgl':
         return (
           <CGLInterface 
@@ -108,8 +114,6 @@ export default function TypingTestPage() {
             onCancel={() => router.push(`/typing/${examId}`)} 
           />
         );
-
-      // NEW: Add SSC CHSL case!
       case 'ssc_chsl':
         return (
           <CHSLInterface 
@@ -120,7 +124,6 @@ export default function TypingTestPage() {
             onCancel={() => router.push(`/typing/${examId}`)} 
           />
         );
-      
       case 'delhi_police_hcm':
       default:
         return (
@@ -134,17 +137,47 @@ export default function TypingTestPage() {
     }
   };
 
+  // --- DYNAMIC RESULT RENDERER ---
+  const renderExamResult = () => {
+    if (!finalStats) return null;
+
+    switch (examId) {
+      case 'ssc_cgl':
+        return (
+          <CGLResult 
+            result={finalStats} 
+            onRestart={handleRetry} 
+            onTakeAnother={() => router.push(`/typing/${examId}`)} 
+          />
+        );
+      case 'ssc_chsl':
+        return (
+          <CHSLResult 
+            result={finalStats} 
+            onRestart={handleRetry} 
+            onTakeAnother={() => router.push(`/typing/${examId}`)} 
+          />
+        );
+      case 'delhi_police_hcm':
+      default:
+        return (
+          <HCMResult 
+            result={finalStats} 
+            onRestart={handleRetry} 
+            onTakeAnother={() => router.push(`/typing/${examId}`)} 
+          />
+        );
+    }
+  };
+
   return (
+    // The z-[100] overlay ensures the typing interface covers the global navbar
     <div className={testState === 'running' ? "fixed inset-0 z-[100] bg-white" : "w-full min-h-screen bg-white"}>
+      
       {testState === 'running' && renderExamInterface()}
 
-      {testState === 'finished' && finalStats && (
-        <TypingResult
-          result={finalStats}
-          onRestart={handleRetry}
-          onTakeAnother={() => router.push(`/typing/${examId}`)}
-        />
-      )}
+      {testState === 'finished' && renderExamResult()}
+
     </div>
   );
 }

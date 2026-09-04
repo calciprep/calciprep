@@ -10,8 +10,9 @@ import gsap from 'gsap';
 
 // Main navigation items with their respective SVGs from /media/nav/
 const navItems = [
+  { label: 'Home', href: '/', icon: '/media/nav/home-nav.svg' },
   { label: 'Typing', href: '/typing', icon: '/media/nav/typing-nav.svg' },
-  { label: 'Mathematics', href: '/mathematics', icon: '/media/nav/maths-nav.svg' },
+  { label: 'Mathematics', href: '/maths', icon: '/media/nav/maths-nav.svg' }, // Fixed to /maths
   { label: 'English', href: '/english', icon: '/media/nav/english-nav.svg' },
   { label: 'Dashboard', href: '/dashboard', icon: '/media/nav/dashboard-nav.svg' },
   { label: 'Contact', href: '/#contact', icon: '/media/nav/contact-nav.svg' },
@@ -100,7 +101,7 @@ export default function Navigation() {
           </div>
 
           {/* 2. DEAD CENTER: Desktop Navigation Links with SVG Icons & GSAP Hover */}
-          <div className="flex-1 hidden lg:flex items-center justify-center gap-8">
+          <div className="flex-1 hidden lg:flex items-center justify-center gap-7 xl:gap-8">
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href) && !item.href.includes('#'));
               

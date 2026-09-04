@@ -2,7 +2,7 @@ export interface Passage {
   id: string;
   title: string;
   text: string;
-  difficulty?: 'Easy' | 'Medium' | 'Hard';
+  difficulty?: 'Easy' | 'Medium' | 'Hard'| 'PYTT';
   pdfUrl?: string;
 }
 

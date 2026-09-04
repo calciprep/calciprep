@@ -113,7 +113,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-16">
+    // FIX ADDED HERE: Added pt-[120px] to push the content below the fixed navigation bar
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pt-[50px] pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
         {/* Page Header */}
