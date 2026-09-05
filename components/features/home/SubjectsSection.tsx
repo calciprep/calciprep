@@ -3,7 +3,8 @@
 import React, { useEffect, useRef, useContext, ElementType } from 'react';
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
-import { Calculator, BookOpenText, Keyboard, ArrowRight } from 'lucide-react';
+// Swapped Zap for RadioTower
+import { Calculator, BookOpenText, Keyboard, ArrowRight, RadioTower } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LenisContext } from '@/components/common/LenisProvider';
@@ -12,8 +13,8 @@ import { LenisContext } from '@/components/common/LenisProvider';
 import mathsIllustration from '@/public/media/maths-card-illustration.svg';
 import englishIllustration from '@/public/media/english-card-illustration.svg';
 import typingIllustration from '@/public/media/typing-card-illustration.svg';
+import liveTestsIllustration from '@/public/media/live-tests-card-illustration.svg';
 
-// Specify Icon type more precisely and illustration type
 type SubjectData = {
     link: string;
     bgColor: string;
@@ -21,12 +22,11 @@ type SubjectData = {
     Icon: ElementType; 
     title: string;
     desc: string;
-    illustration: StaticImageData | string; 
+    illustration: StaticImageData | string | any; 
 };
 
-const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' }) => {
-    // Explicitly type the content object
-    const content: Record<'maths' | 'english' | 'typing', SubjectData> = {
+const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'livetests' }) => {
+    const content: Record<'maths' | 'english' | 'typing' | 'livetests', SubjectData> = {
         maths: {
             link: "/maths",
             bgColor: "bg-purple-100",
@@ -53,6 +53,16 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' }) =
             title: "Typing Arena",
             desc: "Improve typing speed with guided lessons.",
             illustration: typingIllustration
+        },
+        // UPDATED: Bright Red Colors and RadioTower Icon
+        livetests: {
+            link: "/live-tests",
+            bgColor: "bg-red-100",
+            iconColor: "text-red-600",
+            Icon: RadioTower,
+            title: "Live Tests",
+            desc: "Compete in real-time with peers pan-India.",
+            illustration: liveTestsIllustration 
         }
     };
 
@@ -60,8 +70,8 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' }) =
     const IconComponent = item.Icon; 
 
     return (
-        <div className="card-wrapper">
-            <Link href={item.link} className={`subject-card block shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 rounded-3xl overflow-hidden ${item.bgColor} h-full`}>
+        <div className="card-wrapper h-full">
+            <Link href={item.link} className={`subject-card flex flex-col shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 rounded-3xl overflow-hidden ${item.bgColor} h-full`}>
                 <div className="p-8 text-center flex flex-col h-full">
                     <div className="flex-shrink-0">
                         <div className={`bg-white/50 ${item.iconColor} w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto`}>
@@ -70,9 +80,11 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' }) =
                         <h3 className="text-2xl font-bold mb-3 text-gray-900">{item.title}</h3>
                         <p className="text-gray-600 text-sm font-sans">{item.desc}</p>
                     </div>
+                    
                     <div className="mt-6 mb-4 flex-grow flex justify-center items-center">
                         <Image src={item.illustration} alt={`${item.title} Illustration`} className="max-h-32 w-auto drop-shadow-sm" />
                     </div>
+                    
                     <div className="mt-auto pt-6 bg-white -m-8 px-8 py-6 flex justify-between items-center flex-shrink-0">
                         <span className="font-semibold text-gray-800">Explore</span>
                         <ArrowRight className="text-gray-600" />
@@ -108,19 +120,13 @@ const SubjectsSection = () => {
 
             cards.forEach((card, index) => {
                 let side = index % 2 === 0 ? -1 : 1;
-                let originX = '0%';
-                if(cards.length > 1) {
-                    originX = index === 0 ? '25vw' : (index === cards.length - 1 ? '-25vw' : '0%');
-                    if(index === 0) side = -1;
-                    if(index === cards.length -1) side = 1;
-                }
-
+                
                 gsap.fromTo(card, {
                     autoAlpha: 0,
                     scale: 0.85,
-                    rotate: side * 5,
-                    y: 30,
-                    transformOrigin: `${originX} 100%`,
+                    rotate: side * 3, // Slight alternating tilt
+                    y: 40,
+                    transformOrigin: '50% 100%',
                 }, {
                     autoAlpha: 1,
                     scale: 1,
@@ -129,7 +135,7 @@ const SubjectsSection = () => {
                     scrollTrigger: {
                         trigger: card,
                         start: 'top 95%',
-                        end: 'top 60%',
+                        end: 'top 70%',
                         scrub: 1.5,
                     }
                 });
@@ -151,12 +157,11 @@ const SubjectsSection = () => {
                     </p>
                 </div>
 
-                {/* Removed the 2-column layout and the SVG illustration. 
-                    Centered the cards using max-w-5xl and mx-auto */}
-                <div className="subject-card-grid grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div className="subject-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                     <SubjectCard subject="maths" />
                     <SubjectCard subject="english" />
                     <SubjectCard subject="typing" />
+                    <SubjectCard subject="livetests" />
                 </div>
             </div>
         </section>

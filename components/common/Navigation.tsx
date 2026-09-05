@@ -12,8 +12,9 @@ import gsap from 'gsap';
 const navItems = [
   { label: 'Home', href: '/', icon: '/media/nav/home-nav.svg' },
   { label: 'Typing', href: '/typing', icon: '/media/nav/typing-nav.svg' },
-  { label: 'Mathematics', href: '/maths', icon: '/media/nav/maths-nav.svg' }, // Fixed to /maths
+  { label: 'Mathematics', href: '/maths', icon: '/media/nav/maths-nav.svg' }, 
   { label: 'English', href: '/english', icon: '/media/nav/english-nav.svg' },
+  { label: 'Live Tests', href: '/live-tests', icon: '/media/nav/live-tests-nav.svg' }, 
   { label: 'Dashboard', href: '/dashboard', icon: '/media/nav/dashboard-nav.svg' },
   { label: 'Contact', href: '/#contact', icon: '/media/nav/contact-nav.svg' },
 ];
@@ -101,7 +102,8 @@ export default function Navigation() {
           </div>
 
           {/* 2. DEAD CENTER: Desktop Navigation Links with SVG Icons & GSAP Hover */}
-          <div className="flex-1 hidden lg:flex items-center justify-center gap-7 xl:gap-8">
+          {/* FIXED: Reduced gap slightly (gap-5 xl:gap-8) to comfortably fit the new 6th item */}
+          <div className="flex-1 hidden lg:flex items-center justify-center gap-5 xl:gap-8">
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href) && !item.href.includes('#'));
               
@@ -129,7 +131,8 @@ export default function Navigation() {
                   <img ref={iconRef} src={item.icon} alt="" className="w-5 h-5 object-contain" />
                   <span 
                     ref={textRef} 
-                    className={`text-base font-extrabold tracking-wide transition-colors ${
+                    // FIXED: Added whitespace-nowrap to prevent "Live Tests" from breaking into two lines
+                    className={`whitespace-nowrap text-base font-extrabold tracking-wide transition-colors ${
                       isActive ? 'text-blue-600' : 'text-[#000000]'
                     }`}
                   >
@@ -245,7 +248,8 @@ export default function Navigation() {
                   className="flex items-center gap-3 py-2 text-decoration-none"
                 >
                   <img src={item.icon} alt="" className="w-6 h-6 object-contain" />
-                  <span className="text-lg font-extrabold text-[#000000] tracking-wide">
+                  {/* FIXED: Added whitespace-nowrap here too, just in case! */}
+                  <span className="whitespace-nowrap text-lg font-extrabold text-[#000000] tracking-wide">
                     {item.label}
                   </span>
                 </Link>
