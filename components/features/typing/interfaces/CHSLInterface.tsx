@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Passage, ExamRules } from '@/lib/typing/types';
 import { TypingResult as TypingResultType } from '@/lib/typing-types';
 
@@ -20,16 +20,39 @@ export interface CHSLModeProps {
   onChangeMode: (mode: UIMode) => void;
 }
 
+// 1. ADDED: The initialMode prop definition to fix the TypeScript error
+interface CHSLInterfaceProps extends Omit<CHSLModeProps, 'currentMode' | 'onChangeMode'> {
+  initialMode?: UIMode;
+}
+
 export default function CHSLInterface({
   passage,
   examRules,
   userName,
   onFinish,
   onCancel,
-}: Omit<CHSLModeProps, 'currentMode' | 'onChangeMode'>) {
+  initialMode = 'ediquity', // Defaulting to ediquity per your original setup
+}: CHSLInterfaceProps) {
   
-  // Set the default mode to Ediquity specifically for CHSL
-  const [uiMode, setUiMode] = useState<UIMode>('ediquity');
+  // Initialize state with the passed-in mode
+  const [uiMode, setUiMode] = useState<UIMode>(initialMode);
+
+  // =======================================================================
+  // SCROLL FIX: Forces the window to the top and locks background scrolling
+  // =======================================================================
+  useEffect(() => {
+    // Immediately snap to the top of the page
+    window.scrollTo(0, 0);
+    
+    // Lock the main body so the h-screen interface doesn't shift around
+    document.body.style.overflow = 'hidden';
+    
+    // Cleanup: Unlock the body when the test is finished or cancelled
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+  // =======================================================================
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sharedProps: any = {

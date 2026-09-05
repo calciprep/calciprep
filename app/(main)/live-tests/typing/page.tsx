@@ -10,13 +10,14 @@ import sscLogo from '@/public/media/ssc-logo.png';
 import dpLogo from '@/public/media/delhi-police-logo.png';
 
 import { getTodayHCMPassage, liveTestConfig as hcmConfig } from './delhi_police_hcm/dailyData';
-
+import { getTodayCGLPassage } from './ssc_cgl/dailyData';
+import { getTodayCHSLPassage } from './ssc_chsl/dailyData';
 export default function LiveTypingHubPage() {
   const router = useRouter();
 
   const isHCMActive = getTodayHCMPassage() !== null;
   const isCGLActive = getTodayCGLPassage() !== null; 
-  const isCHSLActive = true; 
+  const isCHSLActive = getTodayCHSLPassage() !== null; 
 
   // ============================================================================
   // TICKER CONFIGURATION

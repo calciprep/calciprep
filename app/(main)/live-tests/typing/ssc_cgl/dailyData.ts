@@ -1,4 +1,6 @@
-
+// ============================================================================
+// DAILY PASSAGES DATA (40 Sets)
+// ============================================================================
 export const cglDailyPassages = [
   { id: 'cgl-live-set-1', title: 'SSC CGL Live Test - 1', text: "[Paste CGL Passage 1 full text here...]", difficulty: 'Medium' },
   { id: 'cgl-live-set-2', title: 'SSC CGL Live Test - 2', text: "[Paste CGL Passage 2 full text here...]", difficulty: 'Medium' },
@@ -43,33 +45,50 @@ export const cglDailyPassages = [
 ];
 
 // ============================================================================
-// ADVANCED LIVE TEST SCHEDULER (SSC CGL)
+// ADVANCED LIVE TEST SCHEDULER
 // ============================================================================
 export const liveTestConfig = {
-  isPermanentlyPaused: false,
-  pauseUntilDate: null as string | null, 
+  isPermanentlyPaused: true,
+  pauseUntilDate: null as string | null,
   skipDates: [
-    '2026-10-02', 
-    '2026-11-12', 
+    '2026-10-02',
+    '2026-11-12',
   ],
-  LIVE_TEST_LAUNCH_DATE: '2026-09-05' 
+  // FIXED: Set your exact launch date here in YYYY-MM-DD.
+  // This ensures that this exact date equals Passage 1.
+  LIVE_TEST_LAUNCH_DATE: '2026-09-06'
 };
 
 export const getTodayCGLPassage = () => {
   const now = new Date();
-  now.setHours(now.getHours() - 4);
-  const dateString = now.toLocaleDateString('en-CA'); 
 
+  // Subtract 4 hours so anything before 4:00 AM counts as "yesterday"
+  now.setHours(now.getHours() - 4);
+
+  // Get a clean YYYY-MM-DD string
+  const dateString = now.toLocaleDateString('en-CA');
+
+  // --- AUTOMATION OVERRIDES (CHECKING THE SCHEDULER) ---
   if (liveTestConfig.isPermanentlyPaused) return null;
-  if (liveTestConfig.pauseUntilDate && dateString < liveTestConfig.pauseUntilDate) return null;
+
+  if (liveTestConfig.pauseUntilDate) {
+    if (dateString < liveTestConfig.pauseUntilDate) {
+      return null;
+    }
+  }
+
   if (liveTestConfig.skipDates.includes(dateString)) return null;
 
+  // --- PASSAGE SELECTION CALCULATION ---
   const launchTime = new Date(liveTestConfig.LIVE_TEST_LAUNCH_DATE).getTime();
   const currentTime = new Date(dateString).getTime();
   const msPerDay = 1000 * 60 * 60 * 24;
-  
+
+  // Calculate exact days since launch date
   const diffDays = Math.floor((currentTime - launchTime) / msPerDay);
+
+  // Math.max(0, ...) ensures it doesn't break if someone visits from an older timezone
   const index = Math.max(0, diffDays) % cglDailyPassages.length;
-  
+
   return cglDailyPassages[index];
 };

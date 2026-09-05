@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Passage, ExamRules } from '@/lib/typing/types';
 import { TypingResult as TypingResultType } from '@/lib/typing-types';
 
@@ -10,7 +10,6 @@ import TCSMode from './modes/TCSMode';
 
 export type UIMode = 'tcs' | 'nta' | 'ediquity';
 
-// ADDED userName to the shared props
 export interface CGLModeProps {
   passage: Passage;
   examRules: ExamRules;
@@ -21,20 +20,42 @@ export interface CGLModeProps {
   onChangeMode: (mode: UIMode) => void;
 }
 
+interface CGLInterfaceProps extends Omit<CGLModeProps, 'currentMode' | 'onChangeMode'> {
+  initialMode?: UIMode;
+}
+
 export default function CGLInterface({
   passage,
   examRules,
   userName,
   onFinish,
   onCancel,
-}: Omit<CGLModeProps, 'currentMode' | 'onChangeMode'>) {
+  initialMode = 'tcs',
+}: CGLInterfaceProps) {
   
-  const [uiMode, setUiMode] = useState<UIMode>('tcs');
+  const [uiMode, setUiMode] = useState<UIMode>(initialMode);
+
+  // =======================================================================
+  // SCROLL FIX: Forces the window to the top and locks background scrolling
+  // =======================================================================
+  useEffect(() => {
+    // 1. Immediately snap to the top of the page
+    window.scrollTo(0, 0);
+    
+    // 2. Lock the main body so the h-screen interface doesn't shift around
+    document.body.style.overflow = 'hidden';
+    
+    // 3. Cleanup: Unlock the body when the test is finished or cancelled
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+  // =======================================================================
 
   const sharedProps: CGLModeProps = {
     passage,
     examRules,
-    userName, // Pass it down
+    userName, 
     onFinish,
     onCancel,
     currentMode: uiMode,

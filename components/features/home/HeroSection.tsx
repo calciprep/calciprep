@@ -14,7 +14,8 @@ const HeroSection = () => {
   };
 
   return (
-    <section id="home" className="pt-28 pb-12 lg:pt-32 lg:pb-20">
+    // FIXED: Changed pt-28 to pt-8 so it sits perfectly under the new sliding ticker!
+    <section id="home" className="pt-2 pb-12 lg:pt-6 lg:pb-20">
       <style jsx>{`
         #home h1 {
           font-family: var(--font-oswald);

@@ -40,12 +40,12 @@ export default function MainLiveTestsArena() {
           <div className="max-w-3xl">
             <h2 className="text-2xl md:text-3xl font-black mb-4" style={{fontFamily: 'var(--font-oswald)'}}>Daily Live Format</h2>
             <p className="text-slate-300 font-medium text-[15px] leading-relaxed">
-              New tests drop daily. The window opens at 10:00 AM and closes strictly at 11:50 PM. Take the test when you are ready, and check your Pan-India percentile on the live leaderboards.
+              New tests drop daily. The window opens at 8:00 AM and closes strictly at 11:50 PM. Take the test when you are ready, and check your Pan-India percentile on the live leaderboards.
             </p>
           </div>
           <div className="shrink-0 bg-white/10 border border-white/10 hover:bg-white/15 transition-colors backdrop-blur-sm rounded-2xl p-4 flex items-center gap-3">
             <CalendarClock className="text-rose-400" size={24} />
-            <span className="font-bold tracking-wide text-sm">Window: 10:00 AM - 11:50 PM</span>
+            <span className="font-bold tracking-wide text-sm">Window: 8:00 AM - 11:50 PM</span>
           </div>
         </div>
 

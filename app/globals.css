@@ -27,39 +27,29 @@ body.quiz-results-open #app-header {
   display: none;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
-  /* Prevent horizontal scrolling issues */
   overflow-x: hidden; 
 }
 
-/* CUSTOM PREMIUM SCROLLBAR 
-  Replaces the default blocky Windows/Mac scrollbar with a sleek modern one.
-*/
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9; /* slate-100 */
+  background: #f1f5f9; 
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1; /* slate-300 */
+  background: #cbd5e1; 
   border-radius: 10px;
   border: 2px solid #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #16a34a; /* green-600 */
+  background: #16a34a; 
 }
 
-/* CUSTOM ANIMATIONS FOR THE HERO SECTION 
-*/
 @keyframes blob {
   0% { transform: translate(0px, 0px) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
@@ -81,4 +71,22 @@ body {
 
 @keyframes shimmer {
   100% { transform: translateX(100%); }
+}
+
+/* ========================================= */
+/* CUSTOM MARQUEE ANIMATION FOR THE TICKER   */
+/* ========================================= */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  /* 40s makes it slide nice and slowly */
+  animation: marquee 40s linear infinite;
+}
+
+/* Pause the scrolling when the user hovers over it to click the link */
+.ticker-container:hover .animate-marquee {
+  animation-play-state: paused;
 }

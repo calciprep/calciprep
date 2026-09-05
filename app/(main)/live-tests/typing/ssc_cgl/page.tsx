@@ -36,9 +36,10 @@ export default function SSCCGL_LiveTestLanding() {
       const hours = now.getHours();
       const minutes = now.getMinutes();
 
-      if (hours < 10) {
+      // FIXED: Restored to exactly 10:00 AM!
+      if (hours < 8) {
         setTestStatus('upcoming');
-        let h = 9 - hours;
+        let h = 7 - hours;
         let m = 59 - minutes;
         let s = 59 - now.getSeconds();
         setTimeLeft(`${h}h ${m}m ${s}s`);
@@ -107,7 +108,7 @@ export default function SSCCGL_LiveTestLanding() {
               <>
                 {testStatus === 'live' && !hasTakenTest && <div className="bg-red-100 text-red-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2 animate-pulse"><div className="w-2 h-2 rounded-full bg-red-600"></div> LIVE NOW</div>}
                 {hasTakenTest && <div className="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><CheckCircle2 size={16} /> COMPLETED</div>}
-                {testStatus === 'upcoming' && !hasTakenTest && <div className="bg-amber-100 text-amber-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><Clock size={16} /> OPENS AT 10:00 AM</div>}
+                {testStatus === 'upcoming' && !hasTakenTest && <div className="bg-amber-100 text-amber-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><Clock size={16} /> STARTS AT 8:00 AM</div>}
                 {testStatus === 'ended' && !hasTakenTest && <div className="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><Lock size={16} /> TEST ENDED</div>}
               </>
             )}
@@ -149,7 +150,7 @@ export default function SSCCGL_LiveTestLanding() {
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-center">
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Practice Material</p>
                   <a href="/pdf/ssc-cgl-bulk-live-tests.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-bold mt-0.5 transition-colors">
-                    <Download size={18} /> Download Bulk PDF
+                    <Download size={18} /> No PDF's Available
                   </a>
                 </div>
               </div>
