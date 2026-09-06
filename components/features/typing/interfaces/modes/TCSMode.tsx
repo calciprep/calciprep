@@ -49,7 +49,9 @@ export default function TCSMode({ passage, examRules, userName, onFinish, onCanc
     for (let i = 0; i < typedWords.length; i++) {
       if (typedWords[i] !== originalWords[i] && typedWords[i] !== '') errors++;
     }
-    const netWpm = Math.max(0, (timeInMinutes > 0 ? Math.round((userInput.length / 5) / timeInMinutes) : 0) - Math.round(errors / timeInMinutes));
+    const grossWpmRaw = timeInMinutes > 0 ? (userInput.length / 5) / timeInMinutes : 0;
+    const netWpmRaw = Math.max(0, grossWpmRaw - (errors / timeInMinutes));
+    const accuracyRaw = grossWpmRaw > 0 ? Math.max(0, (netWpmRaw / grossWpmRaw) * 100) : 0;
     
     onFinish({
       testName: `Typing Test - ${examRules.name} ${passage.title}`,
@@ -57,12 +59,12 @@ export default function TCSMode({ passage, examRules, userName, onFinish, onCanc
       fullMistakes: errors,
       totalErrors: errors,
       errorPercentage: userInput.length > 0 ? (errors / (userInput.length / 5)) * 100 : 0,
-      wpm: timeInMinutes > 0 ? Math.round((userInput.length / 5) / timeInMinutes) : 0,
-      netWpm,
-      accuracy: netWpm > 0 ? Math.max(0, Math.round((netWpm / (Math.round((userInput.length / 5) / timeInMinutes))) * 100)) : 0,
+      wpm: grossWpmRaw,      
+      netWpm: netWpmRaw,     
+      accuracy: accuracyRaw, 
       timeTakenInSeconds: examRules.duration - timeLeft,
-      qualified: netWpm >= (examRules.targetWpm || 27),
-      marks: netWpm, 
+      qualified: netWpmRaw >= (examRules.targetWpm || 27),
+      marks: netWpmRaw, 
       originalText: passage.text,
       typedText: userInput,
     });

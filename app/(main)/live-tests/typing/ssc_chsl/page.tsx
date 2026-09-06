@@ -6,7 +6,7 @@ import { ArrowLeft, Clock, Trophy, Play, Lock, Download, Loader2, CheckCircle2, 
 import { getTodayCHSLPassage } from './dailyData';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
 export default function SSCCHSL_LiveTestLanding() {
   const router = useRouter();
@@ -20,40 +20,86 @@ export default function SSCCHSL_LiveTestLanding() {
   const [hasTakenTest, setHasTakenTest] = useState(false);
   const [isCheckingUser, setIsCheckingUser] = useState(true);
 
-  const todayPassage = getTodayCHSLPassage();
-  const TEST_DATE = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  // REAL-TIME CHSL ADMIN SETTINGS
+  const [settings, setSettings] = useState({
+    chslActive: false,
+    startTime: "10:00",
+    endTime: "11:50",
+    chslPauseDate: "",
+    chslLaunchDate: "",
+    isLoading: true
+  });
 
   const handleLoginClick = () => {
     if (setLoginMode) setLoginMode(true); 
     if (openModal) openModal(); 
   };
 
+  // 1. FETCH SETTINGS
   useEffect(() => {
-    if (!todayPassage) return;
+    const docRef = doc(db!, 'app_settings', 'live_tests');
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setSettings({
+          chslActive: data.chslActive || false,
+          startTime: data.startTime || "10:00",
+          endTime: data.endTime || "11:50",
+          chslPauseDate: data.chslPauseDate || "",
+          chslLaunchDate: data.chslLaunchDate || "",
+          isLoading: false
+        });
+      } else {
+        setSettings(prev => ({ ...prev, isLoading: false }));
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. PASS SETTINGS INTO THE PASSAGE SELECTOR
+  const todayPassage = settings.isLoading ? null : getTodayCHSLPassage(settings);
+  const TEST_DATE = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  // 3. DYNAMIC TIMER ENGINE
+  useEffect(() => {
+    if (settings.isLoading || !todayPassage) return;
 
     const timer = setInterval(() => {
       const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
+      const currentHour = now.getHours();
+      const currentMin = now.getMinutes();
+      const currentSec = now.getSeconds();
+      
+      const [startH, startM] = settings.startTime.split(':').map(Number);
+      const [endH, endM] = settings.endTime.split(':').map(Number);
 
-      // FIXED: Restored to strictly 10:00 AM!
-      if (hours < 8) {
+      const startInSeconds = (startH * 3600) + (startM * 60);
+      const endInSeconds = (endH * 3600) + (endM * 60);
+      const nowInSeconds = (currentHour * 3600) + (currentMin * 60) + currentSec;
+
+      if (nowInSeconds < startInSeconds) {
         setTestStatus('upcoming');
-        let h = 7 - hours;
-        let m = 59 - minutes;
-        let s = 59 - now.getSeconds();
+        const diff = startInSeconds - nowInSeconds;
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
         setTimeLeft(`${h}h ${m}m ${s}s`);
-      } else if (hours > 23 || (hours === 23 && minutes >= 50)) {
+      } else if (nowInSeconds >= endInSeconds) {
         setTestStatus('ended');
       } else {
         setTestStatus('live');
-        let h = 23 - hours;
-        let m = 49 - minutes;
-        if (m < 0) { h -= 1; m += 60; }
+        const diff = endInSeconds - nowInSeconds;
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
         setTimeLeft(`${h}h ${m}m remaining`);
       }
     }, 1000);
 
+    return () => clearInterval(timer);
+  }, [settings, todayPassage]);
+
+  // 4. CHECK USER STATUS
+  useEffect(() => {
     const checkUserStatus = async () => {
       if (!currentUser) {
         setIsCheckingUser(false);
@@ -81,15 +127,21 @@ export default function SSCCHSL_LiveTestLanding() {
     };
 
     checkUserStatus();
-
-    return () => clearInterval(timer);
-  }, [currentUser, todayPassage]);
+  }, [currentUser]);
 
   const handleStartTest = () => {
     if (testStatus === 'live' && !hasTakenTest && currentUser) {
       router.push('/live-tests/typing/ssc_chsl/take');
     }
   };
+
+  // SAFE CHECKS FOR UI RENDERING
+  const isExamPaused = settings.chslPauseDate && new Date() < new Date(settings.chslPauseDate);
+  const isTestActive = settings.chslActive && !isExamPaused && todayPassage;
+
+  if (settings.isLoading) {
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pt-[100px] pb-20">
@@ -104,17 +156,17 @@ export default function SSCCHSL_LiveTestLanding() {
           <div className="flex justify-between items-start mb-8">
             <div className="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider">{TEST_DATE}</div>
             
-            {todayPassage && (
+            {isTestActive && (
               <>
                 {testStatus === 'live' && !hasTakenTest && <div className="bg-red-100 text-red-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2 animate-pulse"><div className="w-2 h-2 rounded-full bg-red-600"></div> LIVE NOW</div>}
                 {hasTakenTest && <div className="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><CheckCircle2 size={16} /> COMPLETED</div>}
-                {testStatus === 'upcoming' && !hasTakenTest && <div className="bg-amber-100 text-amber-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><Clock size={16} /> STARTS AT 8:00 AM</div>}
+                {testStatus === 'upcoming' && !hasTakenTest && <div className="bg-amber-100 text-amber-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><Clock size={16} /> STARTS AT {settings.startTime}</div>}
                 {testStatus === 'ended' && !hasTakenTest && <div className="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center gap-2"><Lock size={16} /> TEST ENDED</div>}
               </>
             )}
           </div>
 
-          {!todayPassage ? (
+          {!isTestActive ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CalendarOff size={40} />
@@ -123,7 +175,9 @@ export default function SSCCHSL_LiveTestLanding() {
                 Scheduled Break
               </h1>
               <p className="text-lg text-slate-600 font-medium max-w-lg mx-auto mb-8">
-                There is no Live Mock scheduled for today. Take a break, review your past analytics, or practice in the normal typing arena!
+                {isExamPaused 
+                  ? `SSC CHSL Tier-II Live tests are paused until ${new Date(settings.chslPauseDate).toLocaleDateString()}. Take a break and review your past analytics!`
+                  : "There is no Live Mock scheduled for today. Take a break, review your past analytics, or practice in the normal typing arena!"}
               </p>
               <button onClick={() => router.push('/live-tests')} className="bg-slate-900 hover:bg-black text-white px-8 py-4 rounded-xl font-bold shadow-lg transition-all mx-auto">
                 Explore Other Live Tests
@@ -132,7 +186,7 @@ export default function SSCCHSL_LiveTestLanding() {
           ) : (
             <>
               <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-4" style={{fontFamily: 'var(--font-oswald)'}}>
-                {todayPassage.title}
+                {todayPassage?.title}
               </h1>
               <p className="text-lg text-slate-600 font-medium mb-10 max-w-2xl">
                 This is the official daily live typing test for SSC CHSL Tier-II aspirants. Your formatting, spacing, and speed will be evaluated strictly under TCS/NTA rules.
@@ -145,7 +199,7 @@ export default function SSCCHSL_LiveTestLanding() {
                 </div>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Today's Keystrokes</p>
-                  <p className="text-slate-800 font-black text-lg">{todayPassage.text.length} Keys</p>
+                  <p className="text-slate-800 font-black text-lg">{todayPassage?.text.length} Keys</p>
                 </div>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-center">
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Practice Material</p>

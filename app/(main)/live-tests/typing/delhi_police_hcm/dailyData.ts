@@ -242,10 +242,7 @@ export const hcmDailyPassages = [
   }
 ];
 
-
-// ============================================================================
-// ADVANCED LIVE TEST SCHEDULER
-// ============================================================================
+// Local Fallback Config
 export const liveTestConfig = {
   isPermanentlyPaused: false,
   pauseUntilDate: null as string | null, 
@@ -253,41 +250,51 @@ export const liveTestConfig = {
     '2026-10-02', 
     '2026-11-12', 
   ],
-  // FIXED: Set your exact launch date here in YYYY-MM-DD. 
-  // This ensures that this exact date equals Passage 1.
   LIVE_TEST_LAUNCH_DATE: '2026-09-06' 
 };
 
-export const getTodayHCMPassage = () => {
+// ADDED: Accept dbSettings to override the local logic
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getTodayHCMPassage = (dbSettings?: any) => {
   const now = new Date();
   
   // Subtract 4 hours so anything before 4:00 AM counts as "yesterday"
   now.setHours(now.getHours() - 4);
-  
-  // Get a clean YYYY-MM-DD string
   const dateString = now.toLocaleDateString('en-CA'); 
 
-  // --- AUTOMATION OVERRIDES (CHECKING THE SCHEDULER) ---
-  if (liveTestConfig.isPermanentlyPaused) return null;
+  // --- AUTOMATION OVERRIDES (DATABASE PRECEDENCE) ---
+  
+  // 1. Is it currently active? (Check DB first, fallback to local config)
+  const isActive = dbSettings && dbSettings.hcmActive !== undefined 
+    ? dbSettings.hcmActive 
+    : !liveTestConfig.isPermanentlyPaused;
 
-  if (liveTestConfig.pauseUntilDate) {
-    if (dateString < liveTestConfig.pauseUntilDate) {
-      return null;
-    }
+  if (!isActive) return null; // If off in admin panel, kill the test.
+
+  // 2. Pause Date Logic (Check DB first, fallback to local)
+  const pauseDate = dbSettings?.hcmPauseDate !== undefined 
+    ? dbSettings.hcmPauseDate 
+    : liveTestConfig.pauseUntilDate;
+
+  if (pauseDate && dateString < pauseDate) {
+    return null;
   }
 
+  // 3. Skip Dates (Holidays keep local priority)
   if (liveTestConfig.skipDates.includes(dateString)) return null;
 
   // --- PASSAGE SELECTION CALCULATION ---
-  const launchTime = new Date(liveTestConfig.LIVE_TEST_LAUNCH_DATE).getTime();
+  const launchDateToUse = dbSettings?.hcmLaunchDate || liveTestConfig.LIVE_TEST_LAUNCH_DATE;
+  
+  const launchTime = new Date(launchDateToUse).getTime();
   const currentTime = new Date(dateString).getTime();
   const msPerDay = 1000 * 60 * 60 * 24;
   
-  // Calculate exact days since launch date
   const diffDays = Math.floor((currentTime - launchTime) / msPerDay);
   
-  // Math.max(0, ...) ensures it doesn't break if someone visits from an older timezone
-  const index = Math.max(0, diffDays) % hcmDailyPassages.length;
+  // If we haven't reached the launch date yet
+  if (diffDays < 0) return null; 
   
+  const index = Math.max(0, diffDays) % hcmDailyPassages.length;
   return hcmDailyPassages[index];
 };

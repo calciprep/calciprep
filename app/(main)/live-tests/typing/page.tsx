@@ -1,51 +1,63 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Keyboard, Bell, CalendarOff } from 'lucide-react';
+import { ArrowLeft, Keyboard, Bell, CalendarOff, Loader2 } from 'lucide-react';
 
 import sscLogo from '@/public/media/ssc-logo.png';
 import dpLogo from '@/public/media/delhi-police-logo.png';
 
-import { getTodayHCMPassage, liveTestConfig as hcmConfig } from './delhi_police_hcm/dailyData';
-import { getTodayCGLPassage } from './ssc_cgl/dailyData';
-import { getTodayCHSLPassage } from './ssc_chsl/dailyData';
+// FIREBASE IMPORTS
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+
 export default function LiveTypingHubPage() {
   const router = useRouter();
 
-  const isHCMActive = getTodayHCMPassage() !== null;
-  const isCGLActive = getTodayCGLPassage() !== null; 
-  const isCHSLActive = getTodayCHSLPassage() !== null; 
+  // REAL-TIME DATABASE STATES
+  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState({
+    cglActive: false,
+    chslActive: false,
+    hcmActive: false,
+    tickerText: "Loading live updates...",
+  });
 
-  // ============================================================================
-  // TICKER CONFIGURATION
-  // ============================================================================
-  const USE_MANUAL_TICKER = true; 
-  
-  // UPDATED: Added your new custom text here!
-  const MANUAL_TICKER_TEXT = "🚨 Delhi Police HCM Special Live Tests Will Begin From 08th Sept! SignUp To Attempt The Tests! 🚨";
-
-  let TICKER_TEXT = ""; // This is just the empty container
-
-  if (USE_MANUAL_TICKER) {
-    TICKER_TEXT = MANUAL_TICKER_TEXT; // The container gets filled here
-  } else {
-    if (!isHCMActive && !isCGLActive && !isCHSLActive) {
-      if (hcmConfig.pauseUntilDate) {
-        const [year, month, day] = hcmConfig.pauseUntilDate.split('-');
-        const resumeDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-        const formattedDate = resumeDate.toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' });
-        TICKER_TEXT = `🚨 SCHEDULED BREAK: All Live Tests will resume on ${formattedDate}! Keep practicing in the normal arena! 🚨`;
-      } else {
-        TICKER_TEXT = "🚨 LIVE TESTS ARE CURRENTLY ON A SCHEDULED BREAK. PRACTICE IN THE NORMAL ARENA! 🚨";
+  // FIREBASE ONSNAPSHOT LISTENER (Real-time updates without refreshing!)
+  useEffect(() => {
+    const docRef = doc(db!, 'app_settings', 'live_tests');
+    
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setSettings({
+          cglActive: data.cglActive || false,
+          chslActive: data.chslActive || false,
+          hcmActive: data.hcmActive || false,
+          tickerText: data.tickerText || "🚨 LIVE TESTS ARE CURRENTLY ON A SCHEDULED BREAK. 🚨",
+        });
       }
-    } else {
-      TICKER_TEXT = "🚨 NEW DAILY LIVE TESTS ARE NOW ACTIVE! Check your target exam below! 🚨";
-    }
-  }
-  // ============================================================================
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching live settings:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const anyTestActive = settings.hcmActive || settings.cglActive || settings.chslActive;
+
+  const TICKER_ELEMENT = (
+    <>
+      {settings.tickerText}{' '}
+      <Link href="/live-tests/typing/delhi_police_hcm" className="underline hover:text-red-200 transition-colors ml-2">
+        Login now to check your ranking.
+      </Link>
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pt-[80px] pb-20">
@@ -73,12 +85,12 @@ export default function LiveTypingHubPage() {
           <Bell size={18} className="absolute left-4 z-20 text-white drop-shadow-md" />
           <div className="flex ml-8 pl-4">
             <div className="animate-ticker shrink-0">
-              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_TEXT}</span>
-              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_TEXT}</span>
+              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_ELEMENT}</span>
+              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_ELEMENT}</span>
             </div>
             <div className="animate-ticker shrink-0" aria-hidden="true">
-              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_TEXT}</span>
-              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_TEXT}</span>
+              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_ELEMENT}</span>
+              <span className="font-bold tracking-wide text-sm pr-16">{TICKER_ELEMENT}</span>
             </div>
           </div>
         </div>
@@ -101,7 +113,12 @@ export default function LiveTypingHubPage() {
           Select your target exam. Only exams with active live tests scheduled for today are shown below. Daily live tests are strictly formatted according to official notification guidelines.
         </p>
 
-        {(!isHCMActive && !isCGLActive && !isCHSLActive) ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="animate-spin text-indigo-600 w-12 h-12 mb-4" />
+            <p className="text-slate-500 font-bold">Checking Live Test schedules...</p>
+          </div>
+        ) : !anyTestActive ? (
            <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm max-w-2xl mx-auto">
              <div className="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CalendarOff size={40} />
@@ -112,7 +129,7 @@ export default function LiveTypingHubPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            {isHCMActive && (
+            {settings.hcmActive && (
               <Link href="/live-tests/typing/delhi_police_hcm" className="group bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
                 <div className="flex items-start justify-between mb-6">
                   <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center p-2">
@@ -132,7 +149,7 @@ export default function LiveTypingHubPage() {
               </Link>
             )}
 
-            {isCGLActive && (
+            {settings.cglActive && (
               <Link href="/live-tests/typing/ssc_cgl" className="group bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
                 <div className="flex items-start justify-between mb-6">
                   <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center p-2">
@@ -152,7 +169,7 @@ export default function LiveTypingHubPage() {
               </Link>
             )}
 
-            {isCHSLActive && (
+            {settings.chslActive && (
               <Link href="/live-tests/typing/ssc_chsl" className="group bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
                 <div className="flex items-start justify-between mb-6">
                   <div className="w-14 h-14 bg-cyan-50 rounded-2xl flex items-center justify-center p-2">

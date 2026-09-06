@@ -111,36 +111,37 @@ export default function HCMInterface({
     const totalKeystrokes = userInput.length;
 
     // DP HCM Logic: 5 characters = 1 word. All errors are full errors.
-    const grossWpm = timeInMinutes > 0 ? Math.round((totalKeystrokes / 5) / timeInMinutes) : 0;
-    const netWpm = Math.max(0, grossWpm - Math.round(errors / timeInMinutes));
-    const accuracy = grossWpm > 0 ? Math.max(0, Math.round((netWpm / grossWpm) * 100)) : 0;
-    const errorPercentage = totalKeystrokes > 0 ? (errors / (totalKeystrokes / 5)) * 100 : 0;
+// FIXED: Removed all Math.round() functions to preserve raw decimals!
+const grossWpmRaw = timeInMinutes > 0 ? (totalKeystrokes / 5) / timeInMinutes : 0;
+const netWpmRaw = Math.max(0, grossWpmRaw - (errors / timeInMinutes));
+const accuracyRaw = grossWpmRaw > 0 ? Math.max(0, (netWpmRaw / grossWpmRaw) * 100) : 0;
+const errorPercentage = totalKeystrokes > 0 ? (errors / (totalKeystrokes / 5)) * 100 : 0;
 
-    // Marks Calculation Tiers for HCM
-    let calculatedMarks = 0;
-    if (netWpm > 50) calculatedMarks = 25;
-    else if (netWpm >= 46) calculatedMarks = 21;
-    else if (netWpm >= 41) calculatedMarks = 18;
-    else if (netWpm >= 36) calculatedMarks = 15;
-    else if (netWpm >= 31) calculatedMarks = 12;
-    else if (netWpm >= 30) calculatedMarks = 10;
+// Marks Calculation Tiers for HCM
+let calculatedMarks = 0;
+if (netWpmRaw > 50) calculatedMarks = 25;
+else if (netWpmRaw >= 46) calculatedMarks = 21;
+else if (netWpmRaw >= 41) calculatedMarks = 18;
+else if (netWpmRaw >= 36) calculatedMarks = 15;
+else if (netWpmRaw >= 31) calculatedMarks = 12;
+else if (netWpmRaw >= 30) calculatedMarks = 10;
 
-    const stats: TypingResultType = {
-      testName: `Typing Test - ${examRules.name} ${passage.title}`,
-      keyStrokesByCandidate: totalKeystrokes,
-      fullMistakes: errors,
-      totalErrors: errors,
-      errorPercentage: errorPercentage,
-      backspacePresses: backspaceCount.current,
-      wpm: grossWpm,
-      netWpm: netWpm,
-      accuracy: accuracy,
-      timeTakenInSeconds: timeTaken,
-      qualified: netWpm >= (examRules.targetWpm || 30),
-      marks: calculatedMarks,
-      originalText: passage.text,
-      typedText: userInput,
-    };
+const stats: TypingResultType = {
+  testName: `Typing Test - ${examRules.name} ${passage.title}`,
+  keyStrokesByCandidate: totalKeystrokes,
+  fullMistakes: errors,
+  totalErrors: errors,
+  errorPercentage: errorPercentage,
+  backspacePresses: backspaceCount.current,
+  wpm: grossWpmRaw,      // <-- Raw decimal!
+  netWpm: netWpmRaw,     // <-- Raw decimal!
+  accuracy: accuracyRaw, // <-- Raw decimal!
+  timeTakenInSeconds: timeTaken,
+  qualified: netWpmRaw >= (examRules.targetWpm || 30),
+  marks: calculatedMarks,
+  originalText: passage.text,
+  typedText: userInput,
+};
 
     onFinish(stats);
   }, [userInput, passage.text, timeLeft, examRules, onFinish]);

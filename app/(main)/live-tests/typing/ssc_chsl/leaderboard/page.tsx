@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Trophy, Medal } from 'lucide-react';
+import { ArrowLeft, Trophy, Medal, Download } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 import { db } from '@/lib/firebase'; 
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+
+// PDF Libraries
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 type LeaderboardEntry = {
   id: string;
@@ -39,7 +43,6 @@ export default function SSCCHSL_LiveLeaderboard() {
     const q = query(
       collection(db!, leaderboardRefName), 
       orderBy('netWpm', 'desc'), 
-      orderBy('accuracy', 'desc'),
       limit(100)
     );
 
@@ -64,7 +67,9 @@ export default function SSCCHSL_LiveLeaderboard() {
   }, []);
 
   const topThree = leaderboard.slice(0, 3);
-  const formatStat = (num: number) => Number.isInteger(num) ? num : Number(num).toFixed(1);
+  
+  // FIXED: This will now strictly force 1 decimal point for every score (e.g., 45.0, 42.6)
+  const formatStat = (num: number) => Number(num).toFixed(1);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatISTDate = (timestamp: any) => {
@@ -76,6 +81,87 @@ export default function SSCCHSL_LiveLeaderboard() {
       hour: '2-digit', minute: '2-digit', hour12: true 
     });
   };
+
+  // ============================================================================
+  // MODERNIZED PDF GENERATOR (CHSL)
+  // ============================================================================
+  const downloadPDF = () => {
+    const doc = new jsPDF('landscape'); 
+    const pageWidth = doc.internal.pageSize.width;
+    
+    // Centered Bold Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("SSC CHSL Tier-II Live Leaderboard - CalciPrep", pageWidth / 2, 16, { align: 'center' });
+    
+    // Centered Date
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, pageWidth / 2, 24, { align: 'center' });
+
+    const tableColumn = ["Rank", "User", "Gross WPM", "Net WPM", "Accuracy", "Marks", "Status", "Date & Time (IST)"];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tableRows: any[] = [];
+
+    leaderboard.forEach((entry, index) => {
+      const rank = index + 1;
+      let rankText = rank.toString();
+      if (rank === 1) rankText = "1st Place";
+      if (rank === 2) rankText = "2nd Place";
+      if (rank === 3) rankText = "3rd Place";
+
+      // Assuming > 0 netWpm is a pass, you can adjust this target!
+      const isQualified = entry.netWpm > 0;
+
+      const rowData = [
+        rankText,
+        entry.userName,
+        formatStat(entry.wpm),
+        formatStat(entry.netWpm),
+        `${formatStat(entry.accuracy)}%`,
+        formatStat(entry.marks),
+        isQualified ? "Qualified" : "Not Qualified",
+        formatISTDate(entry.timestamp)
+      ];
+      tableRows.push(rowData);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 32,
+      theme: 'grid',
+      headStyles: { fillColor: [10, 115, 140], halign: 'center', fontSize: 10 },
+      columnStyles: {
+        0: { fontStyle: 'bold' },
+        2: { halign: 'center' },
+        3: { halign: 'center', fontStyle: 'bold' },
+        4: { halign: 'center' },
+        5: { halign: 'center' },
+        6: { halign: 'center', fontStyle: 'bold' },
+        7: { halign: 'right', fontSize: 9 }
+      },
+      didParseCell: function (data) {
+        if (data.section === 'body') {
+          if (data.column.index === 0) {
+            if (data.row.index === 0) data.cell.styles.textColor = [218, 165, 32];
+            if (data.row.index === 1) data.cell.styles.textColor = [112, 128, 144];
+            if (data.row.index === 2) data.cell.styles.textColor = [205, 127, 50];
+          }
+          if (data.column.index === 6) {
+            if (data.cell.raw === 'Qualified') {
+              data.cell.styles.textColor = [22, 163, 74];
+            } else {
+              data.cell.styles.textColor = [220, 38, 38];
+            }
+          }
+        }
+      }
+    });
+
+    doc.save(`CalciPrep_CHSL_Leaderboard_${new Date().toLocaleDateString('en-CA')}.pdf`);
+  };
+  // ============================================================================
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pt-[100px] pb-20">
@@ -93,6 +179,18 @@ export default function SSCCHSL_LiveLeaderboard() {
             Live Leaderboard
           </h1>
           <p className="text-slate-600 font-medium">SSC CHSL Tier-II • Today's Pan-India Rankings</p>
+
+          {/* ADMIN PDF BUTTON */}
+          {currentUser?.email === 'calciprep@gmail.com' && (
+            <div className="mt-6 flex justify-center">
+              <button 
+                onClick={downloadPDF}
+                className="bg-slate-900 hover:bg-black text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-md"
+              >
+                <Download size={18} /> Export to PDF for Telegram
+              </button>
+            </div>
+          )}
         </div>
 
         {loading ? (
@@ -184,7 +282,14 @@ export default function SSCCHSL_LiveLeaderboard() {
                           <td className="px-6 py-4 text-center"><span className={`inline-flex items-center px-3 py-1 rounded-lg font-black ${isCurrentUser ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-800'}`}>{formatStat(entry.netWpm)}</span></td>
                           <td className="px-6 py-4 text-center font-bold text-slate-600">{formatStat(entry.accuracy)}%</td>
                           <td className="px-6 py-4 text-center font-bold text-slate-600">{formatStat(entry.marks)}</td>
-                          <td className="px-6 py-4 text-center font-bold"><span className="text-emerald-600">Qualified</span></td>
+                          
+                          {/* DYNAMIC GREEN/RED STATUS UPDATE */}
+                          <td className="px-6 py-4 text-center font-bold">
+                            <span className={entry.netWpm > 0 ? "text-emerald-600" : "text-red-500"}>
+                              {entry.netWpm > 0 ? "Qualified" : "Not Qualified"}
+                            </span>
+                          </td>
+                          
                           <td className="px-6 py-4 text-right text-sm font-medium text-slate-500">{formatISTDate(entry.timestamp)}</td>
                         </tr>
                       );

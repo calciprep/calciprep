@@ -59,6 +59,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${oswald.variable} ${ebGaramond.variable} ${robotoMono.variable}`}
+        suppressHydrationWarning
       >
         <AuthProvider>
           <LenisProvider>
@@ -71,4 +72,3 @@ export default function RootLayout({
     </html>
   );
 }
-

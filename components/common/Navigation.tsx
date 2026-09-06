@@ -5,10 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/common/AuthModal';
-import { User, ChevronDown, Menu, X, LogOut, Settings } from 'lucide-react';
+import { User, ChevronDown, Menu, X, LogOut, Settings, ShieldCheck, LifeBuoy } from 'lucide-react';
 import gsap from 'gsap';
 
-// Main navigation items with their respective SVGs from /media/nav/
 const navItems = [
   { label: 'Home', href: '/', icon: '/media/nav/home-nav.svg' },
   { label: 'Typing', href: '/typing', icon: '/media/nav/typing-nav.svg' },
@@ -16,7 +15,7 @@ const navItems = [
   { label: 'English', href: '/english', icon: '/media/nav/english-nav.svg' },
   { label: 'Live Tests', href: '/live-tests', icon: '/media/nav/live-tests-nav.svg' }, 
   { label: 'Dashboard', href: '/dashboard', icon: '/media/nav/dashboard-nav.svg' },
-  { label: 'Contact', href: '/#contact', icon: '/media/nav/contact-nav.svg' },
+  { label: 'Support', href: '/support', icon: '/media/nav/contact-nav.svg' },
 ];
 
 export default function Navigation() {
@@ -25,14 +24,12 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  // GSAP Mobile Menu Refs
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const mobileLinksRef = useRef<HTMLDivElement>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { currentUser, logout, openModal, setLoginMode } = useAuth() as any;
 
-  // Handle clicking outside user dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -43,7 +40,6 @@ export default function Navigation() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // GSAP open/close animation for Mobile Menu
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -78,11 +74,10 @@ export default function Navigation() {
 
   return (
     <>
-      {/* 3-Column Layout Navbar */}
-      <nav className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-slate-200 shadow-sm z-40 px-4 md:px-8">
+      <nav className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-slate-200 shadow-sm z-40 px-4 md:px-8 font-sans">
         <div className="w-full max-w-screen-2xl mx-auto h-full flex items-center justify-between">
           
-          {/* 1. ABSOLUTE LEFT: Mobile Hamburger & Logo */}
+          {/* 1. Logo & Mobile Hamburger */}
           <div className="flex-1 flex items-center justify-start gap-4">
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
@@ -101,8 +96,7 @@ export default function Navigation() {
             </Link>
           </div>
 
-          {/* 2. DEAD CENTER: Desktop Navigation Links with SVG Icons & GSAP Hover */}
-          {/* FIXED: Reduced gap slightly (gap-5 xl:gap-8) to comfortably fit the new 6th item */}
+          {/* 2. Desktop Navigation Links */}
           <div className="flex-1 hidden lg:flex items-center justify-center gap-5 xl:gap-8">
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href) && !item.href.includes('#'));
@@ -131,7 +125,6 @@ export default function Navigation() {
                   <img ref={iconRef} src={item.icon} alt="" className="w-5 h-5 object-contain" />
                   <span 
                     ref={textRef} 
-                    // FIXED: Added whitespace-nowrap to prevent "Live Tests" from breaking into two lines
                     className={`whitespace-nowrap text-base font-extrabold tracking-wide transition-colors ${
                       isActive ? 'text-blue-600' : 'text-[#000000]'
                     }`}
@@ -143,7 +136,7 @@ export default function Navigation() {
             })}
           </div>
 
-          {/* 3. ABSOLUTE RIGHT: Account Dropdown / Auth Buttons */}
+          {/* 3. Account / Dropdown / Login */}
           <div className="flex-1 flex items-center justify-end">
             {currentUser ? (
               <div className="relative" ref={dropdownRef}>
@@ -158,7 +151,7 @@ export default function Navigation() {
                       className="w-8 h-8 rounded-full object-cover border border-slate-200" 
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold uppercase">
+                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold uppercase text-xs">
                       {currentUser.displayName?.[0] || currentUser.email?.[0] || <User size={16} />}
                     </div>
                   )}
@@ -169,24 +162,47 @@ export default function Navigation() {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-48 bg-white border border-slate-200 shadow-xl rounded-xl py-2 z-50 flex flex-col overflow-hidden">
+                  <div className="absolute right-0 mt-3 w-52 bg-white border border-slate-200 shadow-xl rounded-2xl py-2 z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-4 py-2 border-b border-slate-100 bg-slate-50 mb-1">
-                      <p className="text-xs font-bold text-slate-400 uppercase">Signed in as</p>
-                      <p className="text-sm font-extrabold text-[#000000] truncate">{currentUser.email}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Signed in as</p>
+                      <p className="text-xs font-black text-slate-900 truncate">{currentUser.email}</p>
                     </div>
+
+                    {currentUser.email === 'calciprep@gmail.com' && (
+                      <Link 
+                        href="/admin" 
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-extrabold text-indigo-700 hover:bg-indigo-50 transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        <ShieldCheck size={16} /> Admin Panel
+                      </Link>
+                    )}
+
                     <Link 
                       href="/account" 
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-extrabold text-[#000000] hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      className="flex items-center gap-2.5 px-4 py-2 text-sm font-extrabold text-slate-800 hover:bg-slate-50 transition-colors"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       <Settings size={16} /> Account
                     </Link>
+
+                    {/* NEW: Direct Link to Support & Ticket History */}
+                    <Link 
+                      href="/support" 
+                      className="flex items-center gap-2.5 px-4 py-2 text-sm font-extrabold text-slate-800 hover:bg-slate-50 transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <LifeBuoy size={16} /> Support & Queries
+                    </Link>
+
+                    <div className="border-t border-slate-100 my-1"></div>
+
                     <button
                       onClick={() => {
                         setIsDropdownOpen(false);
                         logout();
                       }}
-                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-extrabold text-left text-red-600 hover:bg-red-50 transition-colors"
+                      className="flex items-center gap-2.5 w-full px-4 py-2 text-sm font-extrabold text-left text-red-600 hover:bg-red-50 transition-colors"
                     >
                       <LogOut size={16} /> Logout
                     </button>
@@ -214,69 +230,49 @@ export default function Navigation() {
         </div>
       </nav>
 
-      {/* MOBILE HAMBURGER SIDEBAR NAVIGATION */}
+      {/* MOBILE DRAWER */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-            onClick={closeMobileMenu}
-          />
+        <div className="fixed inset-0 z-[100] lg:hidden font-sans">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closeMobileMenu} />
 
-          {/* Sidebar Drawer */}
-          <div 
-            ref={mobileMenuRef}
-            className="absolute top-0 left-0 w-[300px] h-full bg-white shadow-2xl z-10 flex flex-col"
-          >
+          <div ref={mobileMenuRef} className="absolute top-0 left-0 w-[300px] h-full bg-white shadow-2xl z-10 flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-slate-100">
-              <span className="text-xl font-black text-[#000000]">Menu</span>
-              <button 
-                onClick={closeMobileMenu}
-                className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-black transition-colors"
-                aria-label="Close Menu"
-              >
+              <span className="text-xl font-black text-slate-900">Menu</span>
+              <button onClick={closeMobileMenu} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-black transition-colors" aria-label="Close Menu">
                 <X size={22} strokeWidth={2.5} />
               </button>
             </div>
 
             <div ref={mobileLinksRef} className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-5">
               {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={closeMobileMenu}
-                  className="flex items-center gap-3 py-2 text-decoration-none"
-                >
+                <Link key={item.label} href={item.href} onClick={closeMobileMenu} className="flex items-center gap-3 py-2">
                   <img src={item.icon} alt="" className="w-6 h-6 object-contain" />
-                  {/* FIXED: Added whitespace-nowrap here too, just in case! */}
                   <span className="whitespace-nowrap text-lg font-extrabold text-[#000000] tracking-wide">
                     {item.label}
                   </span>
                 </Link>
               ))}
 
+              {currentUser?.email === 'calciprep@gmail.com' && (
+                <Link href="/admin" onClick={closeMobileMenu} className="flex items-center gap-3 py-2">
+                  <ShieldCheck className="w-6 h-6 text-indigo-600" />
+                  <span className="whitespace-nowrap text-lg font-extrabold text-indigo-700 tracking-wide">Admin Panel</span>
+                </Link>
+              )}
+
               <hr className="border-slate-100 my-2" />
 
               {!currentUser ? (
                 <div className="flex flex-col gap-3 mt-2">
-                  <button
-                    onClick={() => { closeMobileMenu(); handleOpenAuth('signin'); }}
-                    className="w-full py-3 bg-slate-100 text-[#000000] font-extrabold rounded-xl text-center"
-                  >
+                  <button onClick={() => { closeMobileMenu(); handleOpenAuth('signin'); }} className="w-full py-3 bg-slate-100 text-[#000000] font-extrabold rounded-xl text-center">
                     Sign In
                   </button>
-                  <button
-                    onClick={() => { closeMobileMenu(); handleOpenAuth('signup'); }}
-                    className="w-full py-3 bg-slate-900 text-white font-extrabold rounded-xl text-center shadow-sm"
-                  >
+                  <button onClick={() => { closeMobileMenu(); handleOpenAuth('signup'); }} className="w-full py-3 bg-slate-900 text-white font-extrabold rounded-xl text-center shadow-sm">
                     Get Started
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => { closeMobileMenu(); logout(); }}
-                  className="flex items-center gap-3 py-2 text-red-600 font-extrabold text-lg text-left"
-                >
+                <button onClick={() => { closeMobileMenu(); logout(); }} className="flex items-center gap-3 py-2 text-red-600 font-extrabold text-lg text-left">
                   <LogOut size={20} /> Logout
                 </button>
               )}
@@ -285,7 +281,6 @@ export default function Navigation() {
         </div>
       )}
 
-      {/* Auth Modal detached from flow */}
       <AuthModal />
     </>
   );
