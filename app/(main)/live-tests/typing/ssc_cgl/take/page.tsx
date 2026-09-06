@@ -1,23 +1,58 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Monitor, CheckCircle2, ShieldAlert, Sparkles } from 'lucide-react';
+import { ArrowLeft, Monitor, CheckCircle2, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
 import { getTodayCGLPassage } from '../dailyData';
 import { useAuth } from '@/contexts/AuthContext';
 import CGLInterface, { UIMode } from '@/components/features/typing/interfaces/CGLInterface';
 import { TypingResult as TypingResultType } from '@/lib/typing-types';
+
+// FIREBASE IMPORTS
+import { db } from '@/lib/firebase';
+import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 
 export default function SSCCGL_LiveTakePage() {
   const router = useRouter();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { currentUser } = useAuth() as any;
 
-  const todayPassage = getTodayCGLPassage();
   const [selectedMode, setSelectedMode] = useState<UIMode>('tcs');
   const [isTestActive, setIsTestActive] = useState(false);
 
-  if (!todayPassage) {
+  // NEW: CLOUD PASSAGE STATES
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [cloudPassage, setCloudPassage] = useState<any>(null);
+  const [fetchingCloud, setFetchingCloud] = useState(true);
+
+  // 1. FETCH LATEST LIVE CLOUD PASSAGE
+  useEffect(() => {
+    const fetchCloud = async () => {
+      try {
+        // STRICT db! ENFORCEMENT - Grabs the exact same single passage as the landing page
+        const q = query(collection(db!, 'passages_Live_CGL'), orderBy('createdAt', 'desc'), limit(1));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          setCloudPassage(snap.docs[0].data());
+        }
+      } catch (error) {
+        console.error("Error fetching live cloud passage:", error);
+      } finally {
+        setFetchingCloud(false);
+      }
+    };
+    fetchCloud();
+  }, []);
+
+  // 2. MERGE LOGIC
+  const staticPassage = getTodayCGLPassage();
+  const activePassage = cloudPassage || staticPassage;
+
+  if (fetchingCloud) {
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
+  }
+
+  if (!activePassage) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center max-w-md shadow-sm">
@@ -51,15 +86,15 @@ export default function SSCCGL_LiveTakePage() {
   };
 
   if (isTestActive) {
-    // FIXED: Added the z-[9999] wrapper so the CalciPrep Navbar doesn't overlap the test!
+    // Uses the z-[9999] wrapper so the CalciPrep Navbar doesn't overlap the test!
     return (
       <div className="fixed inset-0 z-[9999] bg-white overflow-hidden">
         <CGLInterface
           passage={{
-            id: todayPassage.id,
-            title: todayPassage.title,
-            text: todayPassage.text,
-            difficulty: todayPassage.difficulty as "Medium" | "Hard" | "Easy" | "PYTT",
+            id: activePassage.id,
+            title: activePassage.title,
+            text: activePassage.text,
+            difficulty: activePassage.difficulty as "Medium" | "Hard" | "Easy" | "PYTT",
           }}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           examRules={examRules as any}
@@ -92,7 +127,7 @@ export default function SSCCGL_LiveTakePage() {
           </div>
 
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-3" style={{ fontFamily: 'var(--font-oswald)' }}>
-            {todayPassage.title}
+            {activePassage.title}
           </h1>
           <p className="text-slate-600 font-medium mb-8">
             Select your preferred examination interface mode before beginning. You can also switch modes during the test using the settings panel.
@@ -179,7 +214,7 @@ export default function SSCCGL_LiveTakePage() {
 
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 flex flex-wrap items-center justify-between gap-4 text-sm font-bold text-slate-700">
             <div>Duration: <span className="text-slate-900 font-black">15 Minutes</span></div>
-            <div>Keystrokes: <span className="text-slate-900 font-black">~{todayPassage.text.length} Keys</span></div>
+            <div>Keystrokes: <span className="text-slate-900 font-black">~{activePassage.text.length} Keys</span></div>
             <div>Candidate: <span className="text-indigo-600 font-black">{currentUser?.displayName || 'Candidate'}</span></div>
           </div>
 

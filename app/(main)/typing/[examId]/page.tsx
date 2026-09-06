@@ -7,10 +7,15 @@ import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserService } from '@/services/userService';
 import { exams } from '@/lib/typing';
+import { Passage } from '@/lib/typing/types';
 import { 
   ArrowLeft, Info, FileText, Play, RefreshCw, 
-  Search, Layers, Clock, Leaf, Equal, Flame, FileDown 
+  Search, Layers, Clock, Leaf, Equal, Flame, FileDown, Loader2 
 } from 'lucide-react';
+
+// FIREBASE IMPORTS
+import { db } from '@/lib/firebase';
+import { collection, query, getDocs } from 'firebase/firestore';
 
 // --- TAB CONFIGURATION ---
 const TABS = [
@@ -75,7 +80,53 @@ export default function ExamPassageSelectionPage() {
   const [completedPassages, setCompletedPassages] = useState<Set<string>>(new Set());
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
-  // FETCH USER HISTORY TO DETERMINE "START" vs "RETAKE"
+  // CLOUD PASSAGES STATE
+  const [cloudPassages, setCloudPassages] = useState<Passage[]>([]);
+  const [isFetchingCloud, setIsFetchingCloud] = useState(true);
+
+  // 1. FETCH FIREBASE CLOUD PASSAGES
+  useEffect(() => {
+    const fetchCloudPassages = async () => {
+      try {
+        let mappedExamType = '';
+        if (examId === 'delhi_police_hcm') mappedExamType = 'HCM';
+        else if (examId === 'ssc_cgl') mappedExamType = 'CGL';
+        else if (examId === 'ssc_chsl') mappedExamType = 'CHSL';
+
+        if (!mappedExamType) {
+          setIsFetchingCloud(false);
+          return;
+        }
+
+        // STRICT db! ENFORCEMENT
+        const q = query(collection(db!, `passages_Normal_${mappedExamType}`));
+        const snap = await getDocs(q);
+        
+        const fetched = snap.docs.map(doc => doc.data() as Passage);
+        
+        // Sort newest uploaded passages first
+        fetched.sort((a: any, b: any) => {
+          if (!a.createdAt || !b.createdAt) return 0;
+          return b.createdAt.toMillis() - a.createdAt.toMillis();
+        });
+
+        setCloudPassages(fetched);
+      } catch (error) {
+        console.error("Error fetching cloud passages:", error);
+      } finally {
+        setIsFetchingCloud(false);
+      }
+    };
+    fetchCloudPassages();
+  }, [examId]);
+
+  // 2. MERGE HARDCODED & CLOUD PASSAGES
+  const allPassages = useMemo(() => {
+    if (!examData) return [];
+    return [...examData.passages, ...cloudPassages];
+  }, [examData, cloudPassages]);
+
+  // 3. FETCH USER HISTORY TO DETERMINE "START" vs "RETAKE"
   useEffect(() => {
     const fetchHistory = async () => {
       if (!currentUser) {
@@ -97,24 +148,23 @@ export default function ExamPassageSelectionPage() {
     fetchHistory();
   }, [currentUser]);
 
-  // HELPER TO GET TAB COUNTS
+  // HELPER TO GET TAB COUNTS (Now using allPassages)
   const getTabCount = (tabId: string) => {
-    if (!examData) return 0;
-    if (tabId === 'All') return examData.passages.length;
-    return examData.passages.filter(p => (p.difficulty || 'Easy').toLowerCase() === tabId.toLowerCase()).length;
+    if (!allPassages.length) return 0;
+    if (tabId === 'All') return allPassages.length;
+    return allPassages.filter(p => (p.difficulty || 'Easy').toLowerCase() === tabId.toLowerCase()).length;
   };
 
-  // FILTER PASSAGES BASED ON SELECTED TAB & SEARCH
+  // FILTER PASSAGES BASED ON SELECTED TAB & SEARCH (Now using allPassages)
   const filteredPassages = useMemo(() => {
-    if (!examData) return [];
-    return examData.passages.filter(passage => {
+    return allPassages.filter(passage => {
       const diff = passage.difficulty || 'Easy';
       const matchesTab = activeTab === 'All' || diff.toLowerCase() === activeTab.toLowerCase();
       const matchesSearch = passage.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             passage.text.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesTab && matchesSearch;
     });
-  }, [examData, activeTab, searchQuery]);
+  }, [allPassages, activeTab, searchQuery]);
 
   if (!examData) {
     return (
@@ -159,7 +209,6 @@ export default function ExamPassageSelectionPage() {
         {/* Rules Box with "Back to Exams" embedded in top-left */}
         <div className="relative bg-[#f8f9fa] border border-gray-200 rounded-xl p-6 md:p-8 text-center shadow-sm mb-16 max-w-5xl mx-auto">
           
-          {/* Embedded Back Button matching "image_9d75dc.png" */}
           <Link 
             href="/typing" 
             className="absolute top-5 left-6 flex items-center text-gray-500 hover:text-gray-800 font-medium transition-colors text-sm md:text-base"
@@ -172,7 +221,6 @@ export default function ExamPassageSelectionPage() {
               <Info size={20} /> Typing Rules
             </span>
             
-            {/* Conditional PDF Button - Only shows for Delhi Police */}
             {showPdfFeatures && (
               <span className="flex items-center text-red-500 font-medium gap-1.5 border border-red-200 bg-red-50 px-3 py-1 rounded cursor-pointer text-sm hover:bg-red-100 transition-colors">
                 <FileText size={16} /> Official PDF
@@ -186,9 +234,17 @@ export default function ExamPassageSelectionPage() {
         </div>
 
         {/* PASSAGES HEADING */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex flex-col items-center">
           <h2 className="text-3xl md:text-4xl font-black text-[#10b981] tracking-tight mb-2">Passages</h2>
-          <div className="w-12 h-1.5 bg-[#2563eb] mx-auto rounded-full"></div>
+          <div className="w-12 h-1.5 bg-[#2563eb] rounded-full mb-2"></div>
+          {/* Cloud Sync Indicator */}
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+            {isFetchingCloud ? (
+              <><Loader2 className="animate-spin" size={14} /> Syncing Cloud Passages...</>
+            ) : cloudPassages.length > 0 ? (
+              <><Layers size={14} className="text-emerald-500" /> {cloudPassages.length} Cloud Passages Loaded</>
+            ) : null}
+          </div>
         </div>
 
         {/* SEARCH AND TABS BAR */}
@@ -198,7 +254,6 @@ export default function ExamPassageSelectionPage() {
           <div className="flex flex-wrap gap-3 items-center">
             {TABS.map(tab => {
               const count = getTabCount(tab.id);
-              // Hide empty tabs to keep the UI clean (except 'All')
               if (tab.id !== 'All' && count === 0) return null;
 
               const isActive = activeTab === tab.id;
@@ -235,7 +290,7 @@ export default function ExamPassageSelectionPage() {
           </div>
         </div>
 
-        {/* RESTORED PASSAGE CARD GRID */}
+        {/* PASSAGE CARD GRID */}
         {filteredPassages.length === 0 ? (
           <div className="bg-gray-50 p-12 rounded-2xl border border-gray-200 text-center">
             <Search className="mx-auto h-12 w-12 text-gray-300 mb-4" />
@@ -288,7 +343,9 @@ export default function ExamPassageSelectionPage() {
                       </div>
                     </div>
                     
-                    <h3 className="text-xl font-black text-gray-900 mb-2 line-clamp-1">{passage.title}</h3>
+                    <h3 className="text-xl font-black text-gray-900 mb-2 line-clamp-1">
+                      {passage.title}
+                    </h3>
                     <p className={`text-sm font-medium line-clamp-2 leading-relaxed mb-4 ${isCompleted ? 'text-gray-600' : 'text-gray-500'}`}>
                       {passage.text}
                     </p>

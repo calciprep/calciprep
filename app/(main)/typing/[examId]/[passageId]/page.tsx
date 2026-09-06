@@ -1,25 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 import { exams } from '@/lib/typing';
 import { TypingResult as TypingResultType } from '@/lib/typing-types';
+import { Passage } from '@/lib/typing/types';
 
-// --- Import Modular Interfaces ---
 import HCMInterface from '@/components/features/typing/interfaces/HCMInterface';
 import CGLInterface from '@/components/features/typing/interfaces/CGLInterface';
 import CHSLInterface from '@/components/features/typing/interfaces/CHSLInterface';
 
-// --- Import Modular Result Pages ---
 import HCMResult from '@/components/features/typing/results/HCMResult';
 import CGLResult from '@/components/features/typing/results/CGLResult';
 import CHSLResult from '@/components/features/typing/results/CHSLResult';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { UserService } from '@/services/userService';
+
+// FIREBASE IMPORTS
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default function TypingTestPage() {
   const params = useParams();
@@ -35,9 +38,54 @@ export default function TypingTestPage() {
   const [testState, setTestState] = useState<'running' | 'finished'>('running');
   const [finalStats, setFinalStats] = useState<TypingResultType | null>(null);
 
+  // CLOUD PASSAGE STATES
+  const [cloudPassage, setCloudPassage] = useState<Passage | null>(null);
+  const [fetchingCloud, setFetchingCloud] = useState(true);
+
   const examData = exams[examId];
 
-  // Fallback if exam isn't found
+  // Check hardcoded passages first
+  const staticPassage = examData?.passages.find((p) => p.id === passageId);
+
+  // DYNAMIC FIREBASE MERGE LOGIC
+  useEffect(() => {
+    if (staticPassage || !examData) {
+      setFetchingCloud(false);
+      return;
+    }
+
+    const fetchCloudPassage = async () => {
+      try {
+        // Map the URL examId to the CMS environment tag
+        let mappedExamType = '';
+        if (examId === 'delhi_police_hcm') mappedExamType = 'HCM';
+        else if (examId === 'ssc_cgl') mappedExamType = 'CGL';
+        else if (examId === 'ssc_chsl') mappedExamType = 'CHSL';
+
+        // STRICT db! ENFORCEMENT
+        const q = query(
+          collection(db!, `passages_Normal_${mappedExamType}`), 
+          where('id', '==', passageId)
+        );
+        
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          setCloudPassage(snap.docs[0].data() as Passage);
+        }
+      } catch (error) {
+        console.error("Error fetching cloud passage:", error);
+      } finally {
+        setFetchingCloud(false);
+      }
+    };
+
+    fetchCloudPassage();
+  }, [examId, passageId, staticPassage, examData]);
+
+  // Combine static and cloud data
+  const activePassage = staticPassage || cloudPassage;
+
+  // Fallback 1: Exam not found
   if (!examData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
@@ -51,10 +99,18 @@ export default function TypingTestPage() {
     );
   }
 
-  const passage = examData.passages.find((p) => p.id === passageId);
+  // Fallback 2: Loading Cloud Data
+  if (fetchingCloud) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
+        <Loader2 className="animate-spin text-blue-600 w-12 h-12 mb-4" />
+        <p className="font-bold text-gray-600">Retrieving Cloud Passage...</p>
+      </div>
+    );
+  }
 
-  // Fallback if passage isn't found
-  if (!passage) {
+  // Fallback 3: Passage not found in Static OR Cloud
+  if (!activePassage) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
         <div className="bg-white p-8 rounded-xl shadow-sm text-center border border-gray-100">
@@ -75,7 +131,7 @@ export default function TypingTestPage() {
     if (currentUser) {
       try {
         await UserService.addHistory(currentUser.uid, 'typing_history', {
-          name: passage.title,
+          name: activePassage.title,
           category: examData.rules.name,
           grossWpm: stats.wpm,
           netWpm: stats.netWpm,
@@ -107,7 +163,7 @@ export default function TypingTestPage() {
       case 'ssc_cgl':
         return (
           <CGLInterface 
-            passage={passage} 
+            passage={activePassage} 
             examRules={examData.rules} 
             userName={userName}
             onFinish={handleTestFinish} 
@@ -117,7 +173,7 @@ export default function TypingTestPage() {
       case 'ssc_chsl':
         return (
           <CHSLInterface 
-            passage={passage} 
+            passage={activePassage} 
             examRules={examData.rules} 
             userName={userName}
             onFinish={handleTestFinish} 
@@ -128,7 +184,7 @@ export default function TypingTestPage() {
       default:
         return (
           <HCMInterface
-            passage={passage}
+            passage={activePassage}
             examRules={examData.rules}
             onFinish={handleTestFinish}
             onCancel={() => router.push(`/typing/${examId}`)}
@@ -171,13 +227,9 @@ export default function TypingTestPage() {
   };
 
   return (
-    // The z-[100] overlay ensures the typing interface covers the global navbar
     <div className={testState === 'running' ? "fixed inset-0 z-[100] bg-white" : "w-full min-h-screen bg-white"}>
-      
       {testState === 'running' && renderExamInterface()}
-
       {testState === 'finished' && renderExamResult()}
-
     </div>
   );
 }

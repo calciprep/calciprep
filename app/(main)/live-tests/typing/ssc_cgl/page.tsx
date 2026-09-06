@@ -6,7 +6,7 @@ import { ArrowLeft, Clock, Trophy, Play, Lock, Download, Loader2, CheckCircle2, 
 import { getTodayCGLPassage } from './dailyData';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 
 export default function SSCCGL_LiveTestLanding() {
   const router = useRouter();
@@ -29,6 +29,11 @@ export default function SSCCGL_LiveTestLanding() {
     isLoading: true
   });
 
+  // NEW: CLOUD PASSAGE STATES
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [cloudPassage, setCloudPassage] = useState<any>(null);
+  const [fetchingCloud, setFetchingCloud] = useState(true);
+
   const handleLoginClick = () => {
     if (setLoginMode) setLoginMode(true); 
     if (openModal) openModal(); 
@@ -36,6 +41,7 @@ export default function SSCCGL_LiveTestLanding() {
 
   // 1. FETCH SETTINGS
   useEffect(() => {
+    // STRICT db! ENFORCEMENT
     const docRef = doc(db!, 'app_settings', 'live_tests');
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -55,13 +61,33 @@ export default function SSCCGL_LiveTestLanding() {
     return () => unsubscribe();
   }, []);
 
-  // 2. PASS SETTINGS INTO THE PASSAGE SELECTOR
-  const todayPassage = settings.isLoading ? null : getTodayCGLPassage(settings);
+  // 2. FETCH LATEST LIVE CLOUD PASSAGE
+  useEffect(() => {
+    const fetchCloud = async () => {
+      try {
+        // STRICT db! ENFORCEMENT - Grabs the single most recent "Live CGL" passage uploaded via CMS
+        const q = query(collection(db!, 'passages_Live_CGL'), orderBy('createdAt', 'desc'), limit(1));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          setCloudPassage(snap.docs[0].data());
+        }
+      } catch (error) {
+        console.error("Error fetching live cloud passage:", error);
+      } finally {
+        setFetchingCloud(false);
+      }
+    };
+    fetchCloud();
+  }, []);
+
+  // 3. PASSAGE MERGE LOGIC (Cloud takes priority, falls back to Hardcoded)
+  const staticPassage = settings.isLoading ? null : getTodayCGLPassage(settings);
+  const activePassage = cloudPassage || staticPassage;
   const TEST_DATE = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  // 3. DYNAMIC TIMER ENGINE
+  // 4. DYNAMIC TIMER ENGINE
   useEffect(() => {
-    if (settings.isLoading || !todayPassage) return;
+    if (settings.isLoading || !activePassage) return;
 
     const timer = setInterval(() => {
       const now = new Date();
@@ -95,9 +121,9 @@ export default function SSCCGL_LiveTestLanding() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [settings, todayPassage]);
+  }, [settings, activePassage]);
 
-  // 4. CHECK USER STATUS
+  // 5. CHECK USER STATUS
   useEffect(() => {
     const checkUserStatus = async () => {
       if (!currentUser) {
@@ -110,6 +136,7 @@ export default function SSCCGL_LiveTestLanding() {
         const dateString = today.toLocaleDateString('en-CA');
         const leaderboardRefName = `live_leaderboards_cgl_${dateString}`;
 
+        // STRICT db! ENFORCEMENT
         const userDocRef = doc(db!, leaderboardRefName, currentUser.uid);
         const userDoc = await getDoc(userDocRef);
 
@@ -134,9 +161,9 @@ export default function SSCCGL_LiveTestLanding() {
 
   // SAFE CHECKS FOR UI RENDERING
   const isExamPaused = settings.cglPauseDate && new Date() < new Date(settings.cglPauseDate);
-  const isTestActive = settings.cglActive && !isExamPaused && todayPassage;
+  const isTestActive = settings.cglActive && !isExamPaused && activePassage;
 
-  if (settings.isLoading) {
+  if (settings.isLoading || fetchingCloud) {
     return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
   }
 
@@ -183,8 +210,16 @@ export default function SSCCGL_LiveTestLanding() {
           ) : (
             <>
               <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-4" style={{fontFamily: 'var(--font-oswald)'}}>
-                {todayPassage?.title}
+                {activePassage?.title}
               </h1>
+              
+              {/* Cloud Badge to let you know it successfully fetched from Admin! */}
+              {cloudPassage && (
+                <span className="inline-block bg-fuchsia-100 text-fuchsia-700 text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wider mb-4 border border-fuchsia-200">
+                  Cloud Live Deployment
+                </span>
+              )}
+
               <p className="text-lg text-slate-600 font-medium mb-10 max-w-2xl">
                 This is the official daily live typing test for SSC CGL Tier-II aspirants. Your formatting, spacing, and speed will be evaluated strictly under TCS/NTA rules.
               </p>
@@ -196,7 +231,7 @@ export default function SSCCGL_LiveTestLanding() {
                 </div>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Today's Keystrokes</p>
-                  <p className="text-slate-800 font-black text-lg">{todayPassage?.text.length} Keys</p>
+                  <p className="text-slate-800 font-black text-lg">{activePassage?.text.length} Keys</p>
                 </div>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-center">
                   <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Practice Material</p>
