@@ -24,8 +24,26 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CalciPrep",
-  description: "Gamified Learning for Competitive Exams",
+  title: "Calciprep | Smart Govt Exam Prep Platform",
+  description:
+    "Calciprep is a student-first exam preparation platform built for SSC, Railway, and Delhi Police aspirants. Practice automated rapid maths calculations, solve English PYQ quizzes, take official-pattern typing tests, and access free exam mock tests.",
+  keywords: [
+    "govt exam preparation",
+    "delhi police hcm typing test",
+    "delhi police hcm typing",
+    "delhi police hcm pyq typing tests",
+    "dp hcm typing test practice",
+    "live dp hcm typing tests",
+    "ssc cgl preparation",
+    "ssc cgl mock tests",
+    "railway exam mock test",
+    "maths speed calculation practice",
+    "english pyq quiz blackbook",
+    "online typing test ssc cgl chsl",
+    "delhi police hcm typing portal",
+    "free mock tests ssc rrb",
+    "calciprep"
+  ],
   icons: {
     icon: [
       { url: '/media/favicon.svg', type: 'image/svg+xml' },
@@ -56,6 +74,25 @@ export default function RootLayout({
           strategy="lazyOnload" // Or "afterInteractive" if needed sooner
         />
         {/* --- END ADSENSE SCRIPT SNIPPET --- */}
+
+        {/* --- GOOGLE SEO SCHEMA MARKUP FOR SITELINKS --- */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Calciprep",
+              "url": "https://calciprep.online/",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://calciprep.online/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+        {/* --- END GOOGLE SEO SCHEMA MARKUP --- */}
       </head>
       <body
         className={`${oswald.variable} ${ebGaramond.variable} ${robotoMono.variable}`}
