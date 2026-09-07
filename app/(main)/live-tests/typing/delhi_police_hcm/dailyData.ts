@@ -253,9 +253,14 @@ export const liveTestConfig = {
   LIVE_TEST_LAUNCH_DATE: '2026-09-06' 
 };
 
-// ADDED: Accept dbSettings to override the local logic
+// ADDED: Accept dbSettings to override the local logic, AND cloudPassages for DB merge
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getTodayHCMPassage = (dbSettings?: any) => {
+export const getTodayHCMPassage = (dbSettings?: any, cloudPassages: any[] = []) => {
+  // 1. Merge the database passages (sorted by upload order) with the hardcoded ones
+  const allPassages = [...hcmDailyPassages, ...cloudPassages];
+
+  if (allPassages.length === 0) return null;
+
   const now = new Date();
   
   // Subtract 4 hours so anything before 4:00 AM counts as "yesterday"
@@ -295,6 +300,7 @@ export const getTodayHCMPassage = (dbSettings?: any) => {
   // If we haven't reached the launch date yet
   if (diffDays < 0) return null; 
   
-  const index = Math.max(0, diffDays) % hcmDailyPassages.length;
-  return hcmDailyPassages[index];
+  // Math: Wrap around the array if days exceed the combined length
+  const index = Math.max(0, diffDays) % allPassages.length;
+  return allPassages[index];
 };

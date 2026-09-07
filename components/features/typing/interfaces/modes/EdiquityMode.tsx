@@ -43,12 +43,59 @@ export default function EdiquityMode({ passage, examRules, onFinish, onCancel, c
 
   const submitTest = useCallback(() => {
     const timeInMinutes = (examRules.duration - timeLeft) / 60;
-    const typedWords = userInput.trim().split(/\s+/);
-    const originalWords = passage.text.trim().split(/\s+/);
+    
+    // --- CLOUD SANITIZER & GREEDY LOOKAHEAD ENGINE ---
+    const normalizeText = (text: string) => {
+      return text
+        .replace(/[\u2018\u2019]/g, "'") 
+        .replace(/[\u201C\u201D]/g, '"') 
+        .replace(/[\u2013\u2014]/g, '-') 
+        .replace(/[\u200B-\u200D\uFEFF]/g, '') 
+        .replace(/\u00A0/g, ' ') 
+        .trim();
+    };
+
+    const cleanTyped = normalizeText(userInput);
+    const cleanOrig = normalizeText(passage.text);
+
+    const typedWords = cleanTyped.split(/\s+/).filter(Boolean);
+    const originalWords = cleanOrig.split(/\s+/).filter(Boolean);
+
     let errors = 0;
-    for (let i = 0; i < typedWords.length; i++) {
-      if (typedWords[i] !== originalWords[i] && typedWords[i] !== '') errors++;
+    let origIdx = 0;
+    let typedIdx = 0;
+
+    while (typedIdx < typedWords.length && origIdx < originalWords.length) {
+      if (typedWords[typedIdx] === originalWords[origIdx]) {
+        typedIdx++;
+        origIdx++;
+      } else {
+        errors++;
+        let realigned = false;
+        for (let lookahead = 1; lookahead <= 5; lookahead++) {
+          if (origIdx + lookahead < originalWords.length && typedWords[typedIdx] === originalWords[origIdx + lookahead]) {
+            origIdx += lookahead;
+            realigned = true;
+            break;
+          }
+          if (typedIdx + lookahead < typedWords.length && typedWords[typedIdx + lookahead] === originalWords[origIdx]) {
+            typedIdx += lookahead;
+            realigned = true;
+            break;
+          }
+        }
+        if (!realigned) {
+          typedIdx++;
+          origIdx++;
+        }
+      }
     }
+    
+    if (typedIdx < typedWords.length) {
+      errors += (typedWords.length - typedIdx);
+    }
+    // ----------------------------------------------------------------
+
     const grossWpmRaw = timeInMinutes > 0 ? (userInput.length / 5) / timeInMinutes : 0;
     const netWpmRaw = Math.max(0, grossWpmRaw - (errors / timeInMinutes));
     const accuracyRaw = grossWpmRaw > 0 ? Math.max(0, (netWpmRaw / grossWpmRaw) * 100) : 0;
@@ -90,7 +137,6 @@ export default function EdiquityMode({ passage, examRules, onFinish, onCancel, c
         <div className="font-bold text-xl tracking-wide">Time Left {formatTime(timeLeft)}</div>
       </div>
       
-      {/* Changed to fixed heights and removed max-width constraints */}
       <div className="flex-1 px-2 pt-4 pb-2 flex flex-col gap-4 w-full">
         
         {showPassage && (

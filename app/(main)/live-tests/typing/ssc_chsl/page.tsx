@@ -6,7 +6,7 @@ import { ArrowLeft, Clock, Trophy, Play, Lock, Download, Loader2, CheckCircle2, 
 import { getTodayCHSLPassage } from './dailyData';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 export default function SSCCHSL_LiveTestLanding() {
   const router = useRouter();
@@ -29,6 +29,11 @@ export default function SSCCHSL_LiveTestLanding() {
     chslLaunchDate: "",
     isLoading: true
   });
+
+  // CLOUD PASSAGE STATES
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [cloudPassages, setCloudPassages] = useState<any[]>([]);
+  const [fetchingCloud, setFetchingCloud] = useState(true);
 
   const handleLoginClick = () => {
     if (setLoginMode) setLoginMode(true); 
@@ -56,11 +61,27 @@ export default function SSCCHSL_LiveTestLanding() {
     return () => unsubscribe();
   }, []);
 
-  // 2. PASS SETTINGS INTO THE PASSAGE SELECTOR
-  const todayPassage = settings.isLoading ? null : getTodayCHSLPassage(settings);
+  // 2. FETCH CLOUD PASSAGES FROM FIREBASE (Targeting CHSL)
+  useEffect(() => {
+    const fetchCloud = async () => {
+      try {
+        const q = query(collection(db!, 'passages_Live_CHSL'), orderBy('createdAt', 'asc'));
+        const snap = await getDocs(q);
+        setCloudPassages(snap.docs.map(doc => doc.data()));
+      } catch (error) {
+        console.error("Error fetching live cloud passages:", error);
+      } finally {
+        setFetchingCloud(false);
+      }
+    };
+    fetchCloud();
+  }, []);
+
+  // 3. PASS SETTINGS & CLOUD PASSAGES INTO RESOLVER
+  const todayPassage = settings.isLoading || fetchingCloud ? null : getTodayCHSLPassage(settings, cloudPassages);
   const TEST_DATE = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  // 3. DYNAMIC TIMER ENGINE
+  // 4. DYNAMIC TIMER ENGINE
   useEffect(() => {
     if (settings.isLoading || !todayPassage) return;
 
@@ -98,7 +119,7 @@ export default function SSCCHSL_LiveTestLanding() {
     return () => clearInterval(timer);
   }, [settings, todayPassage]);
 
-  // 4. CHECK USER STATUS
+  // 5. CHECK USER STATUS
   useEffect(() => {
     const checkUserStatus = async () => {
       if (!currentUser) {
@@ -139,7 +160,7 @@ export default function SSCCHSL_LiveTestLanding() {
   const isExamPaused = settings.chslPauseDate && new Date() < new Date(settings.chslPauseDate);
   const isTestActive = settings.chslActive && !isExamPaused && todayPassage;
 
-  if (settings.isLoading) {
+  if (settings.isLoading || fetchingCloud) {
     return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
   }
 

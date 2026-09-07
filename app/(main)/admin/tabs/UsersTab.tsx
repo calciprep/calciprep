@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-// ADDED: Imported useRouter to enable actual navigation
 import { useRouter } from 'next/navigation'; 
 import { db } from '@/lib/firebase';
-import { collection, query, limit, getDocs, deleteDoc, doc } from 'firebase/firestore';
+// FIXED: Imported onSnapshot for real-time syncing
+import { collection, query, limit, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { Search, Loader2, Trash2, LayoutDashboard, Shield, Activity, CalendarDays, Clock } from 'lucide-react';
 
 export default function UsersTab() {
-  // ADDED: Initialize the Next.js router
   const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,26 +15,35 @@ export default function UsersTab() {
   const [usersLoading, setUsersLoading] = useState(true);
   const [userSearch, setUserSearch] = useState("");
 
-  const fetchUsers = async () => {
+  // FIXED: Replaced the static fetchUsers with a real-time onSnapshot listener
+  useEffect(() => {
     setUsersLoading(true);
-    try {
-      const q = query(collection(db!, 'users'), limit(500)); 
-      const querySnapshot = await getDocs(q);
+    
+    const q = query(collection(db!, 'users'), limit(500)); 
+    
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const users: any[] = [];
       querySnapshot.forEach((doc) => {
         users.push({ id: doc.id, ...doc.data() });
       });
-      setUsersList(users);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setUsersLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    fetchUsers();
+      // SORTING FIX: Forces the newest signups to instantly appear at the top of the list!
+      users.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis?.() || 0;
+        const timeB = b.createdAt?.toMillis?.() || 0;
+        return timeB - timeA; // Descending order
+      });
+
+      setUsersList(users);
+      setUsersLoading(false);
+    }, (error) => {
+      console.error("Error fetching users:", error);
+      setUsersLoading(false);
+    });
+
+    // Cleanup listener when you switch away from the Users tab
+    return () => unsubscribe();
   }, []);
 
   const handleDeleteUser = async (userId: string, userEmail: string) => {
@@ -44,7 +52,7 @@ export default function UsersTab() {
     
     try {
       await deleteDoc(doc(db!, 'users', userId));
-      setUsersList(usersList.filter(user => user.id !== userId));
+      // No need to manually filter the array anymore; onSnapshot will remove them automatically!
       alert("User profile deleted successfully.");
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -90,7 +98,6 @@ export default function UsersTab() {
       {/* MODERN DATA TABLE */}
       <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
         <table className="w-full text-left whitespace-nowrap text-sm">
-          {/* UPDATED: Colorful Teal Header matching your website's primary theme! */}
           <thead className="bg-[#0a738c] border-b border-[#085a6e]">
             <tr>
               <th className="px-6 py-4 text-xs font-bold text-white/90 uppercase tracking-wider">Full name</th>
@@ -104,7 +111,7 @@ export default function UsersTab() {
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white">
             {usersLoading ? (
-              <tr><td colSpan={7} className="text-center py-12 text-slate-400 font-medium"><Loader2 className="animate-spin inline mr-2" size={16}/> Loading users...</td></tr>
+              <tr><td colSpan={7} className="text-center py-12 text-slate-400 font-medium"><Loader2 className="animate-spin inline mr-2" size={16}/> Syncing live users...</td></tr>
             ) : filteredUsers.length === 0 ? (
               <tr><td colSpan={7} className="text-center py-12 text-slate-400 font-medium">No users found matching your search.</td></tr>
             ) : (
@@ -144,7 +151,6 @@ export default function UsersTab() {
                     <td className="px-6 py-4 text-slate-500 font-medium">{formatDate(user.lastLogin || user.createdAt)}</td>
                     
                     <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
-                      {/* FIXED: The Dashboard Button now routes to the actual user! */}
                       <button 
                         onClick={() => router.push(`/admin/user/${user.id}`)}
                         className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors border border-indigo-100 opacity-90 group-hover:opacity-100"

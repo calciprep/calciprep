@@ -17,26 +17,22 @@ export default function TypingInterface({
   onFinish,
   onCancel,
 }: ClassicTypingProps) {
-  // --- TEST STATE ---
   const [userInput, setUserInput] = useState('');
   const [timeLeft, setTimeLeft] = useState(examRules.duration);
   const [isStarted, setIsStarted] = useState(false);
 
-  // --- SETTINGS STATE ---
   const [showSettings, setShowSettings] = useState(false);
   const [backspaceEnabled, setBackspaceEnabled] = useState(
     examRules.allowBackspace
   );
-  const [showPassage, setShowPassage] = useState(false); // Default hidden as per typical paper-to-screen
+  const [showPassage, setShowPassage] = useState(false);
   const [textSize, setTextSize] = useState(15);
   const [fontFamily, setFontFamily] = useState('Times New Roman, serif');
   const [nightMode, setNightMode] = useState(false);
 
-  // --- TRACKING REFS (Doesn't cause re-renders) ---
   const backspaceCount = useRef(0);
   const textareaRef = useRef(null);
 
-  // --- TIMER LOGIC ---
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -52,7 +48,6 @@ export default function TypingInterface({
     return () => clearInterval(interval);
   }, [isStarted, timeLeft]);
 
-  // --- TYPING HANDLERS ---
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isStarted) setIsStarted(true);
 
@@ -60,7 +55,7 @@ export default function TypingInterface({
       backspaceCount.current += 1;
 
       if (!backspaceEnabled) {
-        e.preventDefault(); // Block deletion completely
+        e.preventDefault(); 
       }
     }
   };
@@ -69,7 +64,6 @@ export default function TypingInterface({
     setUserInput(e.target.value);
   };
 
-  // --- FULL SCREEN LOGIC ---
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch((err) => {
@@ -82,29 +76,64 @@ export default function TypingInterface({
     }
   };
 
-  // --- SUBMIT EVALUATION ---
   const submitTest = () => {
     const timeTaken = examRules.duration - timeLeft;
     const timeInMinutes = timeTaken / 60;
 
-    // Evaluate standard words separated by space
-    const typedWords = userInput.trim().split(/\s+/);
-    const originalWords = passage.text.trim().split(/\s+/);
+    // --- CLOUD SANITIZER & GREEDY LOOKAHEAD ENGINE ---
+    const normalizeText = (text: string) => {
+      return text
+        .replace(/[\u2018\u2019]/g, "'") 
+        .replace(/[\u201C\u201D]/g, '"') 
+        .replace(/[\u2013\u2014]/g, '-') 
+        .replace(/[\u200B-\u200D\uFEFF]/g, '') 
+        .replace(/\u00A0/g, ' ') 
+        .trim();
+    };
+
+    const cleanTyped = normalizeText(userInput);
+    const cleanOrig = normalizeText(passage.text);
+
+    const typedWords = cleanTyped.split(/\s+/).filter(Boolean);
+    const originalWords = cleanOrig.split(/\s+/).filter(Boolean);
 
     let errors = 0;
+    let origIdx = 0;
+    let typedIdx = 0;
 
-    for (let i = 0; i < typedWords.length; i++) {
-      if (
-        typedWords[i] !== originalWords[i] &&
-        typedWords[i] !== ''
-      ) {
+    while (typedIdx < typedWords.length && origIdx < originalWords.length) {
+      if (typedWords[typedIdx] === originalWords[origIdx]) {
+        typedIdx++;
+        origIdx++;
+      } else {
         errors++;
+        let realigned = false;
+        for (let lookahead = 1; lookahead <= 5; lookahead++) {
+          if (origIdx + lookahead < originalWords.length && typedWords[typedIdx] === originalWords[origIdx + lookahead]) {
+            origIdx += lookahead;
+            realigned = true;
+            break;
+          }
+          if (typedIdx + lookahead < typedWords.length && typedWords[typedIdx + lookahead] === originalWords[origIdx]) {
+            typedIdx += lookahead;
+            realigned = true;
+            break;
+          }
+        }
+        if (!realigned) {
+          typedIdx++;
+          origIdx++;
+        }
       }
     }
+    
+    if (typedIdx < typedWords.length) {
+      errors += (typedWords.length - typedIdx);
+    }
+    // ----------------------------------------------------------------
 
     const totalKeystrokes = userInput.length;
 
-    // Calculations based on typical SSC / NTA logic (5 characters = 1 word)
     const grossWpm =
       timeInMinutes > 0
         ? Math.round((totalKeystrokes / 5) / timeInMinutes)
@@ -125,7 +154,6 @@ export default function TypingInterface({
         ? (errors / (totalKeystrokes / 5)) * 100
         : 0;
 
-    // --- MARKS CALCULATION LOGIC ---
     let calculatedMarks = 0;
 
     if (netWpm > 50) {
@@ -141,10 +169,9 @@ export default function TypingInterface({
     } else if (netWpm >= 30) {
       calculatedMarks = 10;
     } else {
-      calculatedMarks = 0; // Below qualifying
+      calculatedMarks = 0; 
     }
 
-    // Assemble payload for TypingResult page
     const stats: TypingResultType = {
       testName: `Typing Test - ${examRules.name} ${passage.title}`,
       keyStrokesByCandidate: totalKeystrokes,
@@ -159,7 +186,6 @@ export default function TypingInterface({
       qualified: netWpm >= (examRules.targetWpm || 30),
       marks: calculatedMarks,
 
-      // Passing the texts for the comparison diff visual
       originalText: passage.text,
       typedText: userInput,
     };
@@ -167,7 +193,6 @@ export default function TypingInterface({
     onFinish(stats);
   };
 
-  // --- FORMAT UTILS ---
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -177,7 +202,6 @@ export default function TypingInterface({
       .padStart(2, '0')}`;
   };
 
-  // --- RENDER ---
   return (
     <div
       className={`flex flex-col min-h-screen ${
@@ -186,12 +210,10 @@ export default function TypingInterface({
           : 'bg-gray-100 text-black'
       }`}
     >
-      {/* 1. Header (Blue) */}
       <div className="bg-[#4c75c3] text-white text-center py-2 px-4 text-xl font-bold tracking-wide">
         Typing Test - {examRules.name} {passage.title}
       </div>
 
-      {/* 2. Toolbar (Dark) */}
       <div className="bg-[#333333] text-white px-4 py-2 flex flex-wrap justify-between items-center text-sm gap-2">
         <div className="flex items-center gap-4">
           <span>{examRules.name}</span>
@@ -227,14 +249,11 @@ export default function TypingInterface({
         </div>
       </div>
 
-      {/* 3. Main Typing Area */}
       <div className="flex-1 p-2 md:p-6 lg:px-12 flex flex-col mx-auto w-full max-w-7xl">
-        {/* Info Bar */}
         <div className="bg-[#5b87c6] text-white px-3 py-1 text-sm border border-[#5b87c6]">
           Keyboard Layout: QWERTY Language: English
         </div>
 
-        {/* Optional Passage Viewer */}
         {showPassage && (
           <div
             className={`p-4 border-l border-r border-t overflow-y-auto max-h-48 leading-relaxed select-none ${
@@ -251,7 +270,6 @@ export default function TypingInterface({
           </div>
         )}
 
-        {/* Text Area */}
         <textarea
           ref={textareaRef}
           className={`w-full flex-1 min-h-[400px] p-4 border resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-inner ${
@@ -278,7 +296,6 @@ export default function TypingInterface({
           disabled={timeLeft === 0}
         />
 
-        {/* Footer Actions */}
         <div className="mt-6 flex gap-4">
           <button
             onClick={onCancel}
@@ -296,11 +313,9 @@ export default function TypingInterface({
         </div>
       </div>
 
-      {/* 4. Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center backdrop-blur-sm p-4">
           <div className="bg-white text-black w-full max-w-md rounded shadow-2xl flex flex-col max-h-full">
-            {/* Modal Header */}
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-bold">Test Settings</h2>
 
@@ -324,9 +339,7 @@ export default function TypingInterface({
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 overflow-y-auto space-y-6">
-              {/* Backspace Toggle */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Backspace:</span>
 
@@ -364,7 +377,6 @@ export default function TypingInterface({
                 </label>
               </div>
 
-              {/* Show Passage Toggle */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Show Passage:</span>
 
@@ -400,7 +412,6 @@ export default function TypingInterface({
                 </label>
               </div>
 
-              {/* Text Size */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Text Size:</span>
 
@@ -429,7 +440,6 @@ export default function TypingInterface({
                 </div>
               </div>
 
-              {/* Font Select */}
               <div className="flex flex-col gap-2">
                 <span className="font-bold">Font:</span>
 
@@ -448,7 +458,6 @@ export default function TypingInterface({
                 </select>
               </div>
 
-              {/* Screen Layout Select */}
               <div className="flex flex-col gap-2">
                 <span className="font-bold">Screen Layout:</span>
 
@@ -458,7 +467,6 @@ export default function TypingInterface({
                 </select>
               </div>
 
-              {/* Night Mode Toggle */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Night Mode:</span>
 

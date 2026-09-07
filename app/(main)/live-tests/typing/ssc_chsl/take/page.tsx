@@ -1,23 +1,59 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Monitor, CheckCircle2, ShieldAlert, Sparkles } from 'lucide-react';
+import { ArrowLeft, Monitor, CheckCircle2, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
 import { getTodayCHSLPassage } from '../dailyData';
 import { useAuth } from '@/contexts/AuthContext';
 import CHSLInterface, { UIMode } from '@/components/features/typing/interfaces/CHSLInterface';
 import { TypingResult as TypingResultType } from '@/lib/typing-types';
+
+// FIREBASE IMPORTS
+import { db } from '@/lib/firebase';
+import { doc, getDoc, collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 export default function SSCCHSL_LiveTakePage() {
   const router = useRouter();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { currentUser } = useAuth() as any;
 
-  const todayPassage = getTodayCHSLPassage();
   const [selectedMode, setSelectedMode] = useState<UIMode>('ediquity');
   const [isTestActive, setIsTestActive] = useState(false);
 
-  if (!todayPassage) {
+  // DATA STATES FOR CLOUD SYNCHRONIZATION
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [settings, setSettings] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [cloudPassages, setCloudPassages] = useState<any[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  // 1. FETCH EVERYTHING REQUIRED TO FIND TODAY'S PASSAGE
+  useEffect(() => {
+    const fetchEverything = async () => {
+      try {
+        const settingsSnap = await getDoc(doc(db!, 'app_settings', 'live_tests'));
+        setSettings(settingsSnap.exists() ? settingsSnap.data() : null);
+
+        const q = query(collection(db!, 'passages_Live_CHSL'), orderBy('createdAt', 'asc'));
+        const passagesSnap = await getDocs(q);
+        setCloudPassages(passagesSnap.docs.map(d => d.data()));
+      } catch (error) {
+        console.error("Error fetching live test requirements:", error);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    fetchEverything();
+  }, []);
+
+  // 2. RESOLVE TODAY'S PASSAGE
+  const activePassage = loadingData ? null : getTodayCHSLPassage(settings, cloudPassages);
+
+  if (loadingData) {
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
+  }
+
+  if (!activePassage) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center max-w-md shadow-sm">
@@ -51,16 +87,15 @@ export default function SSCCHSL_LiveTakePage() {
   };
 
   if (isTestActive) {
-    // FIXED: The wrapper here forces the test to overlay the entire site layout,
-    // guaranteeing the CalciPrep Navbar doesn't hide the Ediquity timer/header!
+    // Uses the z-[9999] wrapper so the CalciPrep Navbar doesn't overlap the test!
     return (
       <div className="fixed inset-0 z-[9999] bg-white overflow-hidden">
         <CHSLInterface
           passage={{
-            id: todayPassage.id,
-            title: todayPassage.title,
-            text: todayPassage.text,
-            difficulty: todayPassage.difficulty as "Medium" | "Hard" | "Easy" | "PYTT",
+            id: activePassage.id,
+            title: activePassage.title,
+            text: activePassage.text,
+            difficulty: activePassage.difficulty as "Medium" | "Hard" | "Easy" | "PYTT",
           }}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           examRules={examRules as any}
@@ -93,7 +128,7 @@ export default function SSCCHSL_LiveTakePage() {
           </div>
 
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-3" style={{ fontFamily: 'var(--font-oswald)' }}>
-            {todayPassage.title}
+            {activePassage.title}
           </h1>
           <p className="text-slate-600 font-medium mb-8">
             Select your preferred examination interface mode before beginning. You can also switch modes during the test using the settings panel.
@@ -180,7 +215,7 @@ export default function SSCCHSL_LiveTakePage() {
 
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 flex flex-wrap items-center justify-between gap-4 text-sm font-bold text-slate-700">
             <div>Duration: <span className="text-slate-900 font-black">10 Minutes</span></div>
-            <div>Keystrokes: <span className="text-slate-900 font-black">~{todayPassage.text.length} Keys</span></div>
+            <div>Keystrokes: <span className="text-slate-900 font-black">~{activePassage.text.length} Keys</span></div>
             <div>Candidate: <span className="text-indigo-600 font-black">{currentUser?.displayName || 'Candidate'}</span></div>
           </div>
 

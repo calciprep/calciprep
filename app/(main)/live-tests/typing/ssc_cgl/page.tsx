@@ -213,12 +213,6 @@ export default function SSCCGL_LiveTestLanding() {
                 {activePassage?.title}
               </h1>
               
-              {/* Cloud Badge to let you know it successfully fetched from Admin! */}
-              {cloudPassage && (
-                <span className="inline-block bg-fuchsia-100 text-fuchsia-700 text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wider mb-4 border border-fuchsia-200">
-                  Cloud Live Deployment
-                </span>
-              )}
 
               <p className="text-lg text-slate-600 font-medium mb-10 max-w-2xl">
                 This is the official daily live typing test for SSC CGL Tier-II aspirants. Your formatting, spacing, and speed will be evaluated strictly under TCS/NTA rules.

@@ -13,11 +13,9 @@ import {
   Search, Layers, Clock, Leaf, Equal, Flame, FileDown, Loader2 
 } from 'lucide-react';
 
-// FIREBASE IMPORTS
 import { db } from '@/lib/firebase';
 import { collection, query, getDocs } from 'firebase/firestore';
 
-// --- TAB CONFIGURATION ---
 const TABS = [
   { 
     id: 'All', 
@@ -47,7 +45,7 @@ const TABS = [
     badgeInactive: 'bg-gray-100 text-gray-500'
   },
   { 
-    id: 'Medium', // Mapped to 'Moderate' in UI
+    id: 'Medium', 
     label: 'Moderate', 
     icon: Equal, 
     activeClass: 'bg-[#f0f3ff] text-[#343a9a] border-[#c2d1ff]', 
@@ -80,11 +78,9 @@ export default function ExamPassageSelectionPage() {
   const [completedPassages, setCompletedPassages] = useState<Set<string>>(new Set());
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
-  // CLOUD PASSAGES STATE
   const [cloudPassages, setCloudPassages] = useState<Passage[]>([]);
   const [isFetchingCloud, setIsFetchingCloud] = useState(true);
 
-  // 1. FETCH FIREBASE CLOUD PASSAGES
   useEffect(() => {
     const fetchCloudPassages = async () => {
       try {
@@ -98,16 +94,15 @@ export default function ExamPassageSelectionPage() {
           return;
         }
 
-        // STRICT db! ENFORCEMENT
         const q = query(collection(db!, `passages_Normal_${mappedExamType}`));
         const snap = await getDocs(q);
         
         const fetched = snap.docs.map(doc => doc.data() as Passage);
         
-        // Sort newest uploaded passages first
         fetched.sort((a: any, b: any) => {
-          if (!a.createdAt || !b.createdAt) return 0;
-          return b.createdAt.toMillis() - a.createdAt.toMillis();
+          const orderA = a.uploadOrder ?? a.createdAt?.toMillis?.() ?? 0;
+          const orderB = b.uploadOrder ?? b.createdAt?.toMillis?.() ?? 0;
+          return orderA - orderB; 
         });
 
         setCloudPassages(fetched);
@@ -120,13 +115,11 @@ export default function ExamPassageSelectionPage() {
     fetchCloudPassages();
   }, [examId]);
 
-  // 2. MERGE HARDCODED & CLOUD PASSAGES
   const allPassages = useMemo(() => {
     if (!examData) return [];
     return [...examData.passages, ...cloudPassages];
   }, [examData, cloudPassages]);
 
-  // 3. FETCH USER HISTORY TO DETERMINE "START" vs "RETAKE"
   useEffect(() => {
     const fetchHistory = async () => {
       if (!currentUser) {
@@ -136,6 +129,7 @@ export default function ExamPassageSelectionPage() {
       try {
         if (UserService.getHistory) {
           const history = await UserService.getHistory(currentUser.uid, 'typing_history');
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const completedNames = new Set<string>(history.map((h: any) => h.name));
           setCompletedPassages(completedNames);
         }
@@ -148,21 +142,38 @@ export default function ExamPassageSelectionPage() {
     fetchHistory();
   }, [currentUser]);
 
-  // HELPER TO GET TAB COUNTS (Now using allPassages)
   const getTabCount = (tabId: string) => {
     if (!allPassages.length) return 0;
     if (tabId === 'All') return allPassages.length;
     return allPassages.filter(p => (p.difficulty || 'Easy').toLowerCase() === tabId.toLowerCase()).length;
   };
 
-  // FILTER PASSAGES BASED ON SELECTED TAB & SEARCH (Now using allPassages)
   const filteredPassages = useMemo(() => {
-    return allPassages.filter(passage => {
+    const result = allPassages.filter(passage => {
       const diff = passage.difficulty || 'Easy';
       const matchesTab = activeTab === 'All' || diff.toLowerCase() === activeTab.toLowerCase();
       const matchesSearch = passage.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             passage.text.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesTab && matchesSearch;
+    });
+
+    const diffWeight: Record<string, number> = { 'pytt': 0, 'easy': 1, 'medium': 2, 'moderate': 2, 'hard': 3 };
+
+    return result.sort((a: any, b: any) => {
+      const diffA = (a.difficulty || 'Easy').toLowerCase();
+      const diffB = (b.difficulty || 'Easy').toLowerCase();
+      
+      const weightA = diffWeight[diffA] ?? 1;
+      const weightB = diffWeight[diffB] ?? 1;
+
+      if (weightA !== weightB) {
+        return weightA - weightB; 
+      }
+
+      const orderA = a.uploadOrder ?? a.createdAt?.toMillis?.() ?? 0;
+      const orderB = b.uploadOrder ?? b.createdAt?.toMillis?.() ?? 0;
+      
+      return orderA - orderB;
     });
   }, [allPassages, activeTab, searchQuery]);
 
@@ -177,14 +188,12 @@ export default function ExamPassageSelectionPage() {
     );
   }
 
-  // Boolean flag to conditionally show/hide PDF features
   const showPdfFeatures = examId === 'delhi_police_hcm';
 
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 pt-[120px] font-sans">
         
-        {/* Top Header Section (Centered Logo & Text) */}
         <div className="flex flex-col items-center text-center mb-10">
           {examData.rules.logo && (
             <div className="h-20 w-20 relative mb-4">
@@ -206,14 +215,14 @@ export default function ExamPassageSelectionPage() {
           </p>
         </div>
 
-        {/* Rules Box with "Back to Exams" embedded in top-left */}
         <div className="relative bg-[#f8f9fa] border border-gray-200 rounded-xl p-6 md:p-8 text-center shadow-sm mb-16 max-w-5xl mx-auto">
           
+          {/* FIXED: Upgraded "Back to Exams" Button UI */}
           <Link 
             href="/typing" 
-            className="absolute top-5 left-6 flex items-center text-gray-500 hover:text-gray-800 font-medium transition-colors text-sm md:text-base"
+            className="absolute top-4 left-4 md:top-5 md:left-6 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold transition-all shadow-sm text-xs md:text-sm z-10"
           >
-            <ArrowLeft size={18} className="mr-1.5" /> Back to Exams
+            <ArrowLeft size={16} /> Back to Exams
           </Link>
 
           <div className="flex justify-center items-center gap-4 mb-4 mt-8 md:mt-0">
@@ -233,24 +242,20 @@ export default function ExamPassageSelectionPage() {
           </p>
         </div>
 
-        {/* PASSAGES HEADING */}
         <div className="text-center mb-8 flex flex-col items-center">
           <h2 className="text-3xl md:text-4xl font-black text-[#10b981] tracking-tight mb-2">Passages</h2>
-          <div className="w-12 h-1.5 bg-[#2563eb] rounded-full mb-2"></div>
-          {/* Cloud Sync Indicator */}
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+          <div className="w-12 h-1.5 bg-[#2563eb] rounded-full mb-5"></div>
+          
+          <div className="flex items-center justify-center gap-2 text-sm font-bold text-slate-600 bg-slate-50 px-5 py-2 rounded-full border border-slate-200 shadow-sm transition-all hover:bg-slate-100">
             {isFetchingCloud ? (
-              <><Loader2 className="animate-spin" size={14} /> Syncing Cloud Passages...</>
-            ) : cloudPassages.length > 0 ? (
-              <><Layers size={14} className="text-emerald-500" /> {cloudPassages.length} Cloud Passages Loaded</>
-            ) : null}
+              <><Loader2 className="animate-spin text-emerald-500" size={16} /> <span className="animate-pulse">Loading secure library...</span></>
+            ) : (
+              <><Layers size={16} className="text-emerald-500" /> {allPassages.length} Total Passages Available</>
+            )}
           </div>
         </div>
 
-        {/* SEARCH AND TABS BAR */}
         <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 mb-8 flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
-          
-          {/* TABS */}
           <div className="flex flex-wrap gap-3 items-center">
             {TABS.map(tab => {
               const count = getTabCount(tab.id);
@@ -275,7 +280,6 @@ export default function ExamPassageSelectionPage() {
             })}
           </div>
 
-          {/* SEARCH BOX */}
           <div className="relative w-full xl:w-72 flex-shrink-0">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
@@ -290,7 +294,6 @@ export default function ExamPassageSelectionPage() {
           </div>
         </div>
 
-        {/* PASSAGE CARD GRID */}
         {filteredPassages.length === 0 ? (
           <div className="bg-gray-50 p-12 rounded-2xl border border-gray-200 text-center">
             <Search className="mx-auto h-12 w-12 text-gray-300 mb-4" />
@@ -302,7 +305,7 @@ export default function ExamPassageSelectionPage() {
             {filteredPassages.map((passage) => {
               const wordCount = passage.text.trim().split(/\s+/).length;
               const diff = passage.difficulty || 'Easy';
-              const tabStyle = TABS.find(t => t.id === diff) || TABS[2]; // Fallback to easy
+              const tabStyle = TABS.find(t => t.id === diff) || TABS[2];
               
               const isCompleted = completedPassages.has(passage.title);
 
@@ -315,13 +318,11 @@ export default function ExamPassageSelectionPage() {
                 >
                   <div className="p-5 flex-1">
                     <div className="flex justify-between items-start mb-4">
-                      {/* Difficulty Badge */}
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${tabStyle.activeClass}`}>
                         <tabStyle.icon size={12} strokeWidth={2.5} />
                         {tabStyle.label}
                       </span>
                       
-                      {/* Completed / Download indicators */}
                       <div className="flex items-center gap-2">
                         {isCompleted && (
                           <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border border-green-200">

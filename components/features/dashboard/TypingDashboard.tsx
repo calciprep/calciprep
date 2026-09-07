@@ -43,14 +43,17 @@ export default function TypingDashboard({ history, onDelete }: TypingDashboardPr
 
   const allRecords = useMemo<DashboardRecord[]>(() => {
     return history.map((item) => {
-      const speed = Number(item.netWpm ?? item.grossWpm ?? 0);
+      const rawSpeed = Number(item.netWpm ?? item.grossWpm ?? 0);
+      const rawAcc = Number(item.accuracy ?? 0);
+      
       return {
         id: item.id,
         exam: item.category || 'Typing Test',
         passage: item.name || 'Practice',
-        speed: speed,
-        accuracy: Number(item.accuracy ?? 0),
-        status: speed >= 30 ? 'Qualified' : 'Needs Work',
+        // FIXED: Safely formatted to 1 decimal place. Number() drops trailing zeros (e.g. 51.0 becomes 51)
+        speed: Number(rawSpeed.toFixed(1)),
+        accuracy: Number(rawAcc.toFixed(1)),
+        status: rawSpeed >= 30 ? 'Qualified' : 'Needs Work',
         date: item.date || 'Unknown date',
         time: item.time || 'Unknown time',
         createdAt: item.createdAt || 0,
@@ -156,6 +159,7 @@ export default function TypingDashboard({ history, onDelete }: TypingDashboardPr
     setStatusFilter('All Status'); setSortOrder('Date (Newest First)'); setDateRange('All Time'); setSearchQuery('');
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -164,6 +168,7 @@ export default function TypingDashboard({ history, onDelete }: TypingDashboardPr
           <p className="text-sm font-black text-slate-800 mb-1">{data.name}</p>
           <p className="text-xs font-bold text-slate-600">{data.date}</p>
           <p className="text-xs font-medium text-slate-400 mb-3">{data.time}</p>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center gap-2 text-sm font-bold">
               <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }}></div>

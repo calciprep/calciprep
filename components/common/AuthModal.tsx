@@ -13,20 +13,17 @@ const AuthModal = () => {
     const {
         isModalOpen, closeModal, isLoginMode, setLoginMode,
         signup, login, showNotification, signInWithGoogle,
-        resendVerificationEmail, // Use the correct name from context
+        resendVerificationEmail, 
         createVerifiedUserData, resetPassword,
         firebaseReady
     } = useAuth();
 
-    const { register, handleSubmit, watch,  reset, getValues, formState: { errors }, setError, clearErrors } = useForm<Inputs>();
+    const { register, handleSubmit, watch, reset, getValues, formState: { errors }, setError, clearErrors } = useForm<Inputs>();
     const [usernameStatus, setUsernameStatus] = useState<'idle'|'checking'|'available'|'unavailable'|'error'>('idle');
-    // checkedUsername not needed in signup flow here (we only show availability)
-    // keep state minimal
+    
     const usernameRef = useRef(getValues);
     useEffect(() => { usernameRef.current = getValues; }, [getValues]);
 
-    // get checkUsernameAvailability from the already-destructured context above
-    // (we destructured many items earlier from useAuth)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const checkUsernameAvailability: ((u: string) => Promise<boolean>) | undefined = (useAuth() as any).checkUsernameAvailability;
 
@@ -41,21 +38,17 @@ const AuthModal = () => {
     const verificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const passwordValue = watch('password', '');
-
     const watchedSignupUsername = watch('username');
 
-    // Debounced check for signup username availability
     useEffect(() => {
-        if (isLoginMode) return; // only for signup
+        if (isLoginMode) return; 
         if (!watchedSignupUsername || watchedSignupUsername.length < 3) {
             setUsernameStatus('idle');
             clearErrors('username');
             return;
         }
-        // Start checking
         setUsernameStatus('checking');
         const h = setTimeout(async () => {
-            // If firebase not ready, skip check and show idle
             if (!firebaseReady || !checkUsernameAvailability) {
                 setUsernameStatus('idle');
                 return;
@@ -79,9 +72,8 @@ const AuthModal = () => {
         return () => clearTimeout(h);
     }, [watchedSignupUsername, firebaseReady, checkUsernameAvailability, isLoginMode, clearErrors, setError]);
 
-    // --- Effects ---
     useEffect(() => {
-        setIsVisible(isModalOpen); // Sync visibility state with context
+        setIsVisible(isModalOpen); 
     }, [isModalOpen]);
 
     useEffect(() => {
@@ -111,7 +103,6 @@ const AuthModal = () => {
                 try {
                     await verifyingUser.reload();
                     if (verifyingUser.emailVerified) {
-                        console.log("Email verified, clearing interval and updating user data.");
                         if (verificationIntervalRef.current) clearInterval(verificationIntervalRef.current);
                         const { name = 'New User', username = verifyingUser.email?.split('@')[0] || `user${verifyingUser.uid.substring(0, 5)}` } = getValues();
                         try {
@@ -126,14 +117,12 @@ const AuthModal = () => {
                 }
             }, 3000);
         } else if (verificationIntervalRef.current) {
-             console.log("Clearing verification interval.");
              clearInterval(verificationIntervalRef.current);
              verificationIntervalRef.current = null;
         }
 
         return () => {
             if (verificationIntervalRef.current) {
-                console.log("Cleaning up verification interval.");
                 clearInterval(verificationIntervalRef.current);
                  verificationIntervalRef.current = null;
             }
@@ -141,7 +130,6 @@ const AuthModal = () => {
     }, [authStep, verifyingUser, createVerifiedUserData, getValues]);
 
 
-    // --- Handlers ---
     const handleModeToggle = (mode: 'login' | 'signup') => {
         setLoginMode(mode === 'login');
         reset();
@@ -183,20 +171,19 @@ const AuthModal = () => {
                 const userCredential = await signup(data.email, data.password);
                 setVerifyingUser(userCredential.user);
                 setAuthStep('verifyEmail');
-                 // Keep loading true while moving to verification step
             }
         } catch (error: unknown) {
             console.error("Auth Submit Error:", error);
             showNotification(mapAuthError(error), 'error');
-            setLoading(false); // Stop loading on error
+            setLoading(false); 
         } finally {
-            // Only stop loading if staying on the form step (e.g., login success handled above)
-             if (authStep !== 'verifyEmail' && !isLoginMode) { // Check !isLoginMode too
+             if (authStep !== 'verifyEmail' && !isLoginMode) { 
                  setLoading(false);
              }
         }
     };
 
+    // FIXED: Google Auth now proactively forces a document write
     const handleGoogleSignIn = async () => {
         if (!firebaseReady) {
             showNotification("Authentication service is not ready. Please try again later.", "error");
@@ -204,15 +191,28 @@ const AuthModal = () => {
         }
         setSocialLoading(true);
         try {
-            await signInWithGoogle();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result: any = await signInWithGoogle();
+            
+            // Immediately push Google user to Firestore
+            if (result && result.user) {
+                const user = result.user;
+                const name = user.displayName || 'Student';
+                const username = user.email?.split('@')[0] || `user${user.uid.substring(0, 5)}`;
+                try {
+                    await createVerifiedUserData(user, name, username.toLowerCase());
+                } catch (e) {
+                    console.log("Firestore profile creation skipped (may already exist).");
+                }
+            }
+
             showNotification("Signed in successfully!");
-            handleClose(); // Close modal immediately on success
+            handleClose(); 
         } catch (error: unknown) {
             console.error("Google Sign In Error:", error);
             showNotification(mapAuthError(error), 'error');
-            setSocialLoading(false); // Stop loading only on error
+            setSocialLoading(false); 
         }
-        // No finally block needed, success closes modal & resets state
     };
 
     const handleForgotPassword = async () => {
@@ -222,7 +222,6 @@ const AuthModal = () => {
         }
         const email = getValues("email");
         if (!email) {
-            // Maybe set focus to email field here
             showNotification("Please enter your email address first.", "error");
             return;
         }
@@ -242,8 +241,7 @@ const AuthModal = () => {
     const handleResendEmail = async () => {
         if (verifyingUser && firebaseReady) {
             try {
-                // *** THE FIX IS HERE ***
-                await resendVerificationEmail(verifyingUser); // Use the correct function name from context
+                await resendVerificationEmail(verifyingUser); 
                 showNotification('Verification email sent again.');
             } catch (error: unknown) {
                 console.error("Resend Verification Error:", error);
@@ -252,14 +250,10 @@ const AuthModal = () => {
         } else if (!firebaseReady) {
              showNotification("Authentication service is not ready. Please try again later.", "error");
         } else {
-             showNotification("Could not resend email. User data missing.", "error"); // Added fallback
+             showNotification("Could not resend email. User data missing.", "error"); 
         }
     };
 
-    // --- Render Logic ---
-    // (StrengthIndicator, renderFormContent, renderForgotPasswordContent, renderVerificationContent, renderSuccessContent, renderContent)
-    // ... No changes needed in the render logic itself for these fixes ...
-    // ... Just ensure all buttons correctly use `disabled={loading || socialLoading || !firebaseReady}` where appropriate ...
      const StrengthIndicator = ({ met, text }: { met: boolean; text: string }) => (
       <div className={`strength-indicator ${met ? 'met' : ''}`}>{text}</div>
     );
@@ -365,11 +359,10 @@ const AuthModal = () => {
                     type="email"
                     placeholder="Email Address"
                     className="auth-input w-full"
-                    disabled={loading} // Disable while loading
+                    disabled={loading} 
                 />
                  {errors.email && <p className="text-red-500 text-xs mt-1 text-left">{errors.email.message}</p>}
             </div>
-             {/* Use handleSubmit here as well if you want RHF validation */}
             <button onClick={handleSubmit(handleForgotPassword)} disabled={loading || !firebaseReady} className="auth-submit-btn w-full">
                 {loading ? <Loader2 className="animate-spin" /> : 'Send Reset Link'}
             </button>
@@ -410,7 +403,6 @@ const AuthModal = () => {
 
 
     const renderContent = () => {
-        // ... switch statement remains the same
           switch(authStep) {
             case 'verifyEmail': return renderVerificationContent();
             case 'verifiedSuccess': return renderSuccessContent();
@@ -429,7 +421,6 @@ const AuthModal = () => {
                         <button onClick={handleGoogleSignIn} disabled={socialLoading || loading || !firebaseReady} className="social-btn">
                             {socialLoading ? <Loader2 className="animate-spin" /> : (
                                 <>
-                                    {/* Google SVG */}
                                     <svg role="img" viewBox="0 0 24 24" className="google-icon">
                                         <path fill="#4285F4" d="M22.56,12.25C22.56,11.45 22.49,10.66 22.34,9.89H12.29V14.4H18.1C17.82,16.03 16.9,17.39 15.58,18.32V21.11H19.5C21.46,19.34 22.56,16.08 22.56,12.25Z" />
                                         <path fill="#34A853" d="M12.29,23C15.2,23 17.65,22.03 19.5,20.55L15.58,17.77C14.59,18.44 13.51,18.81 12.29,18.81C9.69,18.81 7.47,17.07 6.64,14.7L2.5,14.7V17.58C4.33,20.89 7.99,23 12.29,23Z" />
@@ -451,11 +442,9 @@ const AuthModal = () => {
 
 
     return (
-        // Modal structure remains the same
          <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/70 p-4 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
              <div className={`auth-modal-container transform-gpu transition-all duration-300 ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${isLoginMode ? 'mode-login' : 'mode-signup'}`}>
 
-                {/* Close/Back Buttons */}
                 {authStep === 'form' && (
                     <button onClick={handleClose} className="close-button" aria-label="Close modal">
                         <X size={24} />
@@ -467,12 +456,10 @@ const AuthModal = () => {
                     </button>
                 )}
 
-                {/* Illustration Column */}
                 <div className="illustration-wrapper">
                     <Image src="/media/authentication.svg" alt="Authentication Illustration" width={400} height={400} className="illustration-svg" priority />
                 </div>
 
-                {/* Form/Content Column */}
                 <div className="form-content">
                     <div className="form-inner-content">
                         {renderContent()}
@@ -491,4 +478,3 @@ const AuthModal = () => {
 };
 
 export default AuthModal;
-

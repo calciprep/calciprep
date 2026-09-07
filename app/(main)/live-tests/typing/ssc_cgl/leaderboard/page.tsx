@@ -8,7 +8,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase'; 
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
-// PDF Libraries
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -19,7 +18,8 @@ type LeaderboardEntry = {
   wpm: number;
   netWpm: number;
   accuracy: number;
-  marks: number;
+  totalErrors: number;
+  errorPercentage: number;
   timeTaken: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   timestamp: any;
@@ -37,7 +37,6 @@ export default function SSCCGL_LiveLeaderboard() {
     today.setHours(today.getHours() - 4); 
     const dateString = today.toLocaleDateString('en-CA'); 
     
-    // UNIQUE CGL COLLECTION
     const leaderboardRefName = `live_leaderboards_cgl_${dateString}`;
 
     const q = query(
@@ -68,7 +67,7 @@ export default function SSCCGL_LiveLeaderboard() {
 
   const topThree = leaderboard.slice(0, 3);
 
-  const formatStat = (num: number) => Number(num).toFixed(1);
+  const formatStat = (num: number) => Number(num || 0).toFixed(1);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatISTDate = (timestamp: any) => {
@@ -85,24 +84,19 @@ export default function SSCCGL_LiveLeaderboard() {
     });
   };
 
-  // ============================================================================
-  // MODERNIZED PDF GENERATOR (CGL)
-  // ============================================================================
   const downloadPDF = () => {
     const doc = new jsPDF('landscape'); 
     const pageWidth = doc.internal.pageSize.width;
     
-    // Centered Bold Title
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text("SSC CGL Tier-II Live Leaderboard - CalciPrep", pageWidth / 2, 16, { align: 'center' });
     
-    // Centered Date
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
     doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, pageWidth / 2, 24, { align: 'center' });
 
-    const tableColumn = ["Rank", "User", "Gross WPM", "Net WPM", "Accuracy", "Marks", "Status", "Date & Time (IST)"];
+    const tableColumn = ["Rank", "User", "Gross WPM", "Net WPM", "Errors", "Error %", "Status", "Date & Time (IST)"];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tableRows: any[] = [];
 
@@ -113,15 +107,16 @@ export default function SSCCGL_LiveLeaderboard() {
       if (rank === 2) rankText = "2nd Place";
       if (rank === 3) rankText = "3rd Place";
 
-      const isQualified = entry.netWpm > 0;
+      // CGL EVALUATION (UR)
+      const isQualified = entry.errorPercentage <= 20;
 
       const rowData = [
         rankText,
         entry.userName,
         formatStat(entry.wpm),
         formatStat(entry.netWpm),
-        `${formatStat(entry.accuracy)}%`,
-        formatStat(entry.marks),
+        entry.totalErrors?.toString() || "0",
+        `${formatStat(entry.errorPercentage)}%`,
         isQualified ? "Qualified" : "Not Qualified",
         formatISTDate(entry.timestamp)
       ];
@@ -163,7 +158,6 @@ export default function SSCCGL_LiveLeaderboard() {
 
     doc.save(`CalciPrep_CGL_Leaderboard_${new Date().toLocaleDateString('en-CA')}.pdf`);
   };
-  // ============================================================================
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pt-[100px] pb-20">
@@ -182,7 +176,6 @@ export default function SSCCGL_LiveLeaderboard() {
           </h1>
           <p className="text-slate-600 font-medium">SSC CGL Tier-II • Today's Pan-India Rankings</p>
 
-          {/* ADMIN PDF BUTTON */}
           {currentUser?.email === 'calciprep@gmail.com' && (
             <div className="mt-6 flex justify-center">
               <button 
@@ -215,6 +208,7 @@ export default function SSCCGL_LiveLeaderboard() {
                     <div className="text-center mb-3">
                       <p className="font-bold text-slate-700 truncate w-full px-2">{topThree[1].userName}</p>
                       <p className="font-black text-xl text-slate-900">{formatStat(topThree[1].netWpm)} <span className="text-xs text-slate-500">WPM</span></p>
+                      <p className="text-[11px] font-bold text-slate-500 mt-0.5">{formatStat(topThree[1].errorPercentage)}% Error</p>
                     </div>
                     <div className="w-full bg-gradient-to-t from-slate-300 to-slate-200 h-24 rounded-t-2xl border-t-4 border-slate-400 flex justify-center pt-3 relative shadow-inner">
                       <Medal size={28} className="text-slate-500 drop-shadow-md" />
@@ -229,6 +223,7 @@ export default function SSCCGL_LiveLeaderboard() {
                     </div>
                     <p className="font-bold text-slate-800 truncate w-full px-2">{topThree[0].userName}</p>
                     <p className="font-black text-2xl text-amber-600">{formatStat(topThree[0].netWpm)} <span className="text-xs text-amber-600/70">WPM</span></p>
+                    <p className="text-xs font-bold text-amber-700/70 mt-0.5">{formatStat(topThree[0].errorPercentage)}% Error</p>
                   </div>
                   <div className="w-full bg-gradient-to-t from-amber-300 to-amber-200 h-32 rounded-t-2xl border-t-4 border-amber-400 flex justify-center pt-3 relative shadow-lg">
                     <Medal size={32} className="text-amber-600 drop-shadow-md" />
@@ -240,6 +235,7 @@ export default function SSCCGL_LiveLeaderboard() {
                     <div className="text-center mb-3">
                       <p className="font-bold text-slate-700 truncate w-full px-2">{topThree[2].userName}</p>
                       <p className="font-black text-xl text-slate-900">{formatStat(topThree[2].netWpm)} <span className="text-xs text-slate-500">WPM</span></p>
+                      <p className="text-[11px] font-bold text-slate-500 mt-0.5">{formatStat(topThree[2].errorPercentage)}% Error</p>
                     </div>
                     <div className="w-full bg-gradient-to-t from-amber-800/40 to-amber-700/30 h-20 rounded-t-2xl border-t-4 border-amber-700/50 flex justify-center pt-3 relative shadow-inner">
                       <Medal size={28} className="text-amber-800/60 drop-shadow-md" />
@@ -258,9 +254,9 @@ export default function SSCCGL_LiveLeaderboard() {
                       <th className="px-6 py-4">User</th>
                       <th className="px-6 py-4 text-center">Gross WPM</th>
                       <th className="px-6 py-4 text-center">Net WPM</th>
-                      <th className="px-6 py-4 text-center">Accuracy</th>
-                      <th className="px-6 py-4 text-center">Marks</th>
-                      <th className="px-6 py-4 text-center text-red-500">Status</th>
+                      <th className="px-6 py-4 text-center text-amber-300">Errors</th>
+                      <th className="px-6 py-4 text-center text-amber-300">Error %</th>
+                      <th className="px-6 py-4 text-center">Status</th>
                       <th className="px-6 py-4 text-right">Date (IST)</th>
                     </tr>
                   </thead>
@@ -269,6 +265,8 @@ export default function SSCCGL_LiveLeaderboard() {
                       const rank = index + 1; 
                       const isCurrentUser = entry.uid === currentUser?.uid;
                       const isTop3 = rank <= 3;
+                      
+                      const isQualified = entry.errorPercentage <= 20;
 
                       return (
                         <tr key={entry.id} className={`border-b border-slate-100 transition-colors ${isCurrentUser ? 'bg-blue-50/50' : 'hover:bg-slate-50'}`}>
@@ -301,16 +299,16 @@ export default function SSCCGL_LiveLeaderboard() {
                           </td>
                           
                           <td className="px-6 py-4 text-center font-bold text-slate-600">
-                            {formatStat(entry.accuracy)}%
+                            {entry.totalErrors || 0}
                           </td>
                           
                           <td className="px-6 py-4 text-center font-bold text-slate-600">
-                            {formatStat(entry.marks)}
+                            {formatStat(entry.errorPercentage)}%
                           </td>
                           
                           <td className="px-6 py-4 text-center font-bold">
-                            <span className={entry.netWpm > 0 ? "text-emerald-600" : "text-red-500"}>
-                              {entry.netWpm > 0 ? "Qualified" : "Not Qualified"}
+                            <span className={isQualified ? "text-emerald-600" : "text-red-500"}>
+                              {isQualified ? "Qualified" : "Not Qualified"}
                             </span>
                           </td>
 

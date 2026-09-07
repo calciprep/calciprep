@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Clock, Trophy, Play, Lock, Download, Loader2, CheckCircle2, CalendarOff } from 'lucide-react';
-// Note: We now pass the launch date into getTodayHCMPassage
 import { getTodayHCMPassage } from './dailyData';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 export default function DPHCM_LiveTestLanding() {
   const router = useRouter();
@@ -30,6 +29,11 @@ export default function DPHCM_LiveTestLanding() {
     hcmLaunchDate: "",
     isLoading: true
   });
+
+  // CLOUD PASSAGE STATES
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [cloudPassages, setCloudPassages] = useState<any[]>([]);
+  const [fetchingCloud, setFetchingCloud] = useState(true);
 
   const handleLoginClick = () => {
     if (setLoginMode) setLoginMode(true); 
@@ -57,11 +61,27 @@ export default function DPHCM_LiveTestLanding() {
     return () => unsubscribe();
   }, []);
 
-  // Use the new dynamic launch date to get today's passage!
-  const todayPassage = settings.hcmLaunchDate ? getTodayHCMPassage(settings.hcmLaunchDate) : getTodayHCMPassage();
+  // 2. FETCH CLOUD PASSAGES FROM FIREBASE (Targeting HCM)
+  useEffect(() => {
+    const fetchCloud = async () => {
+      try {
+        const q = query(collection(db!, 'passages_Live_HCM'), orderBy('createdAt', 'asc'));
+        const snap = await getDocs(q);
+        setCloudPassages(snap.docs.map(doc => doc.data()));
+      } catch (error) {
+        console.error("Error fetching live cloud passages:", error);
+      } finally {
+        setFetchingCloud(false);
+      }
+    };
+    fetchCloud();
+  }, []);
+
+  // 3. PASS SETTINGS & CLOUD PASSAGES INTO RESOLVER
+  const todayPassage = settings.isLoading || fetchingCloud ? null : getTodayHCMPassage(settings, cloudPassages);
   const TEST_DATE = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  // 2. DYNAMIC TIMER ENGINE
+  // 4. DYNAMIC TIMER ENGINE
   useEffect(() => {
     if (settings.isLoading || !todayPassage) return;
 
@@ -99,7 +119,7 @@ export default function DPHCM_LiveTestLanding() {
     return () => clearInterval(timer);
   }, [settings, todayPassage]);
 
-  // 3. CHECK IF USER ALREADY TOOK IT
+  // 5. CHECK IF USER ALREADY TOOK IT
   useEffect(() => {
     const checkUserStatus = async () => {
       if (!currentUser) {
@@ -138,7 +158,7 @@ export default function DPHCM_LiveTestLanding() {
   const isExamPaused = settings.hcmPauseDate && new Date() < new Date(settings.hcmPauseDate);
   const isTestActive = settings.hcmActive && !isExamPaused && todayPassage;
 
-  if (settings.isLoading) {
+  if (settings.isLoading || fetchingCloud) {
     return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
   }
 

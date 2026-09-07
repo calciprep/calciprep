@@ -5,11 +5,7 @@ import '../TypingInterface.css';
 import { Passage, ExamRules } from '@/lib/typing/types';
 import { TypingResult as TypingResultType } from '@/lib/typing-types';
 import { X } from 'lucide-react';
-
-// Import smooth scrolling for the localized passage box
 import { ReactLenis } from '@studio-freight/react-lenis';
-
-// Import custom typing sound hook
 import useTypingSound from '@/hooks/useTypingSound';
 
 interface HCMInterfaceProps {
@@ -25,27 +21,22 @@ export default function HCMInterface({
   onFinish,
   onCancel,
 }: HCMInterfaceProps) {
-  // --- TEST STATE ---
   const [userInput, setUserInput] = useState('');
   const [timeLeft, setTimeLeft] = useState(examRules.duration);
   const [isStarted, setIsStarted] = useState(false);
 
-  // --- SETTINGS STATE ---
   const [showSettings, setShowSettings] = useState(false);
   const [backspaceEnabled, setBackspaceEnabled] = useState(examRules.allowBackspace);
   const [showPassage, setShowPassage] = useState(false); 
-  const [textSize, setTextSize] = useState(15); // Default text size set to 15
+  const [textSize, setTextSize] = useState(15); 
   const [fontFamily, setFontFamily] = useState('Times New Roman, serif');
-  const [soundEnabled, setSoundEnabled] = useState(false); // Typing sound toggle state
+  const [soundEnabled, setSoundEnabled] = useState(false); 
 
-  // Initialize the typing sound hook
   const playTypingSound = useTypingSound();
 
-  // --- TRACKING REFS ---
   const backspaceCount = useRef(0);
   const textareaRef = useRef(null);
 
-  // --- TIMER LOGIC ---
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -58,11 +49,9 @@ export default function HCMInterface({
     return () => clearInterval(interval);
   }, [isStarted, timeLeft]);
 
-  // --- TYPING HANDLERS ---
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isStarted) setIsStarted(true);
 
-    // Play sound if enabled and the hook returned a valid function
     if (soundEnabled && typeof playTypingSound === 'function') {
       playTypingSound();
     }
@@ -70,7 +59,7 @@ export default function HCMInterface({
     if (e.key === 'Backspace') {
       backspaceCount.current += 1;
       if (!backspaceEnabled) {
-        e.preventDefault(); // Block deletion completely
+        e.preventDefault(); 
       }
     }
   };
@@ -79,7 +68,6 @@ export default function HCMInterface({
     setUserInput(e.target.value);
   };
 
-  // --- FULL SCREEN LOGIC ---
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch((err) => {
@@ -92,77 +80,115 @@ export default function HCMInterface({
     }
   };
 
-  // --- SUBMIT EVALUATION (DELHI POLICE HCM LOGIC) ---
   const submitTest = useCallback(() => {
     const timeTaken = examRules.duration - timeLeft;
     const timeInMinutes = timeTaken / 60;
 
-    const typedWords = userInput.trim().split(/\s+/);
-    const originalWords = passage.text.trim().split(/\s+/);
+    // --- CLOUD SANITIZER & GREEDY LOOKAHEAD ENGINE ---
+    const normalizeText = (text: string) => {
+      return text
+        .replace(/[\u2018\u2019]/g, "'") // Normalize smart single quotes
+        .replace(/[\u201C\u201D]/g, '"') // Normalize smart double quotes
+        .replace(/[\u2013\u2014]/g, '-') // Normalize em/en dashes
+        .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
+        .replace(/\u00A0/g, ' ') // Convert non-breaking spaces to regular spaces
+        .trim();
+    };
+
+    const cleanTyped = normalizeText(userInput);
+    const cleanOrig = normalizeText(passage.text);
+
+    const typedWords = cleanTyped.split(/\s+/).filter(Boolean);
+    const originalWords = cleanOrig.split(/\s+/).filter(Boolean);
 
     let errors = 0;
+    let origIdx = 0;
+    let typedIdx = 0;
 
-    for (let i = 0; i < typedWords.length; i++) {
-      if (typedWords[i] !== originalWords[i] && typedWords[i] !== '') {
+    // Advanced array alignment to prevent cascading errors from missing spaces
+    while (typedIdx < typedWords.length && origIdx < originalWords.length) {
+      if (typedWords[typedIdx] === originalWords[origIdx]) {
+        typedIdx++;
+        origIdx++;
+      } else {
         errors++;
+        let realigned = false;
+        
+        // Lookahead up to 5 words to instantly re-align the array 
+        for (let lookahead = 1; lookahead <= 5; lookahead++) {
+          if (origIdx + lookahead < originalWords.length && typedWords[typedIdx] === originalWords[origIdx + lookahead]) {
+            origIdx += lookahead;
+            realigned = true;
+            break;
+          }
+          if (typedIdx + lookahead < typedWords.length && typedWords[typedIdx + lookahead] === originalWords[origIdx]) {
+            typedIdx += lookahead;
+            realigned = true;
+            break;
+          }
+        }
+        
+        if (!realigned) {
+          typedIdx++;
+          origIdx++;
+        }
       }
     }
+    
+    // Penalize any extra words typed beyond the original passage length
+    if (typedIdx < typedWords.length) {
+      errors += (typedWords.length - typedIdx);
+    }
+    // ----------------------------------------------------------------
 
     const totalKeystrokes = userInput.length;
 
-    // DP HCM Logic: 5 characters = 1 word. All errors are full errors.
-// FIXED: Removed all Math.round() functions to preserve raw decimals!
-const grossWpmRaw = timeInMinutes > 0 ? (totalKeystrokes / 5) / timeInMinutes : 0;
-const netWpmRaw = Math.max(0, grossWpmRaw - (errors / timeInMinutes));
-const accuracyRaw = grossWpmRaw > 0 ? Math.max(0, (netWpmRaw / grossWpmRaw) * 100) : 0;
-const errorPercentage = totalKeystrokes > 0 ? (errors / (totalKeystrokes / 5)) * 100 : 0;
+    const grossWpmRaw = timeInMinutes > 0 ? (totalKeystrokes / 5) / timeInMinutes : 0;
+    const netWpmRaw = Math.max(0, grossWpmRaw - (errors / timeInMinutes));
+    const accuracyRaw = grossWpmRaw > 0 ? Math.max(0, (netWpmRaw / grossWpmRaw) * 100) : 0;
+    const errorPercentage = totalKeystrokes > 0 ? (errors / (totalKeystrokes / 5)) * 100 : 0;
 
-// Marks Calculation Tiers for HCM
-let calculatedMarks = 0;
-if (netWpmRaw > 50) calculatedMarks = 25;
-else if (netWpmRaw >= 46) calculatedMarks = 21;
-else if (netWpmRaw >= 41) calculatedMarks = 18;
-else if (netWpmRaw >= 36) calculatedMarks = 15;
-else if (netWpmRaw >= 31) calculatedMarks = 12;
-else if (netWpmRaw >= 30) calculatedMarks = 10;
+    let calculatedMarks = 0;
+    if (netWpmRaw > 50) calculatedMarks = 25;
+    else if (netWpmRaw >= 46) calculatedMarks = 21;
+    else if (netWpmRaw >= 41) calculatedMarks = 18;
+    else if (netWpmRaw >= 36) calculatedMarks = 15;
+    else if (netWpmRaw >= 31) calculatedMarks = 12;
+    else if (netWpmRaw >= 30) calculatedMarks = 10;
 
-const stats: TypingResultType = {
-  testName: `Typing Test - ${examRules.name} ${passage.title}`,
-  keyStrokesByCandidate: totalKeystrokes,
-  fullMistakes: errors,
-  totalErrors: errors,
-  errorPercentage: errorPercentage,
-  backspacePresses: backspaceCount.current,
-  wpm: grossWpmRaw,      // <-- Raw decimal!
-  netWpm: netWpmRaw,     // <-- Raw decimal!
-  accuracy: accuracyRaw, // <-- Raw decimal!
-  timeTakenInSeconds: timeTaken,
-  qualified: netWpmRaw >= (examRules.targetWpm || 30),
-  marks: calculatedMarks,
-  originalText: passage.text,
-  typedText: userInput,
-};
+    const stats: TypingResultType = {
+      testName: `Typing Test - ${examRules.name} ${passage.title}`,
+      keyStrokesByCandidate: totalKeystrokes,
+      fullMistakes: errors,
+      totalErrors: errors,
+      errorPercentage: errorPercentage,
+      backspacePresses: backspaceCount.current,
+      wpm: grossWpmRaw,      
+      netWpm: netWpmRaw,     
+      accuracy: accuracyRaw, 
+      timeTakenInSeconds: timeTaken,
+      qualified: netWpmRaw >= (examRules.targetWpm || 30),
+      marks: calculatedMarks,
+      originalText: passage.text,
+      typedText: userInput,
+    };
 
     onFinish(stats);
   }, [userInput, passage.text, timeLeft, examRules, onFinish]);
 
-  // --- FORMAT UTILS ---
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // --- RENDER ---
   return (
     <div className="flex flex-col h-screen bg-gray-50 text-black overflow-hidden">
       
-      {/* Header (Blue) */}
       <div className="bg-[#4c75c3] text-white text-center py-2 px-4 text-xl font-bold tracking-wide shrink-0">
         Typing Test - {examRules.name} {passage.title}
       </div>
 
-      {/* Toolbar (Dark) */}
       <div className="bg-[#333333] text-white px-4 py-2 flex flex-wrap justify-between items-center text-sm gap-3 shrink-0">
         <div className="flex items-center gap-4">
           <span className="font-bold tracking-wider text-yellow-400 uppercase">{passage.title}</span>
@@ -207,18 +233,14 @@ const stats: TypingResultType = {
         </div>
       </div>
 
-      {/* Main Full-Width Typing Area */}
       <div className="flex-1 w-full px-2 md:px-6 py-4 flex flex-col overflow-hidden">
         
-        {/* Container for Info Bar, Passage, and Textarea */}
         <div className="w-full flex flex-col flex-1 h-full">
           
-          {/* Info Bar */}
           <div className="bg-[#5b87c6] text-white px-3 py-1.5 text-sm border border-[#5b87c6] shrink-0">
             Keyboard Layout: QWERTY Language: English
           </div>
 
-          {/* Smooth Scrollable Passage Box */}
           {showPassage && (
             <ReactLenis 
               className="h-[32vh] overflow-y-auto bg-white border-l border-r border-b border-gray-400 p-4 shrink-0 custom-scrollbar"
@@ -233,7 +255,6 @@ const stats: TypingResultType = {
             </ReactLenis>
           )}
 
-          {/* Typing Area Box */}
           <textarea
             ref={textareaRef}
             className={`w-full flex-1 p-4 border border-gray-400 resize-none outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black ${showPassage ? 'mt-3' : ''}`}
@@ -249,7 +270,6 @@ const stats: TypingResultType = {
           />
         </div>
 
-        {/* Action Buttons */}
         <div className="mt-4 flex gap-3 shrink-0 pb-2">
           <button onClick={onCancel} className="bg-[#dc3545] hover:bg-[#c82333] text-white px-8 py-2 rounded-sm font-medium shadow-sm transition-colors">
             Cancel
@@ -260,7 +280,6 @@ const stats: TypingResultType = {
         </div>
       </div>
 
-      {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/60 z-[150] flex justify-center items-center backdrop-blur-sm p-4">
           <div className="bg-white text-black w-full max-w-md rounded shadow-2xl flex flex-col max-h-full">
@@ -273,7 +292,6 @@ const stats: TypingResultType = {
 
             <div className="p-6 overflow-y-auto space-y-6">
               
-              {/* Backspace Toggle */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Backspace:</span>
                 <label className="flex items-center cursor-pointer">
@@ -286,7 +304,6 @@ const stats: TypingResultType = {
                 </label>
               </div>
 
-              {/* Show Passage Toggle */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Show Passage:</span>
                 <label className="flex items-center cursor-pointer">
@@ -299,7 +316,6 @@ const stats: TypingResultType = {
                 </label>
               </div>
 
-              {/* Typing Sound Toggle */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Typing Sound:</span>
                 <label className="flex items-center cursor-pointer">
@@ -312,7 +328,6 @@ const stats: TypingResultType = {
                 </label>
               </div>
 
-              {/* Text Size Config */}
               <div className="flex justify-between items-center">
                 <span className="font-bold">Text Size:</span>
                 <div className="flex items-center gap-3">
@@ -322,7 +337,6 @@ const stats: TypingResultType = {
                 </div>
               </div>
 
-              {/* Font Type Config */}
               <div className="flex flex-col gap-2">
                 <span className="font-bold">Font:</span>
                 <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)} className="border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
