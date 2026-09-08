@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { HistoryEntry } from '@/services/userService';
-import { Eye, Filter, ArrowUpDown, Calendar, Search, X } from 'lucide-react';
+import { Eye, Filter, ArrowUpDown, Calendar, Search, X, Hash, Award, Activity } from 'lucide-react';
 import { ReactLenis } from '@studio-freight/react-lenis';
 
 import EnglishResult from '@/components/features/english/EnglishResult';
@@ -116,37 +116,37 @@ export default function EnglishDashboard({ history, onDelete }: EnglishDashboard
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300">
       
-      {/* Top Stats Row */}
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="bg-[#f8faff] border border-blue-100 rounded-xl p-5 flex flex-col items-center justify-center min-w-[140px] shadow-sm">
-          <span className="text-3xl font-bold text-blue-600 mb-1">{totalTests}</span>
-          <span className="text-sm font-medium text-slate-500">Total Tests</span>
+      {/* Brutalist Top Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-[#AEE8F5] border-[3px] border-black rounded-[2rem] p-8 flex flex-col justify-center relative">
+          <div className="absolute top-6 right-6 bg-white border-2 border-black text-black p-3 rounded-full"><Hash size={24} strokeWidth={3} /></div>
+          <span className="text-5xl font-black text-black mb-2 mt-2">{totalTests}</span>
+          <span className="text-sm font-black tracking-wider text-black uppercase">Total Tests</span>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col items-center justify-center min-w-[140px] shadow-sm">
-          <span className="text-3xl font-extrabold text-gray-900 mb-1 flex items-center justify-center gap-2">
-            <img src="/media/award-point.svg" alt="Points" className="w-7 h-7" />
-            {totalAwardPoints}
+        <div className="bg-[#C4F2B0] border-[3px] border-black rounded-[2rem] p-8 flex flex-col justify-center relative">
+          <div className="absolute top-6 right-6 bg-white border-2 border-black text-black p-3 rounded-full"><Award size={24} strokeWidth={3} /></div>
+          <span className="text-5xl font-black text-black mb-2 mt-2 flex items-center gap-3">
+            <img src="/media/award-point.svg" alt="Points" className="w-10 h-10 drop-shadow-md" /> {totalAwardPoints}
           </span>
-          <span className="text-sm font-bold tracking-wide text-gray-500 uppercase mt-1">Total Points</span>
+          <span className="text-sm font-black tracking-wider text-black uppercase">Total Points</span>
         </div>
-        <div className="bg-[#f8faff] border border-blue-100 rounded-xl p-5 flex flex-col items-center justify-center min-w-[140px] shadow-sm">
-          <span className="text-3xl font-bold text-blue-600 mb-1">{avgScore}%</span>
-          <span className="text-sm font-medium text-slate-500">Avg Score</span>
+        <div className="bg-[#FF8787] border-[3px] border-black rounded-[2rem] p-8 flex flex-col justify-center relative">
+          <div className="absolute top-6 right-6 bg-white border-2 border-black text-black p-3 rounded-full"><Activity size={24} strokeWidth={3} /></div>
+          <span className="text-5xl font-black text-black mb-2 mt-2">{avgScore}%</span>
+          <span className="text-sm font-black tracking-wider text-black uppercase">Avg Score</span>
         </div>
       </div>
 
-      {/* Modern Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap lg:flex-nowrap items-end gap-4">
-        <div className="flex flex-col gap-1.5 flex-1 min-w-[160px]">
-          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-            <ArrowUpDown size={16} className="text-slate-900" /> Sort by
-          </label>
+      {/* Brutalist Filter Bar */}
+      <div className="bg-white p-6 rounded-[2rem] border-[3px] border-black flex flex-wrap lg:flex-nowrap items-end gap-5">
+        <div className="flex flex-col gap-2 flex-1 min-w-[160px]">
+          <label className="text-sm font-black text-black flex items-center gap-2"><ArrowUpDown size={18} strokeWidth={2.5} /> Sort by</label>
           <select 
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+            className="border-[2.5px] border-black rounded-xl p-3 text-sm font-bold outline-none focus:-translate-y-1 transition-all bg-white cursor-pointer"
           >
             <option>Date (Newest First)</option>
             <option>Date (Oldest First)</option>
@@ -155,14 +155,12 @@ export default function EnglishDashboard({ history, onDelete }: EnglishDashboard
           </select>
         </div>
 
-        <div className="flex flex-col gap-1.5 flex-1 min-w-[160px]">
-          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-            <Calendar size={16} className="text-slate-900" /> Date Range
-          </label>
+        <div className="flex flex-col gap-2 flex-1 min-w-[160px]">
+          <label className="text-sm font-black text-black flex items-center gap-2"><Calendar size={18} strokeWidth={2.5} /> Date Range</label>
           <select 
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+            className="border-[2.5px] border-black rounded-xl p-3 text-sm font-bold outline-none focus:-translate-y-1 transition-all bg-white cursor-pointer"
           >
             <option>All Time</option>
             <option>Last 7 Days</option>
@@ -170,98 +168,80 @@ export default function EnglishDashboard({ history, onDelete }: EnglishDashboard
           </select>
         </div>
 
-        <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-            <Search size={16} className="text-slate-900" /> Search
-          </label>
+        <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
+          <label className="text-sm font-black text-black flex items-center gap-2"><Search size={18} strokeWidth={2.5} /> Search</label>
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-3 text-slate-400" />
+            <Search size={18} strokeWidth={2.5} className="absolute left-3 top-3 text-black" />
             <input 
               type="text" 
               placeholder="Search by exam or test..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border border-slate-200 rounded-lg p-2.5 pl-9 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full border-[2.5px] border-black rounded-xl p-3 pl-10 text-sm font-bold outline-none focus:-translate-y-1 transition-all"
             />
           </div>
         </div>
 
         <div className="flex gap-3 w-full lg:w-auto mt-2 lg:mt-0">
           <button 
-            className="bg-[#4176ff] hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold transition-colors flex-1 lg:flex-none whitespace-nowrap"
-          >
-            <Filter size={16} /> Apply Filters
-          </button>
-          <button 
             onClick={clearFilters}
-            className="bg-white border border-[#4176ff] text-[#4176ff] hover:bg-blue-50 px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold transition-colors flex-1 lg:flex-none whitespace-nowrap"
+            className="bg-white border-[3px] border-black hover:bg-slate-100 text-black px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-black hover:-translate-y-1 transition-all flex-1 lg:flex-none whitespace-nowrap"
           >
-            <X size={16} /> Clear Filters
+            <X size={18} strokeWidth={3} /> Clear
           </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      {/* Brutalist Table */}
+      <div className="bg-white border-[3px] border-black rounded-[2rem] overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">
-                <th className="px-5 py-4">#</th>
-                <th className="px-5 py-4">Category</th>
-                <th className="px-5 py-4">Quiz</th>
-                <th className="px-5 py-4">Score</th>
-                <th className="px-5 py-4">Accuracy</th>
-                <th className="px-5 py-4">Points</th>
-                <th className="px-5 py-4">Date</th>
-                <th className="px-5 py-4 text-right">Action</th>
+              <tr className="border-b-[3px] border-black bg-[#D4FF2A] text-sm font-black uppercase tracking-wider text-black">
+                <th className="px-6 py-5">#</th>
+                <th className="px-6 py-5">Category</th>
+                <th className="px-6 py-5">Quiz</th>
+                <th className="px-6 py-5">Score</th>
+                <th className="px-6 py-5">Accuracy</th>
+                <th className="px-6 py-5">Points</th>
+                <th className="px-6 py-5">Date</th>
+                <th className="px-6 py-5 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredRecords.length > 0 ? filteredRecords.map((row, index) => (
-                <tr key={row.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="px-5 py-4 font-semibold text-slate-600">{index + 1}</td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-                      <div className="text-sm font-semibold text-slate-800">{row.exam}</div>
-                    </div>
+                <tr key={row.id} className="border-b-[2px] border-slate-200 hover:bg-slate-50 transition-colors">
+                  <td className="px-6 py-5 font-black text-black">{index + 1}</td>
+                  <td className="px-6 py-5 font-black text-black">{row.exam}</td>
+                  <td className="px-6 py-5 text-sm font-black text-black">{row.passage}</td>
+                  <td className="px-6 py-5 text-sm font-black text-black">
+                    <span className="inline-flex items-center rounded-full bg-[#AEE8F5] border-2 border-black px-3 py-1">{row.score}%</span>
                   </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{row.passage}</td>
-                  <td className="px-5 py-4 text-sm font-bold text-slate-800">
-                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-blue-700">
-                      {row.score}%
+                  <td className="px-6 py-5 text-sm font-black text-black">{row.accuracy}%</td>
+                  <td className="px-6 py-5">
+                    <span className="inline-flex items-center gap-1.5 font-black text-black bg-[#C4F2B0] border-2 border-black px-3 py-1 rounded-full">
+                      <img src="/media/award-point.svg" alt="Points" className="w-5 h-5 drop-shadow-sm" /> {row.points}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-sm font-semibold text-slate-700">{row.accuracy}%</td>
-                  <td className="px-5 py-4">
-                    <span className="inline-flex items-center gap-1.5 font-bold text-gray-900">
-                      <img src="/media/award-point.svg" alt="Points" className="w-4 h-4" />
-                      {row.points}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">
-                    <div className="font-medium">{row.date}</div>
-                    <div className="text-xs text-slate-400">{row.time}</div>
-                  </td>
-                  <td className="px-5 py-4 text-right flex items-center justify-end gap-2">
+                  <td className="px-6 py-5 text-sm text-black"><div className="font-bold">{row.date}</div><div className="font-medium text-slate-500 mt-0.5">{row.time}</div></td>
+                  <td className="px-6 py-5 text-right flex items-center justify-end gap-3">
                     <button
                       onClick={() => setSelectedRecord(row)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-xs font-black text-white hover:bg-slate-800 transition-colors"
                     >
-                      <Eye size={14} /> View
+                      <Eye size={16} strokeWidth={2.5} /> View
                     </button>
                     <button
                       onClick={() => onDelete(row.id)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 text-red-600 px-3 py-1.5 text-xs font-semibold shadow-sm hover:bg-red-100 transition-colors"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white border-2 border-black text-black px-4 py-2 text-xs font-black hover:bg-[#FF8787] transition-colors"
                     >
-                      <X size={14} /> Delete
+                      <X size={16} strokeWidth={3} /> Delete
                     </button>
                   </td>
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-slate-500 font-medium">
+                  <td colSpan={8} className="px-6 py-12 text-center text-black font-black text-lg">
                     No English records found matching your filters.
                   </td>
                 </tr>
@@ -274,23 +254,23 @@ export default function EnglishDashboard({ history, onDelete }: EnglishDashboard
       {/* FULL SCREEN SMOOTH-SCROLLING MODAL */}
       {selectedRecord && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 md:p-8">
-          <div className="w-full max-w-[1300px] h-[90vh] bg-white rounded-2xl overflow-hidden shadow-2xl relative flex flex-col overscroll-contain">
+          <div className="w-full max-w-[1300px] h-[90vh] bg-[#FDFBF7] border-[4px] border-black rounded-[2rem] overflow-hidden relative flex flex-col overscroll-contain">
             
-            <div className="flex justify-between items-center px-6 py-4 border-b bg-white shrink-0 shadow-sm z-10">
+            <div className="flex justify-between items-center px-8 py-5 border-b-[3px] border-black bg-white shrink-0 z-10">
               <div className="flex flex-col">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Test History Details</span>
-                <h3 className="text-xl font-bold text-slate-900">{selectedRecord.passage} - {selectedRecord.date}</h3>
+                <span className="text-xs font-black uppercase tracking-wider text-slate-500">Test History Details</span>
+                <h3 className="text-2xl font-black text-black font-serif">{selectedRecord.passage} - {selectedRecord.date}</h3>
               </div>
               <button 
                 onClick={() => setSelectedRecord(null)} 
-                className="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors"
+                className="bg-white border-[3px] border-black hover:bg-[#FF8787] text-black px-6 py-2.5 rounded-full font-black flex items-center gap-2 hover:-translate-y-1 transition-all"
               >
-                <X size={18} /> Close Details
+                <X size={20} strokeWidth={3} /> Close Details
               </button>
             </div>
 
             <ReactLenis 
-              className="flex-1 overflow-y-auto w-full custom-scrollbar bg-gray-50" 
+              className="flex-1 overflow-y-auto w-full custom-scrollbar" 
               options={{ lerp: 0.08, smoothWheel: true }}
             >
               <div className="min-h-max pb-8 relative will-change-transform">

@@ -2,25 +2,10 @@
 
 import React, { useState, useMemo } from 'react';
 import { HistoryEntry } from '@/services/userService';
-import { Eye, Filter, ArrowUpDown, Calendar, Search, X } from 'lucide-react';
+import { Eye, Filter, ArrowUpDown, Calendar, Search, X, Activity, Target, Hash } from 'lucide-react';
 
-type DashboardRecord = {
-  id: string;
-  exam: string;
-  passage: string;
-  score: number;
-  accuracy: number;
-  status: 'Qualified' | 'Needs Work';
-  date: string;
-  time: string;
-  createdAt: number;
-  raw: HistoryEntry;
-};
-
-interface MathsDashboardProps {
-  history: HistoryEntry[];
-  onDelete: (id: string) => Promise<void>;
-}
+type DashboardRecord = { id: string; exam: string; passage: string; score: number; accuracy: number; status: 'Qualified' | 'Needs Work'; date: string; time: string; createdAt: number; raw: HistoryEntry; };
+interface MathsDashboardProps { history: HistoryEntry[]; onDelete: (id: string) => Promise<void>; }
 
 export default function MathsDashboard({ history, onDelete }: MathsDashboardProps) {
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -29,286 +14,174 @@ export default function MathsDashboard({ history, onDelete }: MathsDashboardProp
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRecord, setSelectedRecord] = useState<DashboardRecord | null>(null);
 
-  // 1. Map raw history to typed records
   const allRecords = useMemo<DashboardRecord[]>(() => {
     return history.map((item) => {
       const score = Number(item.score ?? 0);
-      return {
-        id: item.id,
-        exam: 'Mathematics',
-        passage: item.name || 'Maths Challenge',
-        score: score,
-        accuracy: Number(item.accuracy ?? score),
-        status: score >= 60 ? 'Qualified' : 'Needs Work',
-        date: item.date || 'Unknown date',
-        time: item.time || 'Unknown time',
-        createdAt: item.createdAt || 0,
-        raw: item,
-      };
+      return { id: item.id, exam: 'Mathematics', passage: item.name || 'Maths Challenge', score: score, accuracy: Number(item.accuracy ?? score), status: score >= 60 ? 'Qualified' : 'Needs Work', date: item.date || 'Unknown date', time: item.time || 'Unknown time', createdAt: item.createdAt || 0, raw: item, };
     });
   }, [history]);
 
-  // 2. Calculate Specific Stats
   const totalTests = allRecords.length;
   const qualifiedTests = allRecords.filter((r) => r.status === 'Qualified').length;
-  const avgScore = totalTests > 0 
-    ? (allRecords.reduce((acc, curr) => acc + curr.score, 0) / totalTests).toFixed(1) 
-    : '0';
+  const avgScore = totalTests > 0 ? (allRecords.reduce((acc, curr) => acc + curr.score, 0) / totalTests).toFixed(1) : '0';
 
-  // 3. Apply Filters and Sorting
   const filteredRecords = useMemo(() => {
     let result = [...allRecords];
-
-    if (statusFilter !== 'All Status') {
-      result = result.filter((r) => r.status === statusFilter);
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter((r) => 
-        r.passage.toLowerCase().includes(q) || 
-        r.exam.toLowerCase().includes(q)
-      );
-    }
-
-    if (dateRange === 'Last 7 Days') {
-      const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      result = result.filter((r) => r.createdAt >= cutoff);
-    } else if (dateRange === 'Last 30 Days') {
-      const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
-      result = result.filter((r) => r.createdAt >= cutoff);
-    }
-
-    if (sortOrder === 'Date (Newest First)') {
-      result.sort((a, b) => b.createdAt - a.createdAt);
-    } else if (sortOrder === 'Date (Oldest First)') {
-      result.sort((a, b) => a.createdAt - b.createdAt);
-    } else if (sortOrder === 'Highest Score') {
-      result.sort((a, b) => b.score - a.score);
-    } else if (sortOrder === 'Lowest Score') {
-      result.sort((a, b) => a.score - b.score);
-    }
-
+    if (statusFilter !== 'All Status') result = result.filter((r) => r.status === statusFilter);
+    if (searchQuery.trim()) result = result.filter((r) => r.passage.toLowerCase().includes(searchQuery.toLowerCase()) || r.exam.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (dateRange === 'Last 7 Days') result = result.filter((r) => r.createdAt >= Date.now() - 7 * 86400000);
+    else if (dateRange === 'Last 30 Days') result = result.filter((r) => r.createdAt >= Date.now() - 30 * 86400000);
+    if (sortOrder === 'Date (Newest First)') result.sort((a, b) => b.createdAt - a.createdAt);
+    else if (sortOrder === 'Date (Oldest First)') result.sort((a, b) => a.createdAt - b.createdAt);
+    else if (sortOrder === 'Highest Score') result.sort((a, b) => b.score - a.score);
+    else if (sortOrder === 'Lowest Score') result.sort((a, b) => a.score - b.score);
     return result;
   }, [allRecords, statusFilter, searchQuery, dateRange, sortOrder]);
 
-  const clearFilters = () => {
-    setStatusFilter('All Status');
-    setSortOrder('Date (Newest First)');
-    setDateRange('All Time');
-    setSearchQuery('');
-  };
+  const clearFilters = () => { setStatusFilter('All Status'); setSortOrder('Date (Newest First)'); setDateRange('All Time'); setSearchQuery(''); };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300">
       
-      {/* Top Stats Row */}
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="bg-[#f8faff] border border-blue-100 rounded-xl p-5 flex flex-col items-center justify-center min-w-[140px] shadow-sm">
-          <span className="text-3xl font-bold text-blue-600 mb-1">{totalTests}</span>
-          <span className="text-sm font-medium text-slate-500">Total Tests</span>
+      {/* Brutalist Top Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-[#AEE8F5] border-[3px] border-black rounded-[2rem] p-8 flex flex-col justify-center relative">
+          <div className="absolute top-6 right-6 bg-white border-2 border-black text-black p-3 rounded-full"><Hash size={24} strokeWidth={3} /></div>
+          <span className="text-5xl font-black text-black mb-2 mt-2">{totalTests}</span>
+          <span className="text-sm font-black tracking-wider text-black uppercase">Total Tests</span>
         </div>
-        <div className="bg-[#f8faff] border border-blue-100 rounded-xl p-5 flex flex-col items-center justify-center min-w-[140px] shadow-sm">
-          <span className="text-3xl font-bold text-blue-600 mb-1">{qualifiedTests}</span>
-          <span className="text-sm font-medium text-slate-500">Qualified</span>
+        <div className="bg-[#C4F2B0] border-[3px] border-black rounded-[2rem] p-8 flex flex-col justify-center relative">
+          <div className="absolute top-6 right-6 bg-white border-2 border-black text-black p-3 rounded-full"><Target size={24} strokeWidth={3} /></div>
+          <span className="text-5xl font-black text-black mb-2 mt-2">{qualifiedTests}</span>
+          <span className="text-sm font-black tracking-wider text-black uppercase">Qualified</span>
         </div>
-        <div className="bg-[#f8faff] border border-blue-100 rounded-xl p-5 flex flex-col items-center justify-center min-w-[140px] shadow-sm">
-          <span className="text-3xl font-bold text-blue-600 mb-1">{avgScore}%</span>
-          <span className="text-sm font-medium text-slate-500">Avg Score</span>
+        <div className="bg-[#FF8787] border-[3px] border-black rounded-[2rem] p-8 flex flex-col justify-center relative">
+          <div className="absolute top-6 right-6 bg-white border-2 border-black text-black p-3 rounded-full"><Activity size={24} strokeWidth={3} /></div>
+          <span className="text-5xl font-black text-black mb-2 mt-2">{avgScore}%</span>
+          <span className="text-sm font-black tracking-wider text-black uppercase">Avg Score</span>
         </div>
       </div>
 
-      {/* Modern Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap lg:flex-nowrap items-end gap-4">
-        <div className="flex flex-col gap-1.5 flex-1 min-w-[160px]">
-          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-            <Filter size={16} className="text-slate-900" /> Filter by Status
-          </label>
-          <select 
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-          >
-            <option>All Status</option>
-            <option>Qualified</option>
-            <option>Needs Work</option>
+      {/* Brutalist Filter Bar */}
+      <div className="bg-white p-6 rounded-[2rem] border-[3px] border-black flex flex-wrap lg:flex-nowrap items-end gap-5">
+        <div className="flex flex-col gap-2 flex-1 min-w-[160px]">
+          <label className="text-sm font-black text-black flex items-center gap-2"><Filter size={18} strokeWidth={2.5} /> Filter by Status</label>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="border-[2.5px] border-black rounded-xl p-3 text-sm font-bold outline-none focus:-translate-y-1 transition-all bg-white cursor-pointer">
+            <option>All Status</option><option>Qualified</option><option>Needs Work</option>
           </select>
         </div>
-
-        <div className="flex flex-col gap-1.5 flex-1 min-w-[160px]">
-          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-            <ArrowUpDown size={16} className="text-slate-900" /> Sort by
-          </label>
-          <select 
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className="border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-          >
-            <option>Date (Newest First)</option>
-            <option>Date (Oldest First)</option>
-            <option>Highest Score</option>
-            <option>Lowest Score</option>
+        <div className="flex flex-col gap-2 flex-1 min-w-[160px]">
+          <label className="text-sm font-black text-black flex items-center gap-2"><ArrowUpDown size={18} strokeWidth={2.5} /> Sort by</label>
+          <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="border-[2.5px] border-black rounded-xl p-3 text-sm font-bold outline-none focus:-translate-y-1 transition-all bg-white cursor-pointer">
+            <option>Date (Newest First)</option><option>Date (Oldest First)</option><option>Highest Score</option><option>Lowest Score</option>
           </select>
         </div>
-
-        <div className="flex flex-col gap-1.5 flex-1 min-w-[160px]">
-          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-            <Calendar size={16} className="text-slate-900" /> Date Range
-          </label>
-          <select 
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-          >
-            <option>All Time</option>
-            <option>Last 7 Days</option>
-            <option>Last 30 Days</option>
+        <div className="flex flex-col gap-2 flex-1 min-w-[160px]">
+          <label className="text-sm font-black text-black flex items-center gap-2"><Calendar size={18} strokeWidth={2.5} /> Date Range</label>
+          <select value={dateRange} onChange={(e) => setDateRange(e.target.value)} className="border-[2.5px] border-black rounded-xl p-3 text-sm font-bold outline-none focus:-translate-y-1 transition-all bg-white cursor-pointer">
+            <option>All Time</option><option>Last 7 Days</option><option>Last 30 Days</option>
           </select>
         </div>
-
-        <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-            <Search size={16} className="text-slate-900" /> Search
-          </label>
+        <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
+          <label className="text-sm font-black text-black flex items-center gap-2"><Search size={18} strokeWidth={2.5} /> Search</label>
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-3 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search by exam or test..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border border-slate-200 rounded-lg p-2.5 pl-9 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
+            <Search size={18} strokeWidth={2.5} className="absolute left-3 top-3 text-black" />
+            <input type="text" placeholder="Search by exam or test..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full border-[2.5px] border-black rounded-xl p-3 pl-10 text-sm font-bold outline-none focus:-translate-y-1 transition-all" />
           </div>
         </div>
-
         <div className="flex gap-3 w-full lg:w-auto mt-2 lg:mt-0">
-          <button 
-            className="bg-[#4176ff] hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold transition-colors flex-1 lg:flex-none whitespace-nowrap"
-          >
-            <Filter size={16} /> Apply Filters
-          </button>
-          <button 
-            onClick={clearFilters}
-            className="bg-white border border-[#4176ff] text-[#4176ff] hover:bg-blue-50 px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold transition-colors flex-1 lg:flex-none whitespace-nowrap"
-          >
-            <X size={16} /> Clear Filters
-          </button>
+          <button onClick={clearFilters} className="bg-white border-[3px] border-black hover:bg-slate-100 text-black px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-black hover:-translate-y-1 transition-all flex-1 lg:flex-none whitespace-nowrap"><X size={18} strokeWidth={3} /> Clear</button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      {/* Brutalist Table */}
+      <div className="bg-white border-[3px] border-black rounded-[2rem] overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">
-                <th className="px-5 py-4">#</th>
-                <th className="px-5 py-4">Exam</th>
-                <th className="px-5 py-4">Test</th>
-                <th className="px-5 py-4">Score</th>
-                <th className="px-5 py-4">Accuracy</th>
-                <th className="px-5 py-4">Status</th>
-                <th className="px-5 py-4">Date</th>
-                <th className="px-5 py-4 text-right">Action</th>
+              <tr className="border-b-[3px] border-black bg-[#D4FF2A] text-sm font-black uppercase tracking-wider text-black">
+                <th className="px-6 py-5">#</th>
+                <th className="px-6 py-5">Exam</th>
+                <th className="px-6 py-5">Test</th>
+                <th className="px-6 py-5">Score</th>
+                <th className="px-6 py-5">Accuracy</th>
+                <th className="px-6 py-5">Status</th>
+                <th className="px-6 py-5">Date</th>
+                <th className="px-6 py-5 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredRecords.length > 0 ? filteredRecords.map((row, index) => (
-                <tr key={row.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="px-5 py-4 font-semibold text-slate-600">{index + 1}</td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-                      <div className="text-sm font-semibold text-slate-800">{row.exam}</div>
-                    </div>
+                <tr key={row.id} className="border-b-[2px] border-slate-200 hover:bg-slate-50 transition-colors">
+                  <td className="px-6 py-5 font-black text-black">{index + 1}</td>
+                  <td className="px-6 py-5 font-black text-black">{row.exam}</td>
+                  <td className="px-6 py-5 text-sm font-black text-black">{row.passage}</td>
+                  <td className="px-6 py-5 text-sm font-black text-black">
+                    <span className="inline-flex items-center rounded-full bg-[#AEE8F5] border-2 border-black px-3 py-1">{row.score}%</span>
                   </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{row.passage}</td>
-                  <td className="px-5 py-4 text-sm font-bold text-slate-800">
-                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-blue-700">
-                      {row.score}%
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-sm font-semibold text-slate-700">{row.accuracy}%</td>
-                  <td className="px-5 py-4">
-                    <span className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold ${row.status === 'Qualified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  <td className="px-6 py-5 text-sm font-black text-black">{row.accuracy}%</td>
+                  <td className="px-6 py-5">
+                    <span className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-black border-2 border-black ${row.status === 'Qualified' ? 'bg-[#C4F2B0] text-black' : 'bg-white text-black'}`}>
                       {row.status}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">
-                    <div className="font-medium">{row.date}</div>
-                    <div className="text-xs text-slate-400">{row.time}</div>
-                  </td>
-                  <td className="px-5 py-4 text-right flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => setSelectedRecord(row)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
-                    >
-                      <Eye size={14} /> View
-                    </button>
-                    <button
-                      onClick={() => onDelete(row.id)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 text-red-600 px-3 py-1.5 text-xs font-semibold shadow-sm hover:bg-red-100 transition-colors"
-                    >
-                      <X size={14} /> Delete
-                    </button>
+                  <td className="px-6 py-5 text-sm text-black"><div className="font-bold">{row.date}</div><div className="font-medium text-slate-500 mt-0.5">{row.time}</div></td>
+                  <td className="px-6 py-5 text-right flex items-center justify-end gap-3">
+                    <button onClick={() => setSelectedRecord(row)} className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-xs font-black text-white hover:bg-slate-800 transition-colors"><Eye size={16} strokeWidth={2.5} /> View</button>
+                    <button onClick={() => onDelete(row.id)} className="inline-flex items-center gap-1.5 rounded-full bg-white border-2 border-black text-black px-4 py-2 text-xs font-black hover:bg-[#FF8787] transition-colors"><X size={16} strokeWidth={3} /> Delete</button>
                   </td>
                 </tr>
               )) : (
-                <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-slate-500 font-medium">
-                    No mathematics records found matching your filters.
-                  </td>
-                </tr>
+                <tr><td colSpan={8} className="px-6 py-12 text-center text-black font-black text-lg">No mathematics records found matching your filters.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Detail Modal */}
+      {/* Brutalist Detail Modal */}
       {selectedRecord && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-[2rem] bg-[#FDFBF7] border-[4px] border-black p-8">
+            <div className="flex items-center justify-between mb-8 border-b-[3px] border-black pb-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Result Details</p>
-                <h4 className="mt-1 text-2xl font-bold text-slate-900">Mathematics</h4>
+                <p className="text-sm font-black uppercase tracking-wider text-slate-500">Result Details</p>
+                <h4 className="mt-1 text-3xl font-black text-black font-serif">Mathematics</h4>
               </div>
               <button
                 onClick={() => setSelectedRecord(null)}
-                className="rounded-full bg-slate-100 p-2 text-slate-600 hover:bg-slate-200 transition-colors"
+                className="rounded-full bg-white border-[3px] border-black p-3 text-black hover:-translate-y-1 transition-all"
               >
-                <X size={20} />
+                <X size={24} strokeWidth={3} />
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Score</p>
-                  <p className="mt-2 text-2xl font-bold text-blue-600">{selectedRecord.score}%</p>
+            <div className="space-y-5">
+              <div className="grid grid-cols-2 gap-5">
+                <div className="rounded-[1.5rem] bg-[#AEE8F5] p-6 border-[3px] border-black text-center">
+                  <p className="text-sm font-black uppercase tracking-wider text-black">Score</p>
+                  <p className="mt-2 text-4xl font-black text-black">{selectedRecord.score}%</p>
                 </div>
-                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Accuracy</p>
-                  <p className="mt-2 text-2xl font-bold text-emerald-600">{selectedRecord.accuracy}%</p>
+                <div className="rounded-[1.5rem] bg-[#FF8787] p-6 border-[3px] border-black text-center">
+                  <p className="text-sm font-black uppercase tracking-wider text-black">Accuracy</p>
+                  <p className="mt-2 text-4xl font-black text-black">{selectedRecord.accuracy}%</p>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Test</p>
-                <p className="mt-2 text-lg font-semibold text-slate-800">{selectedRecord.passage}</p>
+              <div className="rounded-[1.5rem] bg-white border-[3px] border-black p-6">
+                <p className="text-sm font-black uppercase tracking-wider text-slate-500">Test</p>
+                <p className="mt-2 text-xl font-black text-black">{selectedRecord.passage}</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                  <p className="text-slate-500">Status</p>
-                  <p className={`mt-1 font-bold ${selectedRecord.status === 'Qualified' ? 'text-emerald-600' : 'text-amber-600'}`}>{selectedRecord.status}</p>
+              <div className="grid grid-cols-2 gap-5 text-sm">
+                <div className="rounded-[1.5rem] bg-white p-6 border-[3px] border-black">
+                  <p className="font-black text-slate-500 uppercase tracking-wider">Status</p>
+                  <p className={`mt-2 text-xl font-black ${selectedRecord.status === 'Qualified' ? 'text-green-600' : 'text-red-600'}`}>{selectedRecord.status}</p>
                 </div>
-                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                  <p className="text-slate-500">Date & Time</p>
-                  <p className="mt-1 font-bold text-slate-800">{selectedRecord.date}</p>
-                  <p className="text-xs text-slate-500">{selectedRecord.time}</p>
+                <div className="rounded-[1.5rem] bg-white p-6 border-[3px] border-black">
+                  <p className="font-black text-slate-500 uppercase tracking-wider">Date & Time</p>
+                  <p className="mt-2 font-black text-black">{selectedRecord.date}</p>
+                  <p className="text-sm font-bold text-slate-500">{selectedRecord.time}</p>
                 </div>
               </div>
             </div>

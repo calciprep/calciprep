@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useContext, ElementType } from 'react';
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
-// Swapped Zap for RadioTower
 import { Calculator, BookOpenText, Keyboard, ArrowRight, RadioTower } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -18,7 +17,6 @@ import liveTestsIllustration from '@/public/media/live-tests-card-illustration.s
 type SubjectData = {
     link: string;
     bgColor: string;
-    iconColor: string;
     Icon: ElementType; 
     title: string;
     desc: string;
@@ -29,8 +27,7 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
     const content: Record<'maths' | 'english' | 'typing' | 'livetests', SubjectData> = {
         maths: {
             link: "/maths",
-            bgColor: "bg-purple-100",
-            iconColor: "text-purple-600",
+            bgColor: "bg-[#E6E6FA]", // Pastel Purple
             Icon: Calculator,
             title: "Maths Arena",
             desc: "Sharpen your calculation speed and accuracy.",
@@ -38,8 +35,7 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
         },
         english: {
             link: "/english",
-            bgColor: "bg-blue-100",
-            iconColor: "text-blue-600",
+            bgColor: "bg-[#ADD8E6]", // Pastel Blue
             Icon: BookOpenText,
             title: "English Mastery",
             desc: "Master vocabulary with interactive quizzes.",
@@ -47,18 +43,15 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
         },
         typing: {
             link: "/typing",
-            bgColor: "bg-amber-100",
-            iconColor: "text-amber-600",
+            bgColor: "bg-[#FFDAB9]", // Pastel Peach
             Icon: Keyboard,
             title: "Typing Arena",
             desc: "Improve typing speed with guided lessons.",
             illustration: typingIllustration
         },
-        // UPDATED: Bright Red Colors and RadioTower Icon
         livetests: {
             link: "/live-tests",
-            bgColor: "bg-red-100",
-            iconColor: "text-red-600",
+            bgColor: "bg-[#F9C5D1]", // Pastel Pink
             Icon: RadioTower,
             title: "Live Tests",
             desc: "Compete in real-time with peers pan-India.",
@@ -71,23 +64,30 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
 
     return (
         <div className="card-wrapper h-full">
-            <Link href={item.link} className={`subject-card flex flex-col shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 rounded-3xl overflow-hidden ${item.bgColor} h-full`}>
+            <Link 
+                href={item.link} 
+                className={`subject-card flex flex-col border-[3px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 transition-all duration-300 rounded-2xl overflow-hidden ${item.bgColor} h-full`}
+            >
                 <div className="p-8 text-center flex flex-col h-full">
                     <div className="flex-shrink-0">
-                        <div className={`bg-white/50 ${item.iconColor} w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto`}>
-                            <IconComponent size={32} />
+                        {/* Brutalist Icon Container */}
+                        <div className="bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-slate-900 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                            <IconComponent size={30} strokeWidth={2.5} />
                         </div>
-                        <h3 className="text-2xl font-bold mb-3 text-gray-900">{item.title}</h3>
-                        <p className="text-gray-600 text-sm font-sans">{item.desc}</p>
+                        <h3 className="text-2xl font-extrabold mb-3 text-slate-900 font-serif">{item.title}</h3>
+                        <p className="text-slate-800 text-sm font-medium font-sans">{item.desc}</p>
                     </div>
                     
                     <div className="mt-6 mb-4 flex-grow flex justify-center items-center">
                         <Image src={item.illustration} alt={`${item.title} Illustration`} className="max-h-32 w-auto drop-shadow-sm" />
                     </div>
                     
-                    <div className="mt-auto pt-6 bg-white -m-8 px-8 py-6 flex justify-between items-center flex-shrink-0">
-                        <span className="font-semibold text-gray-800">Explore</span>
-                        <ArrowRight className="text-gray-600" />
+                    {/* Brutalist Explore Tab with Continuous Bounce Animation */}
+                    <div className="mt-auto pt-6 bg-white border-t-[3px] border-black -m-8 px-8 py-5 flex justify-between items-center flex-shrink-0 group">
+                        <span className="font-extrabold text-slate-900 uppercase tracking-wider text-sm">Explore</span>
+                        <div className="animate-bounce mt-1">
+                            <ArrowRight className="text-slate-900" strokeWidth={3} size={20} />
+                        </div>
                     </div>
                 </div>
             </Link>

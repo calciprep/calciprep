@@ -1,73 +1,55 @@
-"use client"; 
+"use client";
 
-import Image from 'next/image';
-import heroIllustration from '@/public/media/hero-illustration.svg';
+import React from 'react';
+import Link from 'next/link';
+import { Monitor, RadioTower, Calculator, BookOpenText } from 'lucide-react';
 
-const HeroSection = () => {
-  // Smooth scroll handler for the Explore button
-  const handleExploreClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const subjectsSection = document.getElementById('subjects');
-    if (subjectsSection) {
-      subjectsSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
+export default function HeroSection() {
   return (
-    // FIXED: Changed pt-28 to pt-8 so it sits perfectly under the new sliding ticker!
-    <section id="home" className="pt-2 pb-12 lg:pt-6 lg:pb-20">
-      <style jsx>{`
-        #home h1 {
-          font-family: var(--font-oswald);
-        }
-      `}</style>
-      
-      <div className="container mx-auto px-4 sm:px-6">
-        {/* PREMIUM DARK GRADIENT BACKGROUND */}
-        <div className="bg-gradient-to-br from-slate-900 via-[#0f172a] to-[#1e1b4b] rounded-[2.5rem] p-8 md:p-12 lg:p-16 shadow-2xl border border-slate-800 relative overflow-hidden">
+    <section className="px-4 pt-8 pb-12 max-w-6xl mx-auto">
+      <div className="bg-white border-[3px] border-black rounded-[2rem] p-10 md:p-20 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative">
+        
+        {/* Updated Badge */}
+        <div className="inline-flex items-center gap-2 bg-[#F9C5D1] border-2 border-black rounded-full px-5 py-2 font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] mb-8">
+          <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></div>
+          The New Age Learning Platform
+        </div>
+
+        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-[1.1] text-slate-900" style={{ fontFamily: 'var(--font-eb-garamond)' }}>
+          Your Complete Govt Exam<br />Prep Platform
+        </h1>
+        
+        <p className="text-lg md:text-xl text-slate-700 mb-10 max-w-3xl mx-auto font-medium leading-relaxed">
+          Master SSC, Banking & Railway exams with our ecosystem of tools, typing tests, mathematics drills, English vocabulary quizzes, and daily updates.
+        </p>
+
+        {/* Action Buttons Linked to Platform Features */}
+        <div className="flex flex-wrap justify-center items-center gap-4">
+          <Link href="/typing">
+            <button className="flex items-center gap-2 bg-[#E25E3E] text-white border-2 border-black rounded-full px-8 py-3.5 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <Monitor size={20} /> Start Typing Test
+            </button>
+          </Link>
           
-          {/* Subtle light flares for the background */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[2.5rem] pointer-events-none">
-            <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-[#5b58f5] opacity-20 blur-[100px] rounded-full"></div>
-            <div className="absolute bottom-[10%] -right-[10%] w-[40%] h-[50%] bg-[#FF44EC] opacity-10 blur-[100px] rounded-full"></div>
-          </div>
+          <Link href="/live-tests">
+            <button className="flex items-center gap-2 bg-[#C1E1C1] text-slate-900 border-2 border-black rounded-full px-6 py-3.5 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <RadioTower size={20} /> Live Tests
+            </button>
+          </Link>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
-            
-            <div className="text-center lg:text-left flex flex-col items-center lg:items-start">
-              {/* Updated text colors to pop on the dark background */}
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 text-white tracking-tight">
-                Master your exams with <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#44BCFF] to-[#FF44EC] drop-shadow-sm">real-time analytics</span>
-              </h1>
-              <p className="text-base md:text-xl text-slate-300 max-w-lg mb-10 font-sans leading-relaxed">
-                Elevate your preparation for SSC, Delhi Police, and more. Track your typing speed, conquer complex mathematics, and master English with our premium, data-driven platform.
-              </p>
-              
-              {/* EXPLORE BUTTON WITH SMOOTH SCROLL */}
-              <a 
-                href="#subjects" 
-                onClick={handleExploreClick}
-                className="inline-flex items-center justify-center px-10 py-4 text-lg font-bold text-white transition-all duration-300 bg-[#5b58f5] hover:bg-indigo-500 rounded-2xl shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-1"
-              >
-                Explore Subjects
-              </a>
+          <Link href="/maths">
+            <button className="flex items-center gap-2 bg-[#F9C5D1] text-slate-900 border-2 border-black rounded-full px-6 py-3.5 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <Calculator size={20} /> Maths Arena
+            </button>
+          </Link>
 
-            </div>
-
-            <div className="flex justify-center items-center">
-              <Image 
-                src={heroIllustration} 
-                alt="Exam Preparation Illustration" 
-                priority
-                className="w-full max-w-sm md:max-w-md lg:max-w-lg h-auto drop-shadow-2xl" 
-              />
-            </div>
-
-          </div>
+          <Link href="/english">
+            <button className="flex items-center gap-2 bg-[#ADD8E6] text-slate-900 border-2 border-black rounded-full px-6 py-3.5 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <BookOpenText size={20} /> English Quizzes
+            </button>
+          </Link>
         </div>
       </div>
     </section>
   );
-};
-
-export default HeroSection;
+}

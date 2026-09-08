@@ -18,7 +18,7 @@ export default function TypingExamSelectionPage() {
   /* STREAMING_CHUNK: Rendering the Exam Selection UI... */
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-16">
         {/* Header Section */}
         <div className="text-center mb-10">
           <h1 className="text-[2.5rem] font-bold text-[#6466f1] mb-2 tracking-tight">
@@ -26,7 +26,7 @@ export default function TypingExamSelectionPage() {
           </h1>
 
           <p className="text-gray-500 text-lg">
-            Practice and improve your typing skills with these exams
+            Step into the ultimate typing simulation and prepare for the real exam. Select your target exam below to access official TCS-pattern environments. Master the exact formats required for SSC CGL, CHSL, and Delhi Police. Get instant net-speed calculations and strict error breakdowns. Pinpoint your specific weaknesses with our intelligent lookahead aligner. Build the muscle memory and flawless accuracy required to qualify. Start your practice drill now and crush those cutoffs!
           </p>
 
           <div className="w-16 h-[3px] bg-[#1a73e8] mx-auto mt-6 rounded-full" />

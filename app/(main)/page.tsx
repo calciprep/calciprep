@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import HeroSection from "@/components/features/home/HeroSection";
 import SubjectsSection from "@/components/features/home/SubjectsSection";
+import FreeToolsSection from "@/components/features/home/FreeToolsSection";
 import FeaturesSection from "@/components/features/home/FeaturesSection";
+import WhoWeAreSection from '@/components/features/home/WhoWeAreSection';
 // NOTE: ContactSection has been completely removed!
 import Link from "next/link";
 import { Bell } from "lucide-react";
@@ -90,7 +92,9 @@ export default function HomePage() {
 
       <HeroSection />
       <SubjectsSection />
+      <FreeToolsSection />
       <FeaturesSection />
+      <WhoWeAreSection />
       {/* ContactSection removed! Clean and lightweight! */}
     </>
   );

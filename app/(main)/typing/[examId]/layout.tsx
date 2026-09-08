@@ -1,12 +1,15 @@
 import { Metadata } from 'next';
 
 type Props = {
-  params: { examId: string };
+  // 1. Update the type to expect a Promise
+  params: Promise<{ examId: string }>;
   children: React.ReactNode;
 };
 
-// This function dynamically generates the SEO tags based on the URL!
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  // 2. Await the params before trying to read examId
+  const params = await props.params;
+  
   // Converts "ssc_cgl" into "SSC CGL"
   const formattedExamName = params.examId.replace(/_/g, ' ').toUpperCase(); 
 

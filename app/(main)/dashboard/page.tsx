@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const [mathsHistory, setMathsHistory] = useState<HistoryEntry[]>([]);
   const [englishHistory, setEnglishHistory] = useState<HistoryEntry[]>([]);
 
-  // NEW: Read the URL to see if we were sent here from a specific subject result page
+  // Read the URL to see if we were sent here from a specific subject result page
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const tab = searchParams.get('tab');
@@ -88,22 +88,22 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
+        <Loader2 className="w-10 h-10 animate-spin text-black" />
       </div>
     );
   }
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">Please log in</h2>
-          <p className="text-slate-500 mb-6">You need an account to access your dashboard.</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
+        <div className="text-center bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-10 rounded-[2rem]">
+          <h2 className="text-3xl font-black text-black mb-2 font-serif">Please log in</h2>
+          <p className="text-black font-bold mb-6">You need an account to access your dashboard.</p>
           <button
             type="button"
             onClick={() => openModal(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors shadow-sm"
+            className="bg-[#D4FF2A] border-[3px] border-black hover:-translate-y-1 text-black font-black px-8 py-3 rounded-full text-lg transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           >
             Log In
           </button>
@@ -113,40 +113,39 @@ export default function DashboardPage() {
   }
 
   return (
-    // FIX ADDED HERE: Added pt-[120px] to push the content below the fixed navigation bar
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pt-[50px] pb-16">
+    <div className="min-h-screen bg-[#FDFBF7] text-slate-900 font-sans pt-[80px] pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Performance Dashboard</h1>
-          <p className="text-slate-500 mt-1">Review your practice performance, test history, and track improvements.</p>
+        <div className="mb-8 bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-8 rounded-[2rem]">
+          <h1 className="text-4xl font-black text-black tracking-tight font-serif">Performance Dashboard</h1>
+          <p className="text-slate-800 font-bold mt-2 text-lg">Review your practice performance, test history, and track improvements.</p>
         </div>
 
         {/* Subject Selector Tabs */}
-        <div className="mb-6 flex bg-white rounded-xl shadow-sm border border-slate-200 p-1 w-max overflow-x-auto">
+        <div className="mb-8 flex gap-4 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveSubject('typing')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap
-              ${activeSubject === 'typing' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+              ${activeSubject === 'typing' ? 'bg-[#D4FF2A] text-black' : 'bg-white text-black'}`}
           >
-            <Keyboard size={18} /> Typing
+            <Keyboard size={20} strokeWidth={2.5} /> Typing
           </button>
           
           <button
             onClick={() => setActiveSubject('maths')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap
-              ${activeSubject === 'maths' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+              ${activeSubject === 'maths' ? 'bg-[#D4FF2A] text-black' : 'bg-white text-black'}`}
           >
-            <Calculator size={18} /> Mathematics
+            <Calculator size={20} strokeWidth={2.5} /> Mathematics
           </button>
           
           <button
             onClick={() => setActiveSubject('english')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap
-              ${activeSubject === 'english' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+              ${activeSubject === 'english' ? 'bg-[#D4FF2A] text-black' : 'bg-white text-black'}`}
           >
-            <BookOpen size={18} /> English
+            <BookOpen size={20} strokeWidth={2.5} /> English
           </button>
         </div>
 
