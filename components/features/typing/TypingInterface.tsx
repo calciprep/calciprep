@@ -156,7 +156,7 @@ export default function TypingInterface({
 
     let calculatedMarks = 0;
 
-    if (netWpm > 50) {
+    if (netWpm >= 50) {
       calculatedMarks = 25;
     } else if (netWpm >= 46) {
       calculatedMarks = 21;
@@ -166,7 +166,7 @@ export default function TypingInterface({
       calculatedMarks = 15;
     } else if (netWpm >= 31) {
       calculatedMarks = 12;
-    } else if (netWpm >= 30) {
+    } else if (netWpm === 30) {
       calculatedMarks = 10;
     } else {
       calculatedMarks = 0; 

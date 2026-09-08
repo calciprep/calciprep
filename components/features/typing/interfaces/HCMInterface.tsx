@@ -87,11 +87,11 @@ export default function HCMInterface({
     // --- CLOUD SANITIZER & GREEDY LOOKAHEAD ENGINE ---
     const normalizeText = (text: string) => {
       return text
-        .replace(/[\u2018\u2019]/g, "'") // Normalize smart single quotes
-        .replace(/[\u201C\u201D]/g, '"') // Normalize smart double quotes
-        .replace(/[\u2013\u2014]/g, '-') // Normalize em/en dashes
-        .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
-        .replace(/\u00A0/g, ' ') // Convert non-breaking spaces to regular spaces
+        .replace(/[\u2018\u2019]/g, "'") 
+        .replace(/[\u201C\u201D]/g, '"') 
+        .replace(/[\u2013\u2014]/g, '-') 
+        .replace(/[\u200B-\u200D\uFEFF]/g, '') 
+        .replace(/\u00A0/g, ' ') 
         .trim();
     };
 
@@ -105,7 +105,6 @@ export default function HCMInterface({
     let origIdx = 0;
     let typedIdx = 0;
 
-    // Advanced array alignment to prevent cascading errors from missing spaces
     while (typedIdx < typedWords.length && origIdx < originalWords.length) {
       if (typedWords[typedIdx] === originalWords[origIdx]) {
         typedIdx++;
@@ -114,7 +113,6 @@ export default function HCMInterface({
         errors++;
         let realigned = false;
         
-        // Lookahead up to 5 words to instantly re-align the array 
         for (let lookahead = 1; lookahead <= 5; lookahead++) {
           if (origIdx + lookahead < originalWords.length && typedWords[typedIdx] === originalWords[origIdx + lookahead]) {
             origIdx += lookahead;
@@ -135,7 +133,6 @@ export default function HCMInterface({
       }
     }
     
-    // Penalize any extra words typed beyond the original passage length
     if (typedIdx < typedWords.length) {
       errors += (typedWords.length - typedIdx);
     }
@@ -144,7 +141,10 @@ export default function HCMInterface({
     const totalKeystrokes = userInput.length;
 
     const grossWpmRaw = timeInMinutes > 0 ? (totalKeystrokes / 5) / timeInMinutes : 0;
-    const netWpmRaw = Math.max(0, grossWpmRaw - (errors / timeInMinutes));
+    
+    // 🔥 FIX: Apply the STRICT DP HCM Formula (Gross WPM - Total Errors)
+    const netWpmRaw = Math.max(0, grossWpmRaw - errors);
+    
     const accuracyRaw = grossWpmRaw > 0 ? Math.max(0, (netWpmRaw / grossWpmRaw) * 100) : 0;
     const errorPercentage = totalKeystrokes > 0 ? (errors / (totalKeystrokes / 5)) * 100 : 0;
 

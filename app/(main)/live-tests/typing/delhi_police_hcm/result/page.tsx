@@ -43,7 +43,6 @@ export default function DPHCM_LiveResultPage() {
       const dateString = today.toLocaleDateString('en-CA'); 
       const leaderboardRefName = `live_leaderboards_hcm_${dateString}`;
 
-      // Force exactly 1 document per user per day using setDoc
       const userDocRef = doc(db!, leaderboardRefName, currentUser.uid);
 
       await setDoc(userDocRef, {
@@ -52,6 +51,9 @@ export default function DPHCM_LiveResultPage() {
         photoURL: currentUser.photoURL || '',
         wpm: stats.wpm,
         netWpm: stats.netWpm,
+        // 🔥 FIX: We MUST push the errors to the database so the leaderboard can use them
+        totalErrors: stats.totalErrors || 0,
+        fullMistakes: stats.fullMistakes || 0,
         accuracy: stats.accuracy,
         marks: stats.marks || 0,
         timeTaken: stats.timeTakenInSeconds,

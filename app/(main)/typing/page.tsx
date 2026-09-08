@@ -25,7 +25,7 @@ export default function TypingExamSelectionPage() {
             All Typing Exams
           </h1>
 
-          <p className="text-gray-500 text-lg">
+          <p className="text-black-500 text-lg">
             Step into the ultimate typing simulation and prepare for the real exam. Select your target exam below to access official TCS-pattern environments. Master the exact formats required for SSC CGL, CHSL, and Delhi Police. Get instant net-speed calculations and strict error breakdowns. Pinpoint your specific weaknesses with our intelligent lookahead aligner. Build the muscle memory and flawless accuracy required to qualify. Start your practice drill now and crush those cutoffs!
           </p>
 

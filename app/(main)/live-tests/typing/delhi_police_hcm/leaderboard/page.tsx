@@ -49,12 +49,22 @@ export default function DPHCM_LiveLeaderboard() {
       
       snapshot.forEach((doc) => {
         const data = doc.data() as LeaderboardEntry;
+        
+        // 🔥 FIX: We no longer recalculate! We completely trust the accurately calculated netWpm from the DB.
         if (!uniqueUsers.has(data.uid)) {
           uniqueUsers.set(data.uid, { ...data, id: doc.id });
+        } else {
+          // Keep highest score if multiple tests taken
+          const existing = uniqueUsers.get(data.uid)!;
+          if (data.netWpm > existing.netWpm) {
+            uniqueUsers.set(data.uid, { ...data, id: doc.id });
+          }
         }
       });
       
-      setLeaderboard(Array.from(uniqueUsers.values()));
+      // Sort in descending order based on correct netWpm
+      const sortedLeaderboard = Array.from(uniqueUsers.values()).sort((a, b) => b.netWpm - a.netWpm);
+      setLeaderboard(sortedLeaderboard);
       setLoading(false);
     }, (error) => {
       console.error("Error fetching leaderboard:", error);
@@ -83,20 +93,14 @@ export default function DPHCM_LiveLeaderboard() {
     });
   };
 
-  // ============================================================================
-  // MODERNIZED PDF GENERATOR
-  // ============================================================================
   const downloadPDF = () => {
-    // 'landscape' mode fits all 8 columns perfectly
     const doc = new jsPDF('landscape'); 
     const pageWidth = doc.internal.pageSize.width;
     
-    // Centered Bold Title
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text("Delhi Police HCM Live Leaderboard - CalciPrep", pageWidth / 2, 16, { align: 'center' });
     
-    // Centered Date
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
     doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, pageWidth / 2, 24, { align: 'center' });
@@ -112,7 +116,6 @@ export default function DPHCM_LiveLeaderboard() {
       if (rank === 2) rankText = "2nd Place";
       if (rank === 3) rankText = "3rd Place";
 
-      // Assuming > 0 netWpm is a pass, you can adjust this target!
       const isQualified = entry.netWpm > 0;
 
       const rowData = [
@@ -135,28 +138,26 @@ export default function DPHCM_LiveLeaderboard() {
       theme: 'grid',
       headStyles: { fillColor: [10, 115, 140], halign: 'center', fontSize: 10 },
       columnStyles: {
-        0: { fontStyle: 'bold' }, // Rank
-        2: { halign: 'center' }, // Gross
-        3: { halign: 'center', fontStyle: 'bold' }, // Net
-        4: { halign: 'center' }, // Acc
-        5: { halign: 'center' }, // Marks
-        6: { halign: 'center', fontStyle: 'bold' }, // Status
-        7: { halign: 'right', fontSize: 9 } // Date
+        0: { fontStyle: 'bold' }, 
+        2: { halign: 'center' }, 
+        3: { halign: 'center', fontStyle: 'bold' }, 
+        4: { halign: 'center' }, 
+        5: { halign: 'center' }, 
+        6: { halign: 'center', fontStyle: 'bold' }, 
+        7: { halign: 'right', fontSize: 9 } 
       },
       didParseCell: function (data) {
         if (data.section === 'body') {
-          // Color Top 3 Ranks (Gold, Silver, Bronze)
           if (data.column.index === 0) {
-            if (data.row.index === 0) data.cell.styles.textColor = [218, 165, 32]; // Gold
-            if (data.row.index === 1) data.cell.styles.textColor = [112, 128, 144]; // Silver/Slate
-            if (data.row.index === 2) data.cell.styles.textColor = [205, 127, 50]; // Bronze
+            if (data.row.index === 0) data.cell.styles.textColor = [218, 165, 32]; 
+            if (data.row.index === 1) data.cell.styles.textColor = [112, 128, 144]; 
+            if (data.row.index === 2) data.cell.styles.textColor = [205, 127, 50]; 
           }
-          // Color Status (Green/Red)
           if (data.column.index === 6) {
             if (data.cell.raw === 'Qualified') {
-              data.cell.styles.textColor = [22, 163, 74]; // Emerald Green
+              data.cell.styles.textColor = [22, 163, 74]; 
             } else {
-              data.cell.styles.textColor = [220, 38, 38]; // Red
+              data.cell.styles.textColor = [220, 38, 38]; 
             }
           }
         }
@@ -165,7 +166,6 @@ export default function DPHCM_LiveLeaderboard() {
 
     doc.save(`CalciPrep_HCM_Leaderboard_${new Date().toLocaleDateString('en-CA')}.pdf`);
   };
-  // ============================================================================
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pt-[100px] pb-20">
@@ -316,7 +316,6 @@ export default function DPHCM_LiveLeaderboard() {
                           </td>
                           
                           <td className="px-6 py-4 text-center font-bold">
-                            {/* In sync with the PDF logic */}
                             <span className={entry.netWpm > 0 ? "text-emerald-600" : "text-red-500"}>
                               {entry.netWpm > 0 ? "Qualified" : "Not Qualified"}
                             </span>

@@ -8,12 +8,11 @@ import AuthModal from '@/components/common/AuthModal';
 import { User, ChevronDown, Menu, X, LogOut, Settings, ShieldCheck, LifeBuoy } from 'lucide-react';
 import gsap from 'gsap';
 
-// Specific Neo-Brutalist colors for each nav item
+// Updated Nav Items: Removed Maths/English, Added Image Resizer
 const navItems = [
   { label: 'Home', href: '/', icon: '/media/nav/home-nav.svg', bgColor: 'bg-white', textColor: 'text-slate-900' },
   { label: 'Typing', href: '/typing', icon: '/media/nav/typing-nav.svg', bgColor: 'bg-[#E25E3E]', textColor: 'text-white' },
-  { label: 'Mathematics', href: '/maths', icon: '/media/nav/maths-nav.svg', bgColor: 'bg-[#F9C5D1]', textColor: 'text-slate-900' }, 
-  { label: 'English', href: '/english', icon: '/media/nav/english-nav.svg', bgColor: 'bg-[#ADD8E6]', textColor: 'text-slate-900' },
+  { label: 'Image Resizer', href: '/tools/image-resizer', icon: '/media/nav/image-nav.svg', bgColor: 'bg-[#ADD8E6]', textColor: 'text-slate-900' },
   { label: 'Live Tests', href: '/live-tests', icon: '/media/nav/live-tests-nav.svg', bgColor: 'bg-[#C1E1C1]', textColor: 'text-slate-900' }, 
   { label: 'Dashboard', href: '/dashboard', icon: '/media/nav/dashboard-nav.svg', bgColor: 'bg-[#E6E6FA]', textColor: 'text-slate-900' },
   { label: 'Support', href: '/support', icon: '/media/nav/contact-nav.svg', bgColor: 'bg-[#FDFD96]', textColor: 'text-slate-900' },
