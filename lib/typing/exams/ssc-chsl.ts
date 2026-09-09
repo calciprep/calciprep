@@ -5,7 +5,7 @@ export const sscChsl: ExamData = {
     id: 'ssc_chsl',
     name: 'SSC CHSL TYPING',
     // Using the exact same SSC logo here
-    logo: '/media/ssc-logo.png',
+    logo: '/media/ssc-logo.webp',
     duration: 10 * 60, // 10 minutes
     allowBackspace: true,
     highlightCurrentWord: false,

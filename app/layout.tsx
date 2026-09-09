@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Oswald, EB_Garamond, Roboto_Mono } from "next/font/google";
-import Script from 'next/script'; // Import the Script component
 import { AuthProvider } from "@/contexts/AuthContext";
 import Notification from "@/components/common/Notification";
 import AuthModal from "@/components/common/AuthModal";
-import LenisProvider from "@/components/common/LenisProvider"; // Import the new provider
+import LenisProvider from "@/components/common/LenisProvider"; 
 import "./globals.css";
 import "../auth-modal.css";
 
@@ -66,16 +65,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* --- ADD ADSENSE SCRIPT SNIPPET HERE --- */}
-        <Script
+        {/* Next.js manages Metadata automatically here. Leave this empty to prevent hydration errors. */}
+      </head>
+      <body
+        className={`${oswald.variable} ${ebGaramond.variable} ${robotoMono.variable}`}
+        suppressHydrationWarning
+      >
+        {/* --- FIXED: SCRIPTS MOVED TO BODY --- */}
+        <script
           async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049`}
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
           crossOrigin="anonymous"
-          strategy="lazyOnload" // Or "afterInteractive" if needed sooner
-        />
-        {/* --- END ADSENSE SCRIPT SNIPPET --- */}
-
-        {/* --- GOOGLE SEO SCHEMA MARKUP FOR SITELINKS --- */}
+        ></script>
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -92,12 +94,8 @@ export default function RootLayout({
             })
           }}
         />
-        {/* --- END GOOGLE SEO SCHEMA MARKUP --- */}
-      </head>
-      <body
-        className={`${oswald.variable} ${ebGaramond.variable} ${robotoMono.variable}`}
-        suppressHydrationWarning
-      >
+        {/* --- END SCRIPTS --- */}
+
         <AuthProvider>
           <LenisProvider>
             {children}

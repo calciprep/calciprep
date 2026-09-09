@@ -6,8 +6,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Keyboard, Bell, CalendarOff, Loader2 } from 'lucide-react';
 
-import sscLogo from '@/public/media/ssc-logo.png';
-import dpLogo from '@/public/media/delhi-police-logo.png';
+import sscLogo from '@/public/media/ssc-logo.webp';
+import dpLogo from '@/public/media/delhi-police-logo.webp';
 
 // FIREBASE IMPORTS
 import { db } from '@/lib/firebase';

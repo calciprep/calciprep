@@ -5,7 +5,7 @@ export const delhiPoliceHcm: ExamData = {
     id: 'delhi_police_hcm',
     name: 'Delhi Police HCM Typing',
     // Pointing to your local DP logo
-    logo: '/media/delhi-police-logo.png',
+    logo: '/media/delhi-police-logo.webp',
     duration: 10 * 60, // 10 minutes
     allowBackspace: true, 
     highlightCurrentWord: false, // Strict exam environment

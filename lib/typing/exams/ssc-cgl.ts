@@ -5,7 +5,7 @@ export const sscCgl: ExamData = {
     id: 'ssc_cgl',
     name: 'SSC CGL TYPING',
     // Pointing to your local image in the public/media folder
-    logo: '/media/ssc-logo.png',
+    logo: '/media/ssc-logo.webp',
     duration: 15 * 60, // 15 minutes
     allowBackspace: true,
     highlightCurrentWord: false, 

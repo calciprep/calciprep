@@ -205,7 +205,7 @@ export default function AutomatedCalendarPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
                 <CalendarIcon size={20} className="text-blue-600" /> 
-                {activeBoard === 'All Updates' ? 'Latest Nationwide Updates' : `${activeBoard} Notifications`}
+                {activeBoard === 'All Updates' ? 'Latest Government Exam Updates' : `${activeBoard} Notifications`}
               </h2>
               <span className="text-sm font-semibold text-slate-500">{filteredNotifications.length} updates found</span>
             </div>
