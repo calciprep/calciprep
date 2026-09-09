@@ -7,6 +7,7 @@ import { TypingResult as TypingResultType } from '@/lib/typing-types';
 import { X } from 'lucide-react';
 import { ReactLenis } from '@studio-freight/react-lenis';
 import useTypingSound from '@/hooks/useTypingSound';
+import { downloadPassageAsPDF } from '@/lib/generatePdf'; // <-- New PDF Import
 
 interface HCMInterfaceProps {
   passage: Passage;
@@ -190,20 +191,23 @@ export default function HCMInterface({
       </div>
 
       <div className="bg-[#333333] text-white px-4 py-2 flex flex-wrap justify-between items-center text-sm gap-3 shrink-0">
+        
+        {/* --- FIXED: NEW DYNAMIC PDF BUTTON --- */}
         <div className="flex items-center gap-4">
           <span className="font-bold tracking-wider text-yellow-400 uppercase">{passage.title}</span>
           
-          {passage.pdfUrl && (
-            <a 
-              href={passage.pdfUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="bg-[#dc3545] hover:bg-[#c82333] px-4 py-1.5 rounded text-white font-medium shadow transition-colors"
-            >
-              Download PDF
-            </a>
-          )}
+          <button 
+            onClick={() => downloadPassageAsPDF({
+              title: passage.title,
+              text: passage.text,
+              examType: examRules.name
+            })}
+            className="bg-[#dc3545] hover:bg-[#c82333] px-4 py-1.5 rounded text-white font-medium shadow transition-colors"
+          >
+            Download PDF
+          </button>
         </div>
+        {/* --- END NEW PDF BUTTON --- */}
 
         <div className="flex items-center gap-3 ml-auto flex-wrap justify-end">
           <span className="font-bold text-yellow-400 text-base mr-2">

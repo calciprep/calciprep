@@ -10,58 +10,19 @@ import { exams } from '@/lib/typing';
 import { Passage } from '@/lib/typing/types';
 import { 
   ArrowLeft, Info, FileText, Play, RefreshCw, 
-  Search, Layers, Clock, Leaf, Equal, Flame, FileDown, Loader2 
+  Search, Layers, Clock, Leaf, Equal, Flame, FileDown, Loader2, X, Settings2
 } from 'lucide-react';
 
 import { db } from '@/lib/firebase';
 import { collection, query, getDocs } from 'firebase/firestore';
+import { downloadPassageAsPDF, downloadBulkPassagesAsPDF } from '@/lib/generatePdf';
 
 const TABS = [
-  { 
-    id: 'All', 
-    label: 'All', 
-    icon: Layers, 
-    activeClass: 'bg-[#5b58f5] text-white border-transparent shadow-md', 
-    inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-indigo-50',
-    badgeActive: 'bg-white/20 text-white',
-    badgeInactive: 'bg-gray-100 text-gray-500'
-  },
-  { 
-    id: 'PYTT', 
-    label: 'PYTT', 
-    icon: Clock, 
-    activeClass: 'bg-amber-50 text-amber-700 border-amber-300', 
-    inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-amber-50',
-    badgeActive: 'bg-amber-200 text-amber-800',
-    badgeInactive: 'bg-gray-100 text-gray-500'
-  },
-  { 
-    id: 'Easy', 
-    label: 'Easy', 
-    icon: Leaf, 
-    activeClass: 'bg-[#e6fbf0] text-[#006838] border-[#a3e8c3]', 
-    inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#e6fbf0]',
-    badgeActive: 'bg-[#c2efd6] text-[#006838]',
-    badgeInactive: 'bg-gray-100 text-gray-500'
-  },
-  { 
-    id: 'Medium', 
-    label: 'Moderate', 
-    icon: Equal, 
-    activeClass: 'bg-[#f0f3ff] text-[#343a9a] border-[#c2d1ff]', 
-    inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#f0f3ff]',
-    badgeActive: 'bg-[#d8e2ff] text-[#343a9a]',
-    badgeInactive: 'bg-gray-100 text-gray-500'
-  },
-  { 
-    id: 'Hard', 
-    label: 'Hard', 
-    icon: Flame, 
-    activeClass: 'bg-[#fff0f0] text-[#a51a1a] border-[#ffc2c2]', 
-    inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#fff0f0]',
-    badgeActive: 'bg-[#ffdada] text-[#a51a1a]',
-    badgeInactive: 'bg-gray-100 text-gray-500'
-  }
+  { id: 'All', label: 'All', icon: Layers, activeClass: 'bg-[#5b58f5] text-white border-transparent shadow-md', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-indigo-50', badgeActive: 'bg-white/20 text-white', badgeInactive: 'bg-gray-100 text-gray-500' },
+  { id: 'PYTT', label: 'PYTT', icon: Clock, activeClass: 'bg-amber-50 text-amber-700 border-amber-300', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-amber-50', badgeActive: 'bg-amber-200 text-amber-800', badgeInactive: 'bg-gray-100 text-gray-500' },
+  { id: 'Easy', label: 'Easy', icon: Leaf, activeClass: 'bg-[#e6fbf0] text-[#006838] border-[#a3e8c3]', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#e6fbf0]', badgeActive: 'bg-[#c2efd6] text-[#006838]', badgeInactive: 'bg-gray-100 text-gray-500' },
+  { id: 'Medium', label: 'Moderate', icon: Equal, activeClass: 'bg-[#f0f3ff] text-[#343a9a] border-[#c2d1ff]', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#f0f3ff]', badgeActive: 'bg-[#d8e2ff] text-[#343a9a]', badgeInactive: 'bg-gray-100 text-gray-500' },
+  { id: 'Hard', label: 'Hard', icon: Flame, activeClass: 'bg-[#fff0f0] text-[#a51a1a] border-[#ffc2c2]', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#fff0f0]', badgeActive: 'bg-[#ffdada] text-[#a51a1a]', badgeInactive: 'bg-gray-100 text-gray-500' }
 ];
 
 export default function ExamPassageSelectionPage() {
@@ -80,6 +41,11 @@ export default function ExamPassageSelectionPage() {
 
   const [cloudPassages, setCloudPassages] = useState<Passage[]>([]);
   const [isFetchingCloud, setIsFetchingCloud] = useState(true);
+
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportDifficulty, setExportDifficulty] = useState('All');
+  const [exportStart, setExportStart] = useState(1);
+  const [exportEnd, setExportEnd] = useState(10);
 
   useEffect(() => {
     const fetchCloudPassages = async () => {
@@ -142,16 +108,28 @@ export default function ExamPassageSelectionPage() {
     fetchHistory();
   }, [currentUser]);
 
+  // --- FIXED: getTabCount safely bridges "Medium" and "Moderate" ---
   const getTabCount = (tabId: string) => {
     if (!allPassages.length) return 0;
     if (tabId === 'All') return allPassages.length;
-    return allPassages.filter(p => (p.difficulty || 'Easy').toLowerCase() === tabId.toLowerCase()).length;
+    return allPassages.filter(p => {
+      const diff = (p.difficulty || 'Easy').toLowerCase();
+      if (tabId.toLowerCase() === 'medium' || tabId.toLowerCase() === 'moderate') {
+        return diff === 'medium' || diff === 'moderate';
+      }
+      return diff === tabId.toLowerCase();
+    }).length;
   };
 
   const filteredPassages = useMemo(() => {
     const result = allPassages.filter(passage => {
-      const diff = passage.difficulty || 'Easy';
-      const matchesTab = activeTab === 'All' || diff.toLowerCase() === activeTab.toLowerCase();
+      const diff = (passage.difficulty || 'Easy').toLowerCase();
+      
+      let matchesTab = false;
+      if (activeTab === 'All') matchesTab = true;
+      else if (activeTab === 'Medium') matchesTab = (diff === 'medium' || diff === 'moderate');
+      else matchesTab = (diff === activeTab.toLowerCase());
+
       const matchesSearch = passage.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             passage.text.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesTab && matchesSearch;
@@ -177,13 +155,52 @@ export default function ExamPassageSelectionPage() {
     });
   }, [allPassages, activeTab, searchQuery]);
 
+  const handleCustomExport = () => {
+    let targetPassages = allPassages;
+    
+    // --- FIXED: Ensures Moderate grabs Medium tags securely ---
+    if (exportDifficulty !== 'All') {
+      targetPassages = allPassages.filter(p => {
+        const diff = (p.difficulty || 'Easy').toLowerCase();
+        if (exportDifficulty === 'Medium') return ['moderate', 'medium'].includes(diff);
+        return diff === exportDifficulty.toLowerCase();
+      });
+    }
+
+    const diffWeight: Record<string, number> = { 'pytt': 0, 'easy': 1, 'medium': 2, 'moderate': 2, 'hard': 3 };
+    targetPassages.sort((a: any, b: any) => {
+      const diffA = (a.difficulty || 'Easy').toLowerCase();
+      const diffB = (b.difficulty || 'Easy').toLowerCase();
+      const weightA = diffWeight[diffA] ?? 1;
+      const weightB = diffWeight[diffB] ?? 1;
+
+      if (weightA !== weightB) return weightA - weightB; 
+      
+      const orderA = a.uploadOrder ?? a.createdAt?.toMillis?.() ?? 0;
+      const orderB = b.uploadOrder ?? b.createdAt?.toMillis?.() ?? 0;
+      return orderA - orderB;
+    });
+
+    const safeStart = Math.max(1, exportStart);
+    const safeEnd = Math.min(targetPassages.length, exportEnd);
+    const finalSelection = targetPassages.slice(safeStart - 1, safeEnd);
+
+    if (finalSelection.length > 0) {
+      const bulkData = finalSelection.map(p => ({
+        title: p.title,
+        text: p.text,
+        difficulty: p.difficulty || 'Easy'
+      }));
+      downloadBulkPassagesAsPDF(bulkData, examData.rules.name);
+      setIsExportModalOpen(false);
+    }
+  };
+
   if (!examData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Exam not found.</h1>
-        <button onClick={() => router.push('/typing')} className="text-blue-500 underline hover:text-blue-700">
-          Return to Exams
-        </button>
+        <button onClick={() => router.push('/typing')} className="text-blue-500 underline hover:text-blue-700">Return to Exams</button>
       </div>
     );
   }
@@ -191,52 +208,28 @@ export default function ExamPassageSelectionPage() {
   const showPdfFeatures = examId === 'delhi_police_hcm';
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 pt-[120px] font-sans">
         
         <div className="flex flex-col items-center text-center mb-10">
           {examData.rules.logo && (
             <div className="h-20 w-20 relative mb-4">
-              <Image
-                src={examData.rules.logo}
-                alt={examData.rules.name}
-                fill
-                className="object-contain"
-              />
+              <Image src={examData.rules.logo} alt={examData.rules.name} fill className="object-contain" />
             </div>
           )}
-
-          <h1 className="text-4xl md:text-5xl font-black text-[#6a64f1] uppercase tracking-wide mb-4">
-              {examData.rules.name}
-            </h1>
-
+          <h1 className="text-4xl md:text-5xl font-black text-[#6a64f1] uppercase tracking-wide mb-4">{examData.rules.name}</h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto font-medium leading-relaxed">
             Practice for the {examData.rules.name} through our Computer Based Examination (CBE)...
           </p>
         </div>
 
         <div className="relative bg-[#f8f9fa] border border-gray-200 rounded-xl p-6 md:p-8 text-center shadow-sm mb-16 max-w-5xl mx-auto">
-          
-          {/* FIXED: Upgraded "Back to Exams" Button UI */}
-          <Link 
-            href="/typing" 
-            className="absolute top-4 left-4 md:top-5 md:left-6 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold transition-all shadow-sm text-xs md:text-sm z-10"
-          >
+          <Link href="/typing" className="absolute top-4 left-4 md:top-5 md:left-6 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold transition-all shadow-sm text-xs md:text-sm z-10">
             <ArrowLeft size={16} /> Back to Exams
           </Link>
-
           <div className="flex justify-center items-center gap-4 mb-4 mt-8 md:mt-0">
-            <span className="flex items-center text-[#1a73e8] font-bold gap-1.5 text-lg">
-              <Info size={20} /> Typing Rules
-            </span>
-            
-            {showPdfFeatures && (
-              <span className="flex items-center text-red-500 font-medium gap-1.5 border border-red-200 bg-red-50 px-3 py-1 rounded cursor-pointer text-sm hover:bg-red-100 transition-colors">
-                <FileText size={16} /> Official PDF
-              </span>
-            )}
+            <span className="flex items-center text-[#1a73e8] font-bold gap-1.5 text-lg"><Info size={20} /> Typing Rules</span>
           </div>
-          
           <p className="text-sm md:text-base text-gray-600 leading-relaxed text-justify md:text-center mt-4">
             {examData.rules.description || `Key Depression: The skill test will involve passages with approximately 2000 key depressions in the text. Time Required: Candidates will have ${examData.rules.duration / 60} minutes to complete the typing test. DEST will be mandatory for all the posts; however, it will be qualifying in nature. For English Typing: ${examData.rules.targetWpm} Words Per Minute (WPM).`}
           </p>
@@ -246,11 +239,27 @@ export default function ExamPassageSelectionPage() {
           <h2 className="text-3xl md:text-4xl font-black text-[#10b981] tracking-tight mb-2">Passages</h2>
           <div className="w-12 h-1.5 bg-[#2563eb] rounded-full mb-5"></div>
           
-          <div className="flex items-center justify-center gap-2 text-sm font-bold text-slate-600 bg-slate-50 px-5 py-2 rounded-full border border-slate-200 shadow-sm transition-all hover:bg-slate-100">
-            {isFetchingCloud ? (
-              <><Loader2 className="animate-spin text-emerald-500" size={16} /> <span className="animate-pulse">Loading secure library...</span></>
-            ) : (
-              <><Layers size={16} className="text-emerald-500" /> {allPassages.length} Total Passages Available</>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm font-bold">
+            <div className="flex items-center gap-2 text-slate-600 bg-slate-50 px-5 py-2 rounded-full border border-slate-200 shadow-sm transition-all hover:bg-slate-100">
+              {isFetchingCloud ? (
+                <><Loader2 className="animate-spin text-emerald-500" size={16} /> <span className="animate-pulse">Loading secure library...</span></>
+              ) : (
+                <><Layers size={16} className="text-emerald-500" /> {allPassages.length} Total Passages Available</>
+              )}
+            </div>
+            
+            {!isFetchingCloud && allPassages.length > 0 && showPdfFeatures && (
+              <button
+                onClick={() => {
+                  setExportDifficulty('All');
+                  setExportStart(1);
+                  setExportEnd(allPassages.length); 
+                  setIsExportModalOpen(true);
+                }}
+                className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-full shadow-sm shadow-red-500/20 transition-all hover:-translate-y-0.5"
+              >
+                <Settings2 size={18} strokeWidth={2.5} /> Custom Bulk Export (PDF)
+              </button>
             )}
           </div>
         </div>
@@ -263,18 +272,10 @@ export default function ExamPassageSelectionPage() {
 
               const isActive = activeTab === tab.id;
               return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl font-bold transition-all border ${
-                    isActive ? tab.activeClass : tab.inactiveClass
-                  }`}
-                >
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl font-bold transition-all border ${isActive ? tab.activeClass : tab.inactiveClass}`}>
                   <tab.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                   <span>{tab.label}</span>
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-black ${isActive ? tab.badgeActive : tab.badgeInactive}`}>
-                    {count}
-                  </span>
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-black ${isActive ? tab.badgeActive : tab.badgeInactive}`}>{count}</span>
                 </button>
               );
             })}
@@ -284,13 +285,7 @@ export default function ExamPassageSelectionPage() {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
-            <input
-              type="text"
-              placeholder="Search passages..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5b58f5] focus:border-[#5b58f5] font-medium transition-all shadow-sm"
-            />
+            <input type="text" placeholder="Search passages..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5b58f5] focus:border-[#5b58f5] font-medium transition-all shadow-sm" />
           </div>
         </div>
 
@@ -306,16 +301,10 @@ export default function ExamPassageSelectionPage() {
               const wordCount = passage.text.trim().split(/\s+/).length;
               const diff = passage.difficulty || 'Easy';
               const tabStyle = TABS.find(t => t.id === diff) || TABS[2];
-              
               const isCompleted = completedPassages.has(passage.title);
 
               return (
-                <div 
-                  key={passage.id} 
-                  className={`rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col ${
-                    isCompleted ? 'bg-green-50/50 border-green-200' : 'bg-white border-gray-200'
-                  }`}
-                >
+                <div key={passage.id} className={`rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col ${isCompleted ? 'bg-green-50/50 border-green-200' : 'bg-white border-gray-200'}`}>
                   <div className="p-5 flex-1">
                     <div className="flex justify-between items-start mb-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${tabStyle.activeClass}`}>
@@ -324,59 +313,26 @@ export default function ExamPassageSelectionPage() {
                       </span>
                       
                       <div className="flex items-center gap-2">
-                        {isCompleted && (
-                          <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border border-green-200">
-                            Completed
-                          </span>
-                        )}
-                        {showPdfFeatures && passage.pdfUrl && (
-                          <a
-                            href={passage.pdfUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 hover:text-blue-700 transition-colors"
-                            title="Download PDF"
-                          >
-                            <FileDown size={16} />
-                          </a>
+                        {isCompleted && <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border border-green-200">Completed</span>}
+                        {showPdfFeatures && (
+                          <button onClick={(e) => { e.stopPropagation(); downloadPassageAsPDF({ title: passage.title, text: passage.text, examType: examData.rules.name }); }} className="flex items-center gap-1.5 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded-md text-xs font-bold transition-colors" title="Download PDF">
+                            <FileDown size={14} strokeWidth={2.5} /> PDF
+                          </button>
                         )}
                       </div>
                     </div>
                     
-                    <h3 className="text-xl font-black text-gray-900 mb-2 line-clamp-1">
-                      {passage.title}
-                    </h3>
-                    <p className={`text-sm font-medium line-clamp-2 leading-relaxed mb-4 ${isCompleted ? 'text-gray-600' : 'text-gray-500'}`}>
-                      {passage.text}
-                    </p>
+                    <h3 className="text-xl font-black text-gray-900 mb-2 line-clamp-1">{passage.title}</h3>
+                    <p className={`text-sm font-medium line-clamp-2 leading-relaxed mb-4 ${isCompleted ? 'text-gray-600' : 'text-gray-500'}`}>{passage.text}</p>
                     
                     <div className={`flex items-center gap-4 text-xs font-bold ${isCompleted ? 'text-green-700/60' : 'text-gray-400'}`}>
-                      <span>{wordCount} Words</span>
-                      <span>•</span>
-                      <span>{passage.text.length} Keystrokes</span>
+                      <span>{wordCount} Words</span><span>•</span><span>{passage.text.length} Keystrokes</span>
                     </div>
                   </div>
 
                   <div className={`p-4 border-t ${isCompleted ? 'bg-green-100/50 border-green-100' : 'bg-gray-50 border-gray-100'}`}>
-                    <button
-                      onClick={() => router.push(`/typing/${examId}/${passage.id}`)}
-                      disabled={isLoadingHistory}
-                      className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold transition-all ${
-                        isCompleted 
-                          ? 'bg-green-600 text-white hover:bg-green-700 shadow-sm border border-green-700' 
-                          : 'bg-[#5b58f5] text-white hover:bg-indigo-700 shadow-sm'
-                      } ${isLoadingHistory ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {isCompleted ? (
-                        <>
-                          <RefreshCw size={18} strokeWidth={2.5} /> Retake Test
-                        </>
-                      ) : (
-                        <>
-                          <Play size={18} strokeWidth={2.5} /> Start Test
-                        </>
-                      )}
+                    <button onClick={() => router.push(`/typing/${examId}/${passage.id}`)} disabled={isLoadingHistory} className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold transition-all ${isCompleted ? 'bg-green-600 text-white hover:bg-green-700 shadow-sm border border-green-700' : 'bg-[#5b58f5] text-white hover:bg-indigo-700 shadow-sm'} ${isLoadingHistory ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                      {isCompleted ? <><RefreshCw size={18} strokeWidth={2.5} /> Retake Test</> : <><Play size={18} strokeWidth={2.5} /> Start Test</>}
                     </button>
                   </div>
                 </div>
@@ -386,6 +342,100 @@ export default function ExamPassageSelectionPage() {
         )}
 
       </div>
+
+      {isExportModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-[150] flex justify-center items-center backdrop-blur-sm p-4">
+          <div className="bg-white text-slate-800 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+              <div className="flex items-center gap-2 text-red-500">
+                <FileDown size={22} strokeWidth={2.5} />
+                <h2 className="text-lg font-black tracking-tight text-slate-800">Export Bulk PDF</h2>
+              </div>
+              <button onClick={() => setIsExportModalOpen(false)} className="text-slate-400 hover:text-slate-700 transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-slate-700">Select Difficulty Level</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* --- FIXED: Modal now explicitly maps "Medium" to grab the correct ID --- */}
+                  {['All', 'Easy', 'Medium', 'Hard'].map((diffId) => {
+                    const displayLabel = diffId === 'Medium' ? 'Moderate' : diffId;
+                    return (
+                      <button
+                        key={diffId}
+                        onClick={() => {
+                          setExportDifficulty(diffId);
+                          setExportStart(1);
+                          setExportEnd(Math.max(1, getTabCount(diffId)));
+                        }}
+                        className={`px-4 py-2.5 rounded-lg font-bold text-sm border transition-all ${
+                          exportDifficulty === diffId 
+                            ? 'bg-[#5b58f5] text-white border-[#5b58f5]' 
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        {displayLabel} Level
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-slate-700 flex justify-between">
+                  Select Passage Range
+                  <span className="text-[#5b58f5]">{getTabCount(exportDifficulty)} Available</span>
+                </label>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-slate-500 mb-1 block">From Passage #</span>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      max={exportEnd}
+                      value={exportStart}
+                      onChange={(e) => setExportStart(Number(e.target.value))}
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5b58f5] font-medium"
+                    />
+                  </div>
+                  <span className="text-slate-400 font-bold mt-4">to</span>
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-slate-500 mb-1 block">To Passage #</span>
+                    <input 
+                      type="number" 
+                      min={exportStart} 
+                      max={getTabCount(exportDifficulty)}
+                      value={exportEnd}
+                      onChange={(e) => setExportEnd(Number(e.target.value))}
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5b58f5] font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 border-t border-slate-100 bg-slate-50 flex gap-3">
+              <button 
+                onClick={() => setIsExportModalOpen(false)} 
+                className="flex-1 bg-white border border-slate-200 text-slate-600 px-4 py-2.5 rounded-lg font-bold hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleCustomExport} 
+                disabled={getTabCount(exportDifficulty) === 0}
+                className="flex-[2] bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-lg font-bold shadow-sm shadow-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <FileDown size={18} />
+                Generate Custom PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
