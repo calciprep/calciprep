@@ -13,10 +13,8 @@ export const downloadPassageAsPDF = (passage: PassageData) => {
   const pageHeight = doc.internal.pageSize.getHeight(); 
   const margin = 20;
   
-  // --- FIXED GAP: Reduced from 18mm to 9mm for a tight, official look ---
   const maxTextWidth = pageWidth - (margin * 2) - 9; 
 
-  // --- UPDATED LIMIT: Exactly 2750 Characters ---
   const extractedText = passage.text.length > 2750 
     ? passage.text.substring(0, 2750) 
     : passage.text;
@@ -37,7 +35,6 @@ export const downloadPassageAsPDF = (passage: PassageData) => {
   doc.setLineWidth(0.5);
   doc.line(margin, 31, pageWidth - margin, 31);
   
-  // --- UPDATED FONT SIZING: 13pt ---
   doc.setFont('times', 'normal');
   doc.setFontSize(13); 
   doc.setTextColor(0, 0, 0);
@@ -45,14 +42,13 @@ export const downloadPassageAsPDF = (passage: PassageData) => {
   const lines = doc.splitTextToSize(extractedText, maxTextWidth); 
   
   let cursorY = 41; 
-  // --- UPDATED SPACING: Very tight 6.5mm line height to fit 2750 chars ---
   const lineHeight = 6.5; 
 
   let runningKeystrokes = 0;
 
   for (let i = 0; i < lines.length; i++) {
     const rawLine = lines[i];
-    const printLine = rawLine.trim(); // Trim spaces for perfect edge alignment
+    const printLine = rawLine.trim();
 
     if (i === lines.length - 1) {
       runningKeystrokes = keystrokeCount;
@@ -69,9 +65,6 @@ export const downloadPassageAsPDF = (passage: PassageData) => {
     doc.setFontSize(13);
     doc.setTextColor(0, 0, 0);
 
-    // --- FIXED ZIG-ZAG: Custom Justification Engine ---
-    // If a line is too short (like the end of a paragraph), left-align it so it doesn't stretch weirdly.
-    // Otherwise, force 'justify' to create perfectly straight edges on both sides.
     const textWidth = doc.getTextWidth(printLine);
     const isEndOfParagraph = (textWidth < maxTextWidth * 0.85) || i === lines.length - 1;
 
@@ -81,7 +74,6 @@ export const downloadPassageAsPDF = (passage: PassageData) => {
       doc.text(printLine, margin, cursorY, { align: 'justify', maxWidth: maxTextWidth });
     }
 
-    // Print aligned numbers tightly to the right margin
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(150, 150, 150);
@@ -97,7 +89,7 @@ export const downloadPassageAsPDF = (passage: PassageData) => {
     doc.setFontSize(10);
     doc.setTextColor(150, 150, 150);
     doc.text(
-      `Calciprep.online | Smart Govt Exam Prep Platform`, 
+      `Downloaded from calciprep.online`, 
       pageWidth / 2, 
       pageHeight - 8, 
       { align: 'center' }
@@ -113,7 +105,6 @@ export const downloadBulkPassagesAsPDF = (passages: PassageData[], examName: str
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 20;
   
-  // 9mm gap for a tight official look
   const maxTextWidth = pageWidth - (margin * 2) - 9;
 
   const groups = {
@@ -127,7 +118,7 @@ export const downloadBulkPassagesAsPDF = (passages: PassageData[], examName: str
   const printPassages = (groupName: string, groupPassages: PassageData[]) => {
     if (groupPassages.length === 0) return;
 
-    groupPassages.forEach((passage, index) => {
+    groupPassages.forEach((passage) => {
       if (!isFirstPage) doc.addPage();
       isFirstPage = false;
 
@@ -138,10 +129,11 @@ export const downloadBulkPassagesAsPDF = (passages: PassageData[], examName: str
       const wordCount = extractedText.trim().split(/\s+/).length;
       const keystrokeCount = extractedText.length;
 
+      // --- FIXED: Now uses the exact passage title from the database! ---
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
       doc.setTextColor(30, 58, 138);
-      doc.text(`CalciPrep.online | ${groupName} Level - Passage ${index + 1}`, pageWidth / 2, 20, { align: 'center' });
+      doc.text(`CalciPrep.online | ${passage.title}`, pageWidth / 2, 20, { align: 'center' });
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
@@ -158,7 +150,7 @@ export const downloadBulkPassagesAsPDF = (passages: PassageData[], examName: str
       const lines = doc.splitTextToSize(extractedText, maxTextWidth);
       
       let cursorY = 41;
-      const lineHeight = 6.5; // Very tight line height
+      const lineHeight = 6.5; 
       let runningKeystrokes = 0;
 
       for (let i = 0; i < lines.length; i++) {
@@ -180,7 +172,6 @@ export const downloadBulkPassagesAsPDF = (passages: PassageData[], examName: str
         doc.setFontSize(13);
         doc.setTextColor(0, 0, 0);
 
-        // --- FIXED ZIG-ZAG: Custom Justification Engine ---
         const textWidth = doc.getTextWidth(printLine);
         const isEndOfParagraph = (textWidth < maxTextWidth * 0.85) || i === lines.length - 1;
 
@@ -211,7 +202,7 @@ export const downloadBulkPassagesAsPDF = (passages: PassageData[], examName: str
     doc.setFontSize(10);
     doc.setTextColor(150, 150, 150);
     doc.text(
-      `Calciprep.online | Smart Govt Exam Prep Platform`,
+      `Downloaded from calciprep.online`,
       pageWidth / 2,
       pageHeight - 8,
       { align: 'center' }
