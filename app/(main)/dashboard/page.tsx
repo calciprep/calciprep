@@ -1,18 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Keyboard, Calculator, BookOpen, Loader2 } from 'lucide-react';
+import { Keyboard, Calculator, BookOpen, TrendingUp, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HistoryCollection, HistoryEntry, UserService } from '@/services/userService';
 
 import TypingDashboard from '@/components/features/dashboard/TypingDashboard';
 import MathsDashboard from '@/components/features/dashboard/MathsDashboard';
 import EnglishDashboard from '@/components/features/dashboard/EnglishDashboard';
+import MockTrackerDashboard from '@/components/features/dashboard/MockTrackerDashboard';
 
 export default function DashboardPage() {
   const { currentUser, authLoading, openModal } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [activeSubject, setActiveSubject] = useState<'typing' | 'maths' | 'english'>('typing');
+  const [activeSubject, setActiveSubject] = useState<'typing' | 'maths' | 'english' | 'mocks'>('typing');
   
   const [typingHistory, setTypingHistory] = useState<HistoryEntry[]>([]);
   const [mathsHistory, setMathsHistory] = useState<HistoryEntry[]>([]);
@@ -22,7 +23,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const tab = searchParams.get('tab');
-    if (tab === 'typing' || tab === 'maths' || tab === 'english') {
+    if (tab === 'typing' || tab === 'maths' || tab === 'english' || tab === 'mocks') {
       setActiveSubject(tab);
     }
   }, []);
@@ -123,7 +124,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Subject Selector Tabs */}
-        <div className="mb-8 flex gap-4 overflow-x-auto pb-2">
+        <div className="mb-8 flex items-center gap-4 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveSubject('typing')}
             className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
@@ -147,6 +148,18 @@ export default function DashboardPage() {
           >
             <BookOpen size={20} strokeWidth={2.5} /> English
           </button>
+
+          {/* Futuristic Borderless Mock Tracker Tab Button */}
+          <button
+            onClick={() => setActiveSubject('mocks')}
+            className={`flex items-center gap-2 px-8 py-3.5 rounded-full text-base font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
+              activeSubject === 'mocks'
+                ? 'bg-gradient-to-r from-indigo-600 via-blue-600 to-emerald-500 text-white shadow-lg shadow-indigo-500/25'
+                : 'bg-slate-900 text-slate-100 hover:bg-slate-800'
+            }`}
+          >
+            <TrendingUp size={20} strokeWidth={2.5} /> Mock Tracker
+          </button>
         </div>
 
         {/* Main Content View Switcher */}
@@ -169,6 +182,10 @@ export default function DashboardPage() {
             history={englishHistory} 
             onDelete={(id) => handleDeleteHistory('english_history', id)} 
           />
+        )}
+
+        {activeSubject === 'mocks' && (
+          <MockTrackerDashboard />
         )}
 
       </div>

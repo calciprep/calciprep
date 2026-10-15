@@ -12,6 +12,7 @@ import gsap from 'gsap';
 const navItems = [
   { label: 'Home', href: '/', icon: '/media/nav/home-nav.svg', bgColor: 'bg-white', textColor: 'text-slate-900' },
   { label: 'Typing', href: '/typing', icon: '/media/nav/typing-nav.svg', bgColor: 'bg-[#E25E3E]', textColor: 'text-white' },
+  { label: 'Mock Tracker', href: '/tools/mock-tracker', icon: '/media/nav/dashboard-nav.svg', bgColor: 'bg-[#D4FF2A]', textColor: 'text-slate-900' },
   { label: 'Image Resizer', href: '/tools/image-resizer', icon: '/media/nav/image-nav.svg', bgColor: 'bg-[#ADD8E6]', textColor: 'text-slate-900' },
   { label: 'Live Tests', href: '/live-tests', icon: '/media/nav/live-tests-nav.svg', bgColor: 'bg-[#C1E1C1]', textColor: 'text-slate-900' }, 
   { label: 'Dashboard', href: '/dashboard', icon: '/media/nav/dashboard-nav.svg', bgColor: 'bg-[#E6E6FA]', textColor: 'text-slate-900' },

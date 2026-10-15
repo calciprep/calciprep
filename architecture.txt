@@ -1,0 +1,276 @@
+﻿+-- app
+    +-- (main)
+    |   +-- account
+    |   |   \-- page.tsx
+    |   +-- admin
+    |   |   +-- tabs
+    |   |   |   +-- CalendarTab.tsx
+    |   |   |   +-- CMSTab.tsx
+    |   |   |   +-- InboxTab.tsx
+    |   |   |   +-- LeaderboardsTab.tsx
+    |   |   |   +-- OverviewTab.tsx
+    |   |   |   \-- UsersTab.tsx
+    |   |   +-- user
+    |   |   |   \-- [userId]
+    |   |   |       \-- page.tsx
+    |   |   \-- page.tsx
+    |   +-- analytics
+    |   |   \-- page.tsx
+    |   +-- dashboard
+    |   |   \-- page.tsx
+    |   +-- english
+    |   |   +-- quiz
+    |   |   |   \-- page.tsx
+    |   |   +-- quiz-list
+    |   |   |   \-- page.tsx
+    |   |   +-- layout.tsx
+    |   |   \-- page.tsx
+    |   +-- live-tests
+    |   |   +-- typing
+    |   |   |   +-- delhi_police_hcm
+    |   |   |   |   +-- leaderboard
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- result
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- take
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- dailyData.ts
+    |   |   |   |   +-- layout.tsx
+    |   |   |   |   \-- page.tsx
+    |   |   |   +-- ssc_cgl
+    |   |   |   |   +-- leaderboard
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- result
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- take
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- dailyData.ts
+    |   |   |   |   +-- layout.tsx
+    |   |   |   |   \-- page.tsx
+    |   |   |   +-- ssc_chsl
+    |   |   |   |   +-- leaderboard
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- result
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- take
+    |   |   |   |   |   \-- page.tsx
+    |   |   |   |   +-- dailyData.ts
+    |   |   |   |   +-- layout.tsx
+    |   |   |   |   \-- page.tsx
+    |   |   |   \-- page.tsx
+    |   |   +-- layout.tsx
+    |   |   \-- page.tsx
+    |   +-- maths
+    |   |   +-- games
+    |   |   |   \-- page.tsx
+    |   |   +-- layout.tsx
+    |   |   \-- page.tsx
+    |   +-- privacy-policy
+    |   |   \-- page.tsx
+    |   +-- support
+    |   |   \-- page.tsx
+    |   +-- terms-conditions
+    |   |   \-- page.tsx
+    |   +-- tools
+    |   |   +-- calendar
+    |   |   |   \-- page.tsx
+    |   |   \-- image-resizer
+    |   |       \-- page.tsx
+    |   +-- typing
+    |   |   +-- [examId]
+    |   |   |   +-- [passageId]
+    |   |   |   |   \-- page.tsx
+    |   |   |   +-- layout.tsx
+    |   |   |   \-- page.tsx
+    |   |   +-- custom
+    |   |   |   \-- page.tsx
+    |   |   +-- layout.tsx
+    |   |   \-- page.tsx
+    |   +-- layout.tsx
+    |   \-- page.tsx
+    +-- api
+    |   \-- send-email
+    |       \-- route.ts
+    +-- auth
+    |   \-- action
+    |       \-- page.tsx
+    +-- globals.css
+    +-- layout.tsx
+    \-- sitemap.ts
++-- components
+    +-- common
+    |   +-- AdSenseBlock.tsx
+    |   +-- AuthModal.tsx
+    |   +-- Footer.tsx
+    |   +-- HamburgerIcon.tsx
+    |   +-- Header.tsx
+    |   +-- LenisProvider.tsx
+    |   +-- MobileMenu.tsx
+    |   +-- Navigation.tsx
+    |   +-- Notification.tsx
+    |   +-- ResultActionButtons.tsx
+    |   +-- ResultPopup.tsx
+    |   \-- SocialMediaIcons.tsx
+    +-- features
+    |   +-- account
+    |   |   +-- AccountClient.tsx
+    |   |   +-- AccountProfile.tsx
+    |   |   +-- AccountSecurity.tsx
+    |   |   +-- ProfileTab.tsx
+    |   |   +-- SecurityTab.tsx
+    |   |   \-- UpdateProfileModal.tsx
+    |   +-- dashboard
+    |   |   +-- EnglishDashboard.tsx
+    |   |   +-- MathsDashboard.tsx
+    |   |   \-- TypingDashboard.tsx
+    |   +-- english
+    |   |   +-- EnglishResult.tsx
+    |   |   +-- QuizInterface.css
+    |   |   +-- QuizInterface.tsx
+    |   |   +-- QuizListPageClient.tsx
+    |   |   \-- QuizReviewSection.tsx
+    |   +-- home
+    |   |   +-- ContactSection.tsx
+    |   |   +-- FeaturesSection.tsx
+    |   |   +-- FreeToolsSection.tsx
+    |   |   +-- HeroSection.tsx
+    |   |   +-- StatsSection.tsx
+    |   |   +-- SubjectsSection.tsx
+    |   |   \-- WhoWeAreSection.tsx
+    |   +-- maths
+    |   |   +-- MathsQuizInterface.tsx
+    |   |   +-- MathsResultsPage.tsx
+    |   |   \-- SettingsModal.tsx
+    |   \-- typing
+    |       +-- interfaces
+    |       |   +-- modes
+    |       |   |   +-- EdiquityMode.tsx
+    |       |   |   +-- NTAMode.tsx
+    |       |   |   \-- TCSMode.tsx
+    |       |   +-- CGLInterface.tsx
+    |       |   +-- CHSLInterface.tsx
+    |       |   \-- HCMInterface.tsx
+    |       +-- results
+    |       |   +-- CGLResult.tsx
+    |       |   +-- CHSLResult.tsx
+    |       |   \-- HCMResult.tsx
+    |       +-- TypingInterface.css
+    |       +-- TypingInterface.tsx
+    |       +-- TypingResult.css
+    |       \-- TypingResult.tsx
+    \-- ui
+        +-- AnimatedButton.css
+        +-- AnimatedButton.tsx
+        +-- Badge.tsx
+        +-- Button.css
+        +-- Button.tsx
+        +-- Card.tsx
+        +-- Input.tsx
+        \-- tabs.tsx
++-- contexts
+    \-- AuthContext.tsx
++-- data
+    +-- antonyms.json
+    +-- idioms_and_phrases.json
+    +-- learn-keys-exercises.json
+    +-- one_word_substitution.json
+    +-- OneWordFormatter.html
+    +-- practice-words.json
+    +-- ssc_pyqs.json
+    +-- synonyms.json
+    +-- type-paragraphs.json
+    \-- typing-paragraphs.json
++-- hooks
+    +-- useDashboardNavigation.ts
+    \-- useTypingSound.ts
++-- lib
+    +-- data
+    |   \-- calendarData.ts
+    +-- typing
+    |   +-- exams
+    |   |   +-- delhi-police.ts
+    |   |   +-- ssc-cgl.ts
+    |   |   \-- ssc-chsl.ts
+    |   +-- index.ts
+    |   \-- types.ts
+    +-- authTypes.ts
+    +-- firebase.ts
+    +-- generatePdf.ts
+    +-- maths-utils.ts
+    +-- quizTypes.ts
+    +-- typing-types.ts
+    +-- typing-utils.ts
+    \-- utils.ts
++-- public
+    +-- data
+    |   \-- ssc-cgl-passages.json
+    +-- media
+    |   +-- nav
+    |   |   +-- contact-nav.svg
+    |   |   +-- dashboard-nav.svg
+    |   |   +-- english-nav.svg
+    |   |   +-- home-nav.svg
+    |   |   +-- image-nav.svg
+    |   |   +-- live-tests-nav.svg
+    |   |   +-- maths-nav.svg
+    |   |   +-- privacy-nav.svg
+    |   |   +-- terms-nav.svg
+    |   |   \-- typing-nav.svg
+    |   +-- result-icons
+    |   |   +-- accuracy-result.svg
+    |   |   +-- backspace-result.svg
+    |   |   +-- duration-result.svg
+    |   |   +-- error-percentage-result.svg
+    |   |   +-- full-errors-result.svg
+    |   |   +-- gross-wpm-result.svg
+    |   |   +-- keystrokes-result.svg
+    |   |   +-- marks-result.svg
+    |   |   +-- net-wpm-result.svg
+    |   |   +-- qualification-resul.svg
+    |   |   +-- total-errors-result.svg
+    |   |   \-- words-typed-result.svg
+    |   +-- achievements-illustration.svg
+    |   +-- analytics-illustration.svg
+    |   +-- android-chrome-192x192.png
+    |   +-- android-chrome-512x512.png
+    |   +-- apple-touch-icon.png
+    |   +-- authentication.svg
+    |   +-- award-point.svg
+    |   +-- delhi-police-logo.webp
+    |   +-- english-card-illustration.svg
+    |   +-- favicon.svg
+    |   +-- hero-illustration.svg
+    |   +-- live-tests-card-illustration.svg
+    |   +-- maths-card-illustration.svg
+    |   +-- New-logo.svg
+    |   +-- new-logo-green.svg
+    |   +-- right-question.svg
+    |   +-- ssc-logo.webp
+    |   +-- subjects-illustration.svg
+    |   +-- typing-card-illustration.svg
+    |   \-- wrong-question.svg
+    +-- pdfs
+    |   +-- DELHI POLICE HCM PASSAGE - 2.pdf
+    |   \-- dp-hcm-bulk-live-tests.pdf
+    +-- ads.txt
+    \-- site.webmanifest
++-- services
+    +-- authService.ts
+    +-- dataService.ts
+    \-- userService.ts
++-- .env.local
++-- .gitignore
++-- auth-modal.css
++-- components.json
++-- eslint.config.mjs
++-- netlify.toml
++-- next.config.ts
++-- next-env.d.ts
++-- package.json
++-- package-lock.json
++-- postcss.config.mjs
++-- project_structure.txt
++-- README.md
++-- tailwind.config.ts
++-- tsconfig.json
++-- tsconfig.tsbuildinfo
