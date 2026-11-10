@@ -410,6 +410,13 @@ export default function MockTrackerDashboard({
 
   // Smart Analytics Engine (Handles both Full & Sectional Mocks accurately)
   const analytics = useMemo(() => {
+    const fullMocksOnly = filteredMocks.filter(
+      (m) => m.mockMode === "Full Mock"
+    );
+    const sectionalMocksOnly = filteredMocks.filter(
+      (m) => m.mockMode === "Sectional Mock"
+    );
+
     if (filteredMocks.length === 0) {
       return {
         avgScorePct: 0,
@@ -439,6 +446,22 @@ export default function MockTrackerDashboard({
           avgPercentile: number;
           avgAccuracy: number;
         }[],
+        fullMockCount: 0,
+        sectionalMockCount: 0,
+        fullMockAvgScore: 0,
+        fullMockAvgMax: 0,
+        sectionalAvgScorePct: 0,
+        sectionalAvgScore: 0,
+        sectionalAvgMax: 0,
+        fullMockAvgPercentile: 0,
+        sectionalAvgPercentile: 0,
+        fullMockBestScore: 0,
+        fullMockBestMax: 0,
+        sectionalBestScore: 0,
+        sectionalBestMax: 0,
+        sectionalBestSubject: "N/A" as string,
+        fullMockWeakest: "N/A" as string,
+        sectionalWeakest: "N/A" as string,
       };
     }
 
@@ -449,10 +472,6 @@ export default function MockTrackerDashboard({
     );
     const avgScorePct = Number((totalPct / count).toFixed(1));
 
-    // Average Raw Score for Full Mocks (or scaled to 200 if only sectionals exist)
-    const fullMocksOnly = filteredMocks.filter(
-      (m) => m.mockMode === "Full Mock"
-    );
     const avgFullRawScore =
       fullMocksOnly.length > 0
         ? Number(
@@ -503,7 +522,6 @@ export default function MockTrackerDashboard({
         ? `Stable (±${stdDev.toFixed(1)}%)`
         : `Volatile (±${stdDev.toFixed(1)}%)`;
 
-    // Calculate accurate subject averages (only counting tests where that subject was attempted)
     const sectionKeys: SectionKey[] = ["quant", "reasoning", "english", "gk"];
     const sectionAverages: Record<SectionKey, number> = {
       quant: 0,
@@ -584,6 +602,132 @@ export default function MockTrackerDashboard({
       })
     );
 
+    const fullMockCount = fullMocksOnly.length;
+    const sectionalMockCount = sectionalMocksOnly.length;
+
+    const fullMockAvgScore =
+      fullMockCount > 0
+        ? Number(
+            (
+              fullMocksOnly.reduce((acc, m) => acc + m.totalScore, 0) /
+              fullMockCount
+            ).toFixed(1)
+          )
+        : 0;
+    const fullMockAvgMax =
+      fullMockCount > 0
+        ? Math.round(
+            fullMocksOnly.reduce((acc, m) => acc + m.maxScore, 0) /
+              fullMockCount
+          )
+        : 0;
+
+    const sectionalAvgScorePct =
+      sectionalMockCount > 0
+        ? Number(
+            (
+              sectionalMocksOnly.reduce(
+                (acc, m) => acc + (m.totalScore / m.maxScore) * 100,
+                0
+              ) / sectionalMockCount
+            ).toFixed(1)
+          )
+        : 0;
+
+    const sectionalAvgScore =
+      sectionalMockCount > 0
+        ? Number(
+            (
+              sectionalMocksOnly.reduce((acc, m) => acc + m.totalScore, 0) /
+              sectionalMockCount
+            ).toFixed(1)
+          )
+        : 0;
+    const sectionalAvgMax =
+      sectionalMockCount > 0
+        ? Math.round(
+            sectionalMocksOnly.reduce((acc, m) => acc + m.maxScore, 0) /
+              sectionalMockCount
+          )
+        : 0;
+
+    const fullMockAvgPercentile =
+      fullMockCount > 0
+        ? Number(
+            (
+              fullMocksOnly.reduce((acc, m) => acc + m.percentile, 0) /
+              fullMockCount
+            ).toFixed(1)
+          )
+        : 0;
+    const sectionalAvgPercentile =
+      sectionalMockCount > 0
+        ? Number(
+            (
+              sectionalMocksOnly.reduce((acc, m) => acc + m.percentile, 0) /
+              sectionalMockCount
+            ).toFixed(1)
+          )
+        : 0;
+
+    const fullMockBest =
+      fullMockCount > 0
+        ? fullMocksOnly.reduce((prev, curr) =>
+            curr.totalScore > prev.totalScore ? curr : prev
+          )
+        : null;
+    const sectionalBest =
+      sectionalMockCount > 0
+        ? sectionalMocksOnly.reduce((prev, curr) =>
+            curr.totalScore / curr.maxScore > prev.totalScore / prev.maxScore
+              ? curr
+              : prev
+          )
+        : null;
+
+    const fullMockBestScore = fullMockBest ? fullMockBest.totalScore : 0;
+    const fullMockBestMax = fullMockBest ? fullMockBest.maxScore : 0;
+    const sectionalBestScore = sectionalBest ? sectionalBest.totalScore : 0;
+    const sectionalBestMax = sectionalBest ? sectionalBest.maxScore : 0;
+    const sectionalBestSubject =
+      sectionalBest && sectionalBest.sectionalSubject
+        ? SECTION_META[sectionalBest.sectionalSubject].shortLabel
+        : "N/A";
+
+    const fullMockSectionAvgs = sectionKeys
+      .map((k) => {
+        if (fullMockCount === 0) return { key: k, val: -1 };
+        const sum = fullMocksOnly.reduce((a, m) => a + m.sections[k], 0);
+        return { key: k, val: sum / fullMockCount };
+      })
+      .filter((item) => item.val > 0);
+
+    const fullMockWeakest =
+      fullMockSectionAvgs.length > 0
+        ? SECTION_META[
+            fullMockSectionAvgs.sort((a, b) => a.val - b.val)[0].key
+          ].shortLabel
+        : "N/A";
+
+    const sectionalSubjectAvgs = sectionKeys
+      .map((k) => {
+        const relevant = sectionalMocksOnly.filter(
+          (m) => m.sectionalSubject === k
+        );
+        if (relevant.length === 0) return { key: k, val: -1 };
+        const sum = relevant.reduce((a, m) => a + m.sections[k], 0);
+        const secMax = EXAM_PRESETS[goal.targetExam]?.sectionalMax[k] || 50;
+        return { key: k, val: Number(((sum / relevant.length / secMax) * 100).toFixed(1)) };
+      })
+      .filter((item) => item.val >= 0);
+
+    const sectionalWeakest =
+      sectionalSubjectAvgs.length > 0
+        ? SECTION_META[
+            sectionalSubjectAvgs.sort((a, b) => a.val - b.val)[0].key
+          ].shortLabel
+        : "N/A";
+
     return {
       avgScorePct,
       avgFullRawScore,
@@ -596,8 +740,24 @@ export default function MockTrackerDashboard({
       sectionAverages,
       sectionVelocity,
       platformBreakdown,
+      fullMockCount,
+      sectionalMockCount,
+      fullMockAvgScore,
+      fullMockAvgMax,
+      sectionalAvgScorePct,
+      sectionalAvgScore,
+      sectionalAvgMax,
+      fullMockAvgPercentile,
+      sectionalAvgPercentile,
+      fullMockBestScore,
+      fullMockBestMax,
+      sectionalBestScore,
+      sectionalBestMax,
+      sectionalBestSubject,
+      fullMockWeakest,
+      sectionalWeakest,
     };
-  }, [filteredMocks]);
+  }, [filteredMocks, goal.targetExam]);
 
   const gapToTarget = Number(
     (goal.targetScore - analytics.avgFullRawScore).toFixed(1)
@@ -1309,99 +1469,137 @@ export default function MockTrackerDashboard({
           </div>
         </div>
 
-        {/* 4 FUTURISTIC KPI CARDS */}
+        {/* 4 OVERVIEW KPI CARDS */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* KPI 1: Net Trajectory */}
+          {/* KPI 1: Average Score */}
           <div
-            className={`${cardClass} p-5 flex items-center justify-between`}
+            className={`${cardClass} p-5`}
           >
-            <div className="space-y-1">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-indigo-500 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5" /> Net Score Velocity
+                <TrendingUp className="w-3.5 h-3.5" /> Average Score
               </span>
-              <div className="text-2xl sm:text-3xl font-extrabold font-mono">
-                {analytics.netImprovement > 0
-                  ? `+${analytics.netImprovement}%`
-                  : `${analytics.netImprovement}%`}
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                <Activity className="w-5 h-5" />
               </div>
-              <p className={`text-xs ${mutedText}`}>
-                Avg Score Rate:{" "}
-                <strong className="font-mono">{analytics.avgScorePct}%</strong>{" "}
-                ({filteredMocks.length} tests)
-              </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Activity className="w-6 h-6" />
+            <div className="space-y-2.5">
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-indigo-500/10 border border-indigo-500/20" : "bg-indigo-50 border border-indigo-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>Full Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.fullMockCount > 0
+                    ? `${analytics.fullMockAvgScore}/${analytics.fullMockAvgMax}`
+                    : "—"}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>{analytics.fullMockCount} test{analytics.fullMockCount !== 1 ? "s" : ""} logged</p>
+              </div>
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-amber-500/10 border border-amber-500/20" : "bg-amber-50 border border-amber-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-amber-400" : "text-amber-600"}`}>Sectional Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.sectionalMockCount > 0
+                    ? `${analytics.sectionalAvgScore}/${analytics.sectionalAvgMax}`
+                    : "—"}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>{analytics.sectionalMockCount} test{analytics.sectionalMockCount !== 1 ? "s" : ""} logged</p>
+              </div>
             </div>
           </div>
 
-          {/* KPI 2: Percentile Standing */}
+          {/* KPI 2: Average Percentile */}
           <div
-            className={`${cardClass} p-5 flex items-center justify-between`}
+            className={`${cardClass} p-5`}
           >
-            <div className="space-y-1">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5" /> Mean Percentile
+                <Award className="w-3.5 h-3.5" /> Average Percentile
               </span>
-              <div className="text-2xl sm:text-3xl font-extrabold font-mono">
-                {analytics.avgPercentile}%ile
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <Award className="w-5 h-5" />
               </div>
-              <p className={`text-xs ${mutedText}`}>
-                Target Benchmark:{" "}
-                <strong className="font-mono">{goal.targetPercentile}%+</strong>
-              </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <Award className="w-6 h-6" />
+            <div className="space-y-2.5">
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-emerald-50 border border-emerald-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>Full Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.fullMockCount > 0
+                    ? `${analytics.fullMockAvgPercentile}%ile`
+                    : "—"}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>Target: <strong className="font-mono">{goal.targetPercentile}%+</strong></p>
+              </div>
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-teal-500/10 border border-teal-500/20" : "bg-teal-50 border border-teal-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-teal-400" : "text-teal-600"}`}>Sectional Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.sectionalMockCount > 0
+                    ? `${analytics.sectionalAvgPercentile}%ile`
+                    : "—"}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>{analytics.sectionalMockCount} test{analytics.sectionalMockCount !== 1 ? "s" : ""} logged</p>
+              </div>
             </div>
           </div>
 
-          {/* KPI 3: Target Cutoff Gap */}
+          {/* KPI 3: Best Score */}
           <div
-            className={`${cardClass} p-5 flex items-center justify-between`}
+            className={`${cardClass} p-5`}
           >
-            <div className="space-y-1">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
-                <Target className="w-3.5 h-3.5" /> Target Cutoff Gap
+                <Target className="w-3.5 h-3.5" /> Best Score
               </span>
-              <div className="text-2xl sm:text-3xl font-extrabold font-mono">
-                {filteredMocks.length === 0
-                  ? "--"
-                  : gapToTarget <= 0
-                  ? "Cleared! 🏆"
-                  : `-${gapToTarget}m`}
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <Target className="w-5 h-5" />
               </div>
-              <p className={`text-xs ${mutedText}`}>
-                Full Avg:{" "}
-                <strong className="font-mono">
-                  {analytics.avgFullRawScore}
-                </strong>{" "}
-                vs Goal{" "}
-                <strong className="font-mono">{goal.targetScore}</strong>
-              </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Target className="w-6 h-6" />
+            <div className="space-y-2.5">
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-amber-500/10 border border-amber-500/20" : "bg-amber-50 border border-amber-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-amber-400" : "text-amber-600"}`}>Full Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.fullMockBestScore > 0
+                    ? `${analytics.fullMockBestScore}/${analytics.fullMockBestMax}`
+                    : "—"}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>Goal: <strong className="font-mono">{goal.targetScore}</strong> marks</p>
+              </div>
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-orange-500/10 border border-orange-500/20" : "bg-orange-50 border border-orange-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-orange-400" : "text-orange-600"}`}>Sectional Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.sectionalBestScore > 0
+                    ? `${analytics.sectionalBestScore}/${analytics.sectionalBestMax}`
+                    : "—"}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>{analytics.sectionalBestSubject !== "N/A" ? analytics.sectionalBestSubject : "No tests yet"}</p>
+              </div>
             </div>
           </div>
 
-          {/* KPI 4: Weakest Link & Stability */}
+          {/* KPI 4: Weakest Subject */}
           <div
-            className={`${cardClass} p-5 flex items-center justify-between`}
+            className={`${cardClass} p-5`}
           >
-            <div className="space-y-1">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-rose-500 flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5" /> Priority Bottleneck
+                <AlertTriangle className="w-3.5 h-3.5" /> Weakest Subject
               </span>
-              <div className="text-2xl sm:text-3xl font-extrabold font-mono">
-                {analytics.weakestSection}
+              <div className="w-10 h-10 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                <AlertTriangle className="w-5 h-5" />
               </div>
-              <p className={`text-xs ${mutedText}`}>
-                Stability: <strong>{analytics.consistencyLabel}</strong>
-              </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
-              <AlertTriangle className="w-6 h-6" />
+            <div className="space-y-2.5">
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-rose-500/10 border border-rose-500/20" : "bg-rose-50 border border-rose-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-rose-400" : "text-rose-600"}`}>Full Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.fullMockWeakest}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>{analytics.fullMockCount > 0 ? "Lowest avg section" : "Log full mocks"}</p>
+              </div>
+              <div className={`rounded-xl px-3 py-2.5 ${isDark ? "bg-pink-500/10 border border-pink-500/20" : "bg-pink-50 border border-pink-100"}`}>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${isDark ? "text-pink-400" : "text-pink-600"}`}>Sectional Mocks</div>
+                <div className="text-xl font-extrabold font-mono">
+                  {analytics.sectionalWeakest}
+                </div>
+                <p className={`text-[11px] ${mutedText}`}>{analytics.sectionalMockCount > 0 ? "Lowest score %" : "Log sectional mocks"}</p>
+              </div>
             </div>
           </div>
         </section>

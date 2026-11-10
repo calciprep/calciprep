@@ -74,7 +74,9 @@
     |   +-- tools
     |   |   +-- calendar
     |   |   |   \-- page.tsx
-    |   |   \-- image-resizer
+    |   |   +-- image-resizer
+    |   |   |   \-- page.tsx
+    |   |   \-- mock-tracker
     |   |       \-- page.tsx
     |   +-- typing
     |   |   +-- [examId]
@@ -122,6 +124,7 @@
     |   +-- dashboard
     |   |   +-- EnglishDashboard.tsx
     |   |   +-- MathsDashboard.tsx
+    |   |   +-- MockTrackerDashboard.tsx
     |   |   \-- TypingDashboard.tsx
     |   +-- english
     |   |   +-- EnglishResult.tsx
@@ -197,6 +200,7 @@
     +-- firebase.ts
     +-- generatePdf.ts
     +-- maths-utils.ts
+    +-- mockTrackerTypes.ts
     +-- quizTypes.ts
     +-- typing-types.ts
     +-- typing-utils.ts
@@ -257,6 +261,7 @@
 +-- services
     +-- authService.ts
     +-- dataService.ts
+    +-- mockTrackerService.ts
     \-- userService.ts
 +-- .env.local
 +-- .gitignore
