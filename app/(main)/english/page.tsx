@@ -14,37 +14,23 @@ export default function EnglishPage() {
   ];
 
   const colorClasses: { [key: string]: { bg: string; text: string } } = {
-    purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
-    amber: { bg: 'bg-amber-100', text: 'text-amber-600' },
-    rose: { bg: 'bg-rose-100', text: 'text-rose-600' },
-    sky: { bg: 'bg-sky-100', text: 'text-sky-600' },
-    green: { bg: 'bg-green-100', text: 'text-green-600' },
+    purple: { bg: 'bg-[#E6E6FA] dark:bg-[#2d224d]', text: 'text-purple-600 dark:text-purple-300' },
+    amber: { bg: 'bg-[#FEF3C7] dark:bg-[#453011]', text: 'text-amber-600 dark:text-amber-300' },
+    rose: { bg: 'bg-[#FFE4E6] dark:bg-[#4c1d24]', text: 'text-rose-600 dark:text-rose-300' },
+    sky: { bg: 'bg-[#E0F2FE] dark:bg-[#0c3547]', text: 'text-sky-600 dark:text-sky-300' },
+    green: { bg: 'bg-[#DCFCE7] dark:bg-[#143e26]', text: 'text-emerald-600 dark:text-emerald-300' },
   };
 
   return (
-    <main className="container mx-auto px-6 pt-28 pb-12">
-      <style>{`
-        .category-card {
-          border: 1px solid #F3F4F6;
-          border-radius: 1.5rem;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .category-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-        }
-      `}</style>
-      <div className="rounded-2xl bg-gradient-to-r from-blue-500 to-sky-600 p-8 md:p-12">
+    <main className="container mx-auto px-6 pt-28 pb-12 transition-colors duration-200">
+      <div className="rounded-[2rem] bg-gradient-to-r from-blue-600 to-sky-600 p-8 md:p-12 border-[3px] border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(38,38,38,1)]">
         <div className="grid md:grid-cols-2 items-center gap-8">
           <div className="text-center md:text-left">
-            <h1 className="text-4xl md:text-5xl font-bold text-white">English Practice Arena</h1>
-            <p className="text-blue-100 mt-4 text-lg font-sans">Strengthen your vocabulary and grammar. Choose a category to begin.</p>
+            <h1 className="text-4xl md:text-5xl font-black text-white font-serif tracking-tight">English Practice Arena</h1>
+            <p className="text-blue-100 mt-4 text-lg font-sans font-medium">Strengthen your vocabulary and grammar. Choose a category to begin.</p>
           </div>
           <div className="hidden md:flex justify-center items-center">
-            <Image src={englishIllustration} alt="English Mastery Illustration" className="h-56 w-auto" priority />
+            <Image src={englishIllustration} alt="English Mastery Illustration" className="h-56 w-auto drop-shadow-md" priority />
           </div>
         </div>
       </div>
@@ -54,25 +40,29 @@ export default function EnglishPage() {
           const Icon = cat.icon;
           const { bg, text } = colorClasses[cat.color];
           return (
-            <Link href={cat.to} key={cat.name} className={`category-card ${bg}`}>
+            <Link
+              href={cat.to}
+              key={cat.name}
+              className={`flex flex-col border-[3px] border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(38,38,38,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(38,38,38,1)] hover:-translate-y-2 transition-all duration-300 rounded-[2rem] overflow-hidden ${bg}`}
+            >
               <div className="p-8 text-center flex flex-col flex-grow">
                 <div className="flex-shrink-0">
-                  <div className={`bg-white/60 ${text} w-16 h-16 rounded-xl flex items-center justify-center mb-6 mx-auto`}>
-                    <Icon size={32} />
+                  <div className={`bg-white dark:bg-black border-[3px] border-black dark:border-zinc-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${text} w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto`}>
+                    <Icon size={30} strokeWidth={2.5} />
                   </div>
-                  <h2 className="text-2xl font-bold mb-2 text-gray-900">{cat.name}</h2>
-                  <p className="text-gray-600 font-sans text-sm">{cat.description}</p>
+                  <h2 className="text-2xl font-black mb-2 text-slate-900 dark:text-white font-serif tracking-wide">{cat.name}</h2>
+                  <p className="text-slate-800 dark:text-zinc-300 font-sans text-sm font-semibold">{cat.description}</p>
                 </div>
               </div>
-              <div className="p-5 bg-white flex justify-between items-center mt-auto">
-                <span className="font-semibold text-gray-800">Explore</span>
-                <ArrowRight className="text-gray-400" />
+              <div className="p-5 bg-white dark:bg-black border-t-[3px] border-black dark:border-zinc-800 flex justify-between items-center mt-auto">
+                <span className="font-black text-slate-900 dark:text-white uppercase tracking-wider text-sm font-serif">Explore</span>
+                <ArrowRight className="text-slate-900 dark:text-white" strokeWidth={2.5} size={20} />
               </div>
             </Link>
           );
         })}
 
-        <div className="category-card bg-gray-50 flex items-center justify-center p-4 rounded-3xl">
+        <div className="flex items-center justify-center p-4 rounded-[2rem] border-[3px] border-dashed border-slate-300 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950">
            <AdSenseBlock
               adSlot="8028804221"
               adFormat="fluid"
@@ -82,4 +72,4 @@ export default function EnglishPage() {
       </div>
     </main>
   );
-};
+}

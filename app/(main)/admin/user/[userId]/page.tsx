@@ -106,41 +106,41 @@ export default function AdminUserDashboardView() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-black">
         <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pt-[100px] pb-16">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-800 dark:text-zinc-200 font-sans pt-[100px] pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Back to Admin Panel */}
         <button 
           onClick={() => router.push('/admin')} 
-          className="flex items-center text-slate-500 hover:text-indigo-600 font-bold mb-8 transition-colors"
+          className="flex items-center text-slate-500 dark:text-zinc-400 hover:text-indigo-600 font-bold mb-8 transition-colors"
         >
           <ArrowLeft size={18} className="mr-2" /> Back to Admin Console
         </button>
 
         {/* Page Header (Admin View Context) */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-zinc-800 pb-6">
           <div>
             <div className="flex items-center gap-2 mb-2 text-indigo-600">
               <Shield size={16} /> <span className="text-xs font-black uppercase tracking-wider">Admin Observation Mode</span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{targetUser.name}'s Dashboard</h1>
-            <p className="text-slate-500 font-medium mt-1">{targetUser.email} • UID: <span className="font-mono text-xs">{userId}</span></p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{targetUser.name}'s Dashboard</h1>
+            <p className="text-slate-500 dark:text-zinc-400 font-medium mt-1">{targetUser.email} • UID: <span className="font-mono text-xs">{userId}</span></p>
           </div>
         </div>
 
         {/* Subject Selector Tabs */}
-        <div className="mb-6 flex bg-white rounded-xl shadow-sm border border-slate-200 p-1 w-max overflow-x-auto">
+        <div className="mb-6 flex bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 p-1 w-max overflow-x-auto">
           <button
             onClick={() => setActiveSubject('typing')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap
-              ${activeSubject === 'typing' ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+              ${activeSubject === 'typing' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-900 hover:text-slate-900 dark:hover:text-white'}`}
           >
             <Keyboard size={18} /> Typing Tests
           </button>
@@ -148,7 +148,7 @@ export default function AdminUserDashboardView() {
           <button
             onClick={() => setActiveSubject('maths')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap
-              ${activeSubject === 'maths' ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+              ${activeSubject === 'maths' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-900 hover:text-slate-900 dark:hover:text-white'}`}
           >
             <Calculator size={18} /> Mathematics
           </button>
@@ -156,7 +156,7 @@ export default function AdminUserDashboardView() {
           <button
             onClick={() => setActiveSubject('english')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap
-              ${activeSubject === 'english' ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+              ${activeSubject === 'english' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-900 hover:text-slate-900 dark:hover:text-white'}`}
           >
             <BookOpen size={18} /> English
           </button>

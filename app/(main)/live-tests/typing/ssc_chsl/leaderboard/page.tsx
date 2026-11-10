@@ -160,10 +160,10 @@ export default function SSCCHSL_LiveLeaderboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pt-[100px] pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-black font-sans pt-[100px] pb-20 transition-colors duration-200">
       <div className="max-w-6xl mx-auto px-4">
         
-        <button onClick={() => router.push('/live-tests/typing/ssc_chsl')} className="flex items-center text-slate-500 hover:text-slate-900 font-bold mb-8 transition-colors">
+        <button onClick={() => router.push('/live-tests/typing/ssc_chsl')} className="flex items-center text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white font-bold mb-8 transition-colors">
           <ArrowLeft size={18} className="mr-2" /> Back to Live Test Hub
         </button>
 
@@ -171,10 +171,10 @@ export default function SSCCHSL_LiveLeaderboard() {
           <div className="inline-flex items-center justify-center p-3 bg-amber-100 text-amber-600 rounded-2xl mb-4">
             <Trophy size={32} strokeWidth={2.5} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tight mb-3" style={{fontFamily: 'var(--font-oswald)'}}>
+          <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-3" style={{fontFamily: 'var(--font-oswald)'}}>
             Live Leaderboard
           </h1>
-          <p className="text-slate-600 font-medium">SSC CHSL Tier-II • Today's Pan-India Rankings</p>
+          <p className="text-slate-600 dark:text-zinc-300 font-medium">SSC CHSL Tier-II • Today's Pan-India Rankings</p>
 
           {currentUser?.email === 'calciprep@gmail.com' && (
             <div className="mt-6 flex justify-center">
@@ -191,12 +191,12 @@ export default function SSCCHSL_LiveLeaderboard() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mb-4"></div>
-            <p className="text-slate-500 font-bold">Syncing live scores...</p>
+            <p className="text-slate-500 dark:text-zinc-400 font-bold">Syncing live scores...</p>
           </div>
         ) : leaderboard.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm max-w-4xl mx-auto">
             <p className="text-xl font-bold text-slate-400">No one has completed today's test yet.</p>
-            <p className="text-slate-500 mt-2">Be the first to secure the #1 spot!</p>
+            <p className="text-slate-500 dark:text-zinc-400 mt-2">Be the first to secure the #1 spot!</p>
           </div>
         ) : (
           <>
@@ -207,11 +207,11 @@ export default function SSCCHSL_LiveLeaderboard() {
                   <div className="w-1/3 max-w-[150px] flex flex-col items-center animate-in slide-in-from-bottom duration-500 delay-100">
                     <div className="text-center mb-3">
                       <p className="font-bold text-slate-700 truncate w-full px-2">{topThree[1].userName}</p>
-                      <p className="font-black text-xl text-slate-900">{formatStat(topThree[1].netWpm)} <span className="text-xs text-slate-500">WPM</span></p>
-                      <p className="text-[11px] font-bold text-slate-500 mt-0.5">{formatStat(topThree[1].errorPercentage)}% Error</p>
+                      <p className="font-black text-xl text-slate-900">{formatStat(topThree[1].netWpm)} <span className="text-xs text-slate-500 dark:text-zinc-400">WPM</span></p>
+                      <p className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 mt-0.5">{formatStat(topThree[1].errorPercentage)}% Error</p>
                     </div>
                     <div className="w-full bg-gradient-to-t from-slate-300 to-slate-200 h-24 rounded-t-2xl border-t-4 border-slate-400 flex justify-center pt-3 relative shadow-inner">
-                      <Medal size={28} className="text-slate-500 drop-shadow-md" />
+                      <Medal size={28} className="text-slate-500 dark:text-zinc-400 drop-shadow-md" />
                     </div>
                   </div>
                 )}
@@ -234,8 +234,8 @@ export default function SSCCHSL_LiveLeaderboard() {
                   <div className="w-1/3 max-w-[150px] flex flex-col items-center animate-in slide-in-from-bottom duration-500 delay-200">
                     <div className="text-center mb-3">
                       <p className="font-bold text-slate-700 truncate w-full px-2">{topThree[2].userName}</p>
-                      <p className="font-black text-xl text-slate-900">{formatStat(topThree[2].netWpm)} <span className="text-xs text-slate-500">WPM</span></p>
-                      <p className="text-[11px] font-bold text-slate-500 mt-0.5">{formatStat(topThree[2].errorPercentage)}% Error</p>
+                      <p className="font-black text-xl text-slate-900">{formatStat(topThree[2].netWpm)} <span className="text-xs text-slate-500 dark:text-zinc-400">WPM</span></p>
+                      <p className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 mt-0.5">{formatStat(topThree[2].errorPercentage)}% Error</p>
                     </div>
                     <div className="w-full bg-gradient-to-t from-amber-800/40 to-amber-700/30 h-20 rounded-t-2xl border-t-4 border-amber-700/50 flex justify-center pt-3 relative shadow-inner">
                       <Medal size={28} className="text-amber-800/60 drop-shadow-md" />
@@ -272,7 +272,7 @@ export default function SSCCHSL_LiveLeaderboard() {
                         <tr key={entry.id} className={`border-b border-slate-100 transition-colors ${isCurrentUser ? 'bg-blue-50/50' : 'hover:bg-slate-50'}`}>
                           
                           <td className="px-6 py-4">
-                            <span className={`font-black ${isTop3 ? 'text-amber-600' : isCurrentUser ? 'text-blue-600' : 'text-slate-500'}`}>
+                            <span className={`font-black ${isTop3 ? 'text-amber-600' : isCurrentUser ? 'text-blue-600' : 'text-slate-500 dark:text-zinc-400'}`}>
                               #{rank}
                             </span>
                           </td>
@@ -312,7 +312,7 @@ export default function SSCCHSL_LiveLeaderboard() {
                             </span>
                           </td>
 
-                          <td className="px-6 py-4 text-right text-sm font-medium text-slate-500">
+                          <td className="px-6 py-4 text-right text-sm font-medium text-slate-500 dark:text-zinc-400">
                             {formatISTDate(entry.timestamp)}
                           </td>
 

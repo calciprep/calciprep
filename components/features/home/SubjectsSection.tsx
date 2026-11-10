@@ -27,7 +27,7 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
     const content: Record<'maths' | 'english' | 'typing' | 'livetests', SubjectData> = {
         maths: {
             link: "/maths",
-            bgColor: "bg-[#E6E6FA]", // Pastel Purple
+            bgColor: "bg-[#E6E6FA] dark:bg-[#5a5a8a]", // Pastel Purple
             Icon: Calculator,
             title: "Maths Arena",
             desc: "Sharpen your calculation speed and accuracy.",
@@ -35,7 +35,7 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
         },
         english: {
             link: "/english",
-            bgColor: "bg-[#ADD8E6]", // Pastel Blue
+            bgColor: "bg-[#ADD8E6] dark:bg-[#4a7a8a]", // Pastel Blue
             Icon: BookOpenText,
             title: "English Mastery",
             desc: "Master vocabulary with interactive quizzes.",
@@ -43,7 +43,7 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
         },
         typing: {
             link: "/typing",
-            bgColor: "bg-[#FFDAB9]", // Pastel Peach
+            bgColor: "bg-[#FFDAB9] dark:bg-[#8a6848]", // Pastel Peach
             Icon: Keyboard,
             title: "Typing Arena",
             desc: "Improve typing speed with guided lessons.",
@@ -51,7 +51,7 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
         },
         livetests: {
             link: "/live-tests",
-            bgColor: "bg-[#F9C5D1]", // Pastel Pink
+            bgColor: "bg-[#F9C5D1] dark:bg-[#8a5868]", // Pastel Pink
             Icon: RadioTower,
             title: "Live Tests",
             desc: "Compete in real-time with peers pan-India.",
@@ -66,16 +66,16 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
         <div className="card-wrapper h-full">
             <Link 
                 href={item.link} 
-                className={`subject-card flex flex-col border-[3px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 transition-all duration-300 rounded-2xl overflow-hidden ${item.bgColor} h-full`}
+                className={`subject-card flex flex-col border-[3px] border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 transition-all duration-300 rounded-2xl overflow-hidden ${item.bgColor} h-full`}
             >
                 <div className="p-8 text-center flex flex-col h-full">
                     <div className="flex-shrink-0">
                         {/* Brutalist Icon Container */}
-                        <div className="bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-slate-900 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <div className="bg-white dark:bg-black border-[3px] border-black dark:border-zinc-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-slate-900 dark:text-white w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
                             <IconComponent size={30} strokeWidth={2.5} />
                         </div>
-                        <h3 className="text-2xl font-extrabold mb-3 text-slate-900 font-serif">{item.title}</h3>
-                        <p className="text-slate-800 text-sm font-medium font-sans">{item.desc}</p>
+                        <h3 className="text-2xl font-extrabold mb-3 text-slate-900 dark:text-white font-serif">{item.title}</h3>
+                        <p className="text-slate-900 dark:text-slate-100 text-sm font-semibold font-sans">{item.desc}</p>
                     </div>
                     
                     <div className="mt-6 mb-4 flex-grow flex justify-center items-center">
@@ -83,10 +83,10 @@ const SubjectCard = ({ subject }: { subject: 'maths' | 'english' | 'typing' | 'l
                     </div>
                     
                     {/* Brutalist Explore Tab with Continuous Bounce Animation */}
-                    <div className="mt-auto pt-6 bg-white border-t-[3px] border-black -m-8 px-8 py-5 flex justify-between items-center flex-shrink-0 group">
-                        <span className="font-extrabold text-slate-900 uppercase tracking-wider text-sm">Explore</span>
+                    <div className="mt-auto pt-6 bg-white dark:bg-black border-t-[3px] border-black dark:border-zinc-800 -m-8 px-8 py-5 flex justify-between items-center flex-shrink-0 group">
+                        <span className="font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-sm">Explore</span>
                         <div className="animate-bounce mt-1">
-                            <ArrowRight className="text-slate-900" strokeWidth={3} size={20} />
+                            <ArrowRight className="text-slate-900 dark:text-white" strokeWidth={3} size={20} />
                         </div>
                     </div>
                 </div>
@@ -146,13 +146,13 @@ const SubjectsSection = () => {
     }, []); 
 
     return (
-        <section id="subjects" ref={sectionRef} className="py-16 lg:py-24 bg-gray-50 overflow-x-clip">
+        <section id="subjects" ref={sectionRef} className="py-16 lg:py-24 bg-gray-50 dark:bg-black overflow-x-clip transition-colors duration-200">
             <div className="container mx-auto px-6">
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900" style={{fontFamily: 'var(--font-oswald)'}}>
+                    <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 dark:text-white" style={{fontFamily: 'var(--font-oswald)'}}>
                         Explore Skill Based <span className="text-red-500">Subjects</span>
                     </h2>
-                    <p className="text-gray-600 font-sans text-lg">
+                    <p className="text-gray-600 dark:text-slate-400 font-sans text-lg">
                         We have the best selection of subjects to study with our online gamified exercises.
                     </p>
                 </div>

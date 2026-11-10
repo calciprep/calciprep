@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   PlatformType,
   ExamCategory,
@@ -187,9 +188,8 @@ export default function MockTrackerDashboard({
   const { currentUser, authLoading, openModal } = useAuth() as any;
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // Theme State (Dark by default like SSC Daily Tracker)
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const isDark = theme === "dark";
+  // Global Theme State
+  const { theme, isDark, toggleTheme } = useTheme();
 
   const [mocks, setMocks] = useState<MockTestRecord[]>([]);
   const [goal, setGoal] = useState<UserMockGoal>({
@@ -221,19 +221,7 @@ export default function MockTrackerDashboard({
   const [gk, setGk] = useState<string>("");
   const [weakTopics, setWeakTopics] = useState<string>("");
 
-  // Load saved theme preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("calciprep_mock_theme");
-    if (savedTheme === "light" || savedTheme === "dark") {
-      setTheme(savedTheme);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = isDark ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("calciprep_mock_theme", next);
-  };
+  
 
   // Load Mocks from Firebase (if logged in) or LocalStorage (if guest)
   useEffect(() => {
@@ -766,22 +754,22 @@ export default function MockTrackerDashboard({
   // Theme Surface Classes (Matching SSC Daily Tracker.html)
   const wrapperClass = fullPage
     ? isDark
-      ? "min-h-screen bg-[#0b111e] text-slate-100 pt-[80px] pb-16 transition-colors duration-200"
+      ? "min-h-screen bg-black text-slate-100 pt-[80px] pb-16 transition-colors duration-200"
       : "min-h-screen bg-slate-50 text-slate-900 pt-[80px] pb-16 transition-colors duration-200"
     : isDark
-    ? "bg-[#0b111e] text-slate-100 p-4 sm:p-6 rounded-3xl border border-slate-800 transition-colors duration-200"
+    ? "bg-black text-slate-100 p-4 sm:p-6 rounded-3xl border border-zinc-800 transition-colors duration-200"
     : "bg-slate-50 text-slate-900 p-4 sm:p-6 rounded-3xl border border-slate-200/80 transition-colors duration-200";
 
   const cardClass = isDark
-    ? "bg-slate-900/90 border border-slate-800/90 rounded-2xl shadow-lg shadow-black/20 backdrop-blur-md"
+    ? "bg-zinc-950/90 border border-zinc-800/90 rounded-2xl shadow-lg shadow-black/40 backdrop-blur-md"
     : "bg-white border border-slate-200/80 rounded-2xl shadow-sm";
 
   const subCardClass = isDark
-    ? "bg-[#151e2e] border border-slate-800 rounded-xl"
+    ? "bg-zinc-900 border border-zinc-800 rounded-xl"
     : "bg-slate-50/90 border border-slate-200/70 rounded-xl";
 
   const inputClass = isDark
-    ? "w-full px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700/80 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+    ? "w-full px-3.5 py-2.5 rounded-xl bg-black border border-zinc-700/80 text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
     : "w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition";
 
   const mutedText = isDark ? "text-slate-400" : "text-slate-500";
@@ -1105,7 +1093,7 @@ export default function MockTrackerDashboard({
                 <div
                   className={`inline-flex p-1 rounded-xl border ${
                     isDark
-                      ? "bg-slate-900 border-slate-700"
+                      ? "bg-zinc-900 border-zinc-700"
                       : "bg-slate-200/70 border-slate-300"
                   }`}
                 >
@@ -1238,7 +1226,7 @@ export default function MockTrackerDashboard({
                                 active
                                   ? "bg-indigo-600/20 border-indigo-500 text-indigo-400 ring-1 ring-indigo-500"
                                   : isDark
-                                  ? "bg-slate-900/80 border-slate-700/80 text-slate-300 hover:border-slate-600"
+                                  ? "bg-zinc-900/80 border-zinc-700/80 text-zinc-300 hover:border-zinc-600"
                                   : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                               }`}
                             >
@@ -1654,7 +1642,7 @@ export default function MockTrackerDashboard({
               <div
                 className={`h-60 flex flex-col items-center justify-center rounded-2xl border border-dashed p-6 text-center ${
                   isDark
-                    ? "border-slate-800 bg-slate-950/40 text-slate-400"
+                    ? "border-zinc-800 bg-black/60 text-zinc-400"
                     : "border-slate-200 bg-slate-50 text-slate-500"
                 }`}
               >
@@ -1749,7 +1737,7 @@ export default function MockTrackerDashboard({
                           r="6"
                           className={
                             isDark
-                              ? "fill-slate-950 stroke-indigo-400 stroke-[3px]"
+                              ? "fill-black stroke-indigo-400 stroke-[3px]"
                               : "fill-white stroke-indigo-600 stroke-[3px]"
                           }
                         />
@@ -1922,7 +1910,7 @@ export default function MockTrackerDashboard({
                   <tr
                     className={`border-b text-[11px] font-bold uppercase tracking-wider ${
                       isDark
-                        ? "border-slate-800 text-slate-400 bg-slate-950/50"
+                        ? "border-zinc-800 text-zinc-400 bg-black/60"
                         : "border-slate-200 text-slate-500 bg-slate-50"
                     }`}
                   >

@@ -18,11 +18,11 @@ import { collection, query, getDocs } from 'firebase/firestore';
 import { downloadPassageAsPDF, downloadBulkPassagesAsPDF } from '@/lib/generatePdf';
 
 const TABS = [
-  { id: 'All', label: 'All', icon: Layers, activeClass: 'bg-[#5b58f5] text-white border-transparent shadow-md', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-indigo-50', badgeActive: 'bg-white/20 text-white', badgeInactive: 'bg-gray-100 text-gray-500' },
-  { id: 'PYTT', label: 'PYTT', icon: Clock, activeClass: 'bg-amber-50 text-amber-700 border-amber-300', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-amber-50', badgeActive: 'bg-amber-200 text-amber-800', badgeInactive: 'bg-gray-100 text-gray-500' },
-  { id: 'Easy', label: 'Easy', icon: Leaf, activeClass: 'bg-[#e6fbf0] text-[#006838] border-[#a3e8c3]', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#e6fbf0]', badgeActive: 'bg-[#c2efd6] text-[#006838]', badgeInactive: 'bg-gray-100 text-gray-500' },
-  { id: 'Medium', label: 'Moderate', icon: Equal, activeClass: 'bg-[#f0f3ff] text-[#343a9a] border-[#c2d1ff]', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#f0f3ff]', badgeActive: 'bg-[#d8e2ff] text-[#343a9a]', badgeInactive: 'bg-gray-100 text-gray-500' },
-  { id: 'Hard', label: 'Hard', icon: Flame, activeClass: 'bg-[#fff0f0] text-[#a51a1a] border-[#ffc2c2]', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#fff0f0]', badgeActive: 'bg-[#ffdada] text-[#a51a1a]', badgeInactive: 'bg-gray-100 text-gray-500' }
+  { id: 'All', label: 'All', icon: Layers, activeClass: 'bg-[#5b58f5] text-white border-transparent shadow-md', inactiveClass: 'bg-white dark:bg-zinc-900 text-gray-600 dark:text-zinc-300 border-gray-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800', badgeActive: 'bg-white/20 text-white', badgeInactive: 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400' },
+  { id: 'PYTT', label: 'PYTT', icon: Clock, activeClass: 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-amber-50', badgeActive: 'bg-amber-200 text-amber-800', badgeInactive: 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400' },
+  { id: 'Easy', label: 'Easy', icon: Leaf, activeClass: 'bg-[#e6fbf0] dark:bg-emerald-950/50 text-[#006838] dark:text-emerald-300 border-[#a3e8c3] dark:border-emerald-800', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#e6fbf0]', badgeActive: 'bg-[#c2efd6] text-[#006838]', badgeInactive: 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400' },
+  { id: 'Medium', label: 'Moderate', icon: Equal, activeClass: 'bg-[#f0f3ff] dark:bg-indigo-950/50 text-[#343a9a] dark:text-indigo-300 border-[#c2d1ff] dark:border-indigo-800', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#f0f3ff]', badgeActive: 'bg-[#d8e2ff] text-[#343a9a]', badgeInactive: 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400' },
+  { id: 'Hard', label: 'Hard', icon: Flame, activeClass: 'bg-[#fff0f0] dark:bg-rose-950/50 text-[#a51a1a] dark:text-rose-300 border-[#ffc2c2] dark:border-rose-800', inactiveClass: 'bg-white text-gray-600 border-gray-200 hover:bg-[#fff0f0]', badgeActive: 'bg-[#ffdada] text-[#a51a1a]', badgeInactive: 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400' }
 ];
 
 export default function ExamPassageSelectionPage() {
@@ -208,7 +208,7 @@ export default function ExamPassageSelectionPage() {
   const showPdfFeatures = examId === 'delhi_police_hcm';
 
   return (
-    <div className="min-h-screen bg-white relative">
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-200 relative">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 pt-[120px] font-sans">
         
         <div className="flex flex-col items-center text-center mb-10">
@@ -218,19 +218,19 @@ export default function ExamPassageSelectionPage() {
             </div>
           )}
           <h1 className="text-4xl md:text-5xl font-black text-[#6a64f1] uppercase tracking-wide mb-4">{examData.rules.name}</h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-medium leading-relaxed">
+          <p className="text-lg text-gray-600 dark:text-zinc-300 max-w-3xl mx-auto font-medium leading-relaxed">
             Practice for the {examData.rules.name} through our Computer Based Examination (CBE)...
           </p>
         </div>
 
-        <div className="relative bg-[#f8f9fa] border border-gray-200 rounded-xl p-6 md:p-8 text-center shadow-sm mb-16 max-w-5xl mx-auto">
-          <Link href="/typing" className="absolute top-4 left-4 md:top-5 md:left-6 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold transition-all shadow-sm text-xs md:text-sm z-10">
+        <div className="relative bg-[#f8f9fa] dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl p-6 md:p-8 text-center shadow-sm mb-16 max-w-5xl mx-auto">
+          <Link href="/typing" className="absolute top-4 left-4 md:top-5 md:left-6 flex items-center gap-1.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-indigo-200 dark:hover:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:text-indigo-700 dark:hover:text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold transition-all shadow-sm text-xs md:text-sm z-10">
             <ArrowLeft size={16} /> Back to Exams
           </Link>
           <div className="flex justify-center items-center gap-4 mb-4 mt-8 md:mt-0">
             <span className="flex items-center text-[#1a73e8] font-bold gap-1.5 text-lg"><Info size={20} /> Typing Rules</span>
           </div>
-          <p className="text-sm md:text-base text-gray-600 leading-relaxed text-justify md:text-center mt-4">
+          <p className="text-sm md:text-base text-gray-600 dark:text-zinc-300 leading-relaxed text-justify md:text-center mt-4">
             {examData.rules.description || `Key Depression: The skill test will involve passages with approximately 2000 key depressions in the text. Time Required: Candidates will have ${examData.rules.duration / 60} minutes to complete the typing test. DEST will be mandatory for all the posts; however, it will be qualifying in nature. For English Typing: ${examData.rules.targetWpm} Words Per Minute (WPM).`}
           </p>
         </div>
@@ -240,7 +240,7 @@ export default function ExamPassageSelectionPage() {
           <div className="w-12 h-1.5 bg-[#2563eb] rounded-full mb-5"></div>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm font-bold">
-            <div className="flex items-center gap-2 text-slate-600 bg-slate-50 px-5 py-2 rounded-full border border-slate-200 shadow-sm transition-all hover:bg-slate-100">
+            <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300 bg-slate-50 dark:bg-zinc-900 px-5 py-2 rounded-full border border-slate-200 dark:border-zinc-800 shadow-sm transition-all hover:bg-slate-100 dark:hover:bg-zinc-800">
               {isFetchingCloud ? (
                 <><Loader2 className="animate-spin text-emerald-500" size={16} /> <span className="animate-pulse">Loading secure library...</span></>
               ) : (
@@ -264,7 +264,7 @@ export default function ExamPassageSelectionPage() {
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 mb-8 flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
+        <div className="bg-gray-50 dark:bg-zinc-950 p-4 rounded-2xl border border-gray-200 dark:border-zinc-800 mb-8 flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
           <div className="flex flex-wrap gap-3 items-center">
             {TABS.map(tab => {
               const count = getTabCount(tab.id);
@@ -285,7 +285,7 @@ export default function ExamPassageSelectionPage() {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
-            <input type="text" placeholder="Search passages..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5b58f5] focus:border-[#5b58f5] font-medium transition-all shadow-sm" />
+            <input type="text" placeholder="Search passages..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-xl leading-5 bg-white dark:bg-black placeholder-gray-400 dark:placeholder-zinc-500 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5b58f5] focus:border-[#5b58f5] font-medium transition-all shadow-sm" />
           </div>
         </div>
 
@@ -304,7 +304,7 @@ export default function ExamPassageSelectionPage() {
               const isCompleted = completedPassages.has(passage.title);
 
               return (
-                <div key={passage.id} className={`rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col ${isCompleted ? 'bg-green-50/50 border-green-200' : 'bg-white border-gray-200'}`}>
+                <div key={passage.id} className={`rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col ${isCompleted ? 'bg-green-50/50 dark:bg-emerald-950/20 border-green-200 dark:border-emerald-800/50' : 'bg-white dark:bg-zinc-950 border-gray-200 dark:border-zinc-800'}`}>
                   <div className="p-5 flex-1">
                     <div className="flex justify-between items-start mb-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${tabStyle.activeClass}`}>
@@ -322,15 +322,15 @@ export default function ExamPassageSelectionPage() {
                       </div>
                     </div>
                     
-                    <h3 className="text-xl font-black text-gray-900 mb-2 line-clamp-1">{passage.title}</h3>
-                    <p className={`text-sm font-medium line-clamp-2 leading-relaxed mb-4 ${isCompleted ? 'text-gray-600' : 'text-gray-500'}`}>{passage.text}</p>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 line-clamp-1">{passage.title}</h3>
+                    <p className={`text-sm font-medium line-clamp-2 leading-relaxed mb-4 ${isCompleted ? 'text-gray-600 dark:text-zinc-300' : 'text-gray-500 dark:text-zinc-400'}`}>{passage.text}</p>
                     
                     <div className={`flex items-center gap-4 text-xs font-bold ${isCompleted ? 'text-green-700/60' : 'text-gray-400'}`}>
                       <span>{wordCount} Words</span><span>•</span><span>{passage.text.length} Keystrokes</span>
                     </div>
                   </div>
 
-                  <div className={`p-4 border-t ${isCompleted ? 'bg-green-100/50 border-green-100' : 'bg-gray-50 border-gray-100'}`}>
+                  <div className={`p-4 border-t ${isCompleted ? 'bg-green-100/50 dark:bg-emerald-950/40 border-green-100 dark:border-emerald-900/40' : 'bg-gray-50 dark:bg-black border-gray-100 dark:border-zinc-800'}`}>
                     <button onClick={() => router.push(`/typing/${examId}/${passage.id}`)} disabled={isLoadingHistory} className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold transition-all ${isCompleted ? 'bg-green-600 text-white hover:bg-green-700 shadow-sm border border-green-700' : 'bg-[#5b58f5] text-white hover:bg-indigo-700 shadow-sm'} ${isLoadingHistory ? 'opacity-50 cursor-not-allowed' : ''}`}>
                       {isCompleted ? <><RefreshCw size={18} strokeWidth={2.5} /> Retake Test</> : <><Play size={18} strokeWidth={2.5} /> Start Test</>}
                     </button>
@@ -345,11 +345,11 @@ export default function ExamPassageSelectionPage() {
 
       {isExportModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-[150] flex justify-center items-center backdrop-blur-sm p-4">
-          <div className="bg-white text-slate-800 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+          <div className="bg-white dark:bg-zinc-950 text-slate-800 dark:text-white border border-slate-200 dark:border-zinc-800 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            <div className="flex justify-between items-center p-5 border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-black">
               <div className="flex items-center gap-2 text-red-500">
                 <FileDown size={22} strokeWidth={2.5} />
-                <h2 className="text-lg font-black tracking-tight text-slate-800">Export Bulk PDF</h2>
+                <h2 className="text-lg font-black tracking-tight text-slate-800 dark:text-white">Export Bulk PDF</h2>
               </div>
               <button onClick={() => setIsExportModalOpen(false)} className="text-slate-400 hover:text-slate-700 transition-colors">
                 <X size={24} />
@@ -358,7 +358,7 @@ export default function ExamPassageSelectionPage() {
 
             <div className="p-6 space-y-6">
               <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700">Select Difficulty Level</label>
+                <label className="text-sm font-bold text-slate-700 dark:text-zinc-300">Select Difficulty Level</label>
                 <div className="grid grid-cols-2 gap-3">
                   {/* --- FIXED: Modal now explicitly maps "Medium" to grab the correct ID --- */}
                   {['All', 'Easy', 'Medium', 'Hard'].map((diffId) => {
@@ -374,7 +374,7 @@ export default function ExamPassageSelectionPage() {
                         className={`px-4 py-2.5 rounded-lg font-bold text-sm border transition-all ${
                           exportDifficulty === diffId 
                             ? 'bg-[#5b58f5] text-white border-[#5b58f5]' 
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            : 'bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800'
                         }`}
                       >
                         {displayLabel} Level
@@ -417,10 +417,10 @@ export default function ExamPassageSelectionPage() {
               </div>
             </div>
 
-            <div className="p-5 border-t border-slate-100 bg-slate-50 flex gap-3">
+            <div className="p-5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-black flex gap-3">
               <button 
                 onClick={() => setIsExportModalOpen(false)} 
-                className="flex-1 bg-white border border-slate-200 text-slate-600 px-4 py-2.5 rounded-lg font-bold hover:bg-slate-50 transition-colors"
+                className="flex-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 px-4 py-2.5 rounded-lg font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
               >
                 Cancel
               </button>

@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useRef, ChangeEvent } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 import { UploadCloud, Download, Settings, RefreshCw, Lock, Unlock, AlertCircle } from 'lucide-react';
 
 export default function ImageResizerPage() {
+  const { isDark } = useTheme();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [originalSize, setOriginalSize] = useState<number>(0);
@@ -48,70 +50,76 @@ export default function ImageResizerPage() {
         setAspectRatio(img.width / img.height);
         
         // Auto-process once loaded
-        processImage(img.width, img.height, 0.8, 'image/jpeg', img);
+        processImage(img.width, img.height, quality, format, img);
       };
       img.src = imgUrl;
     };
     reader.readAsDataURL(file);
   };
 
-  // Process and Resize Image using Canvas
+  // Process / Resize Image using HTML5 Canvas
   const processImage = (
-    newWidth: number, 
-    newHeight: number, 
-    q: number = quality, 
-    f: string = format,
-    sourceImg: HTMLImageElement | null = imgRef.current
+    targetW = width, 
+    targetH = height, 
+    targetQ = quality, 
+    targetF = format, 
+    sourceImgElement = imgRef.current
   ) => {
-    if (!sourceImg || !canvasRef.current) return;
+    if (!sourceImgElement || targetW <= 0 || targetH <= 0) return;
 
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.width = targetW;
+    canvas.height = targetH;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-
-    // Fill white background for JPEGs (in case of transparent PNG to JPG conversion)
-    if (f === 'image/jpeg') {
+    // Background fill white for JPEG (transparency safety)
+    if (targetF === 'image/jpeg') {
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, newWidth, newHeight);
+      ctx.fillRect(0, 0, targetW, targetH);
+    } else {
+      ctx.clearRect(0, 0, targetW, targetH);
     }
 
-    ctx.drawImage(sourceImg, 0, 0, newWidth, newHeight);
+    // High quality downscaling
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
-    const dataUrl = canvas.toDataURL(f, q);
+    ctx.drawImage(sourceImgElement, 0, 0, targetW, targetH);
+
+    // Export with quality settings
+    const dataUrl = canvas.toDataURL(targetF, targetQ);
     setOutputImage(dataUrl);
 
-    // Calculate approximate size in bytes
-    const base64str = dataUrl.split(',')[1];
-    const decoded = atob(base64str);
-    setOutputSize(decoded.length);
+    // Calculate approximate byte size from base64
+    const stringLength = dataUrl.length - `data:${targetF};base64,`.length;
+    const sizeInBytes = 4 * Math.ceil(stringLength / 3) * 0.5624896334383438; 
+    setOutputSize(sizeInBytes);
   };
 
-  // Handle Dimension Changes
+  // Dimensions inputs with ratio calculation
   const handleWidthChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const w = parseInt(e.target.value) || 0;
-    setWidth(w);
-    setSelectedPreset(null); // Clear preset if manually edited
+    const val = parseInt(e.target.value) || 0;
+    setWidth(val);
     let h = height;
     if (lockAspectRatio && aspectRatio) {
-      h = Math.round(w / aspectRatio);
+      h = Math.round(val / aspectRatio);
       setHeight(h);
     }
-    processImage(w, h);
+    processImage(val, h);
   };
 
   const handleHeightChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const h = parseInt(e.target.value) || 0;
-    setHeight(h);
-    setSelectedPreset(null); // Clear preset if manually edited
+    const val = parseInt(e.target.value) || 0;
+    setHeight(val);
     let w = width;
     if (lockAspectRatio && aspectRatio) {
-      w = Math.round(h * aspectRatio);
+      w = Math.round(val * aspectRatio);
       setWidth(w);
     }
-    processImage(w, h);
+    processImage(w, val);
   };
 
   // Helper to format bytes to KB/MB
@@ -146,20 +154,27 @@ export default function ImageResizerPage() {
     : (outputSize > 51200);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pb-24">
+    <div className="min-h-screen bg-slate-50 dark:bg-black font-sans pb-24 transition-colors duration-200">
       {/* Hidden elements for processing */}
       <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
       <canvas ref={canvasRef} className="hidden" />
       {selectedImage && <img ref={imgRef} src={selectedImage} alt="source" className="hidden" />}
 
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 pt-28 pb-10">
+      <div className="bg-white dark:bg-black border-b border-slate-200 dark:border-zinc-800 pt-28 pb-10 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center p-4 bg-white border border-slate-100 shadow-sm rounded-2xl mb-6">
-            <img src="/media/New-logo.svg" alt="Calciprep" className="h-8 object-contain" />
+          <div className="inline-flex items-center justify-center p-4 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 shadow-sm rounded-2xl mb-6">
+            <img 
+              src={isDark ? "/media/New-logo-dark.svg" : "/media/New-logo.svg"} 
+              alt="Calciprep" 
+              className="h-8 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/media/New-logo.svg';
+              }} 
+            />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Exam Photo & Signature Resizer</h1>
-          <p className="text-slate-600 max-w-2xl mx-auto text-lg">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Exam Photo & Signature Resizer</h1>
+          <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
             Resize and compress your documents locally on your device. Zero uploads to servers ensures your privacy. Perfect for SSC, Banking, and Railway form filling.
           </p>
         </div>
@@ -171,20 +186,20 @@ export default function ImageResizerPage() {
           <div className="max-w-3xl mx-auto">
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-blue-200 bg-white hover:bg-blue-50 transition-colors rounded-2xl p-16 flex flex-col items-center justify-center cursor-pointer shadow-sm group"
+              className="border-2 border-dashed border-blue-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:bg-blue-50 dark:hover:bg-slate-800/60 transition-colors rounded-2xl p-16 flex flex-col items-center justify-center cursor-pointer shadow-sm group"
             >
-              <div className="bg-blue-100 text-blue-600 p-5 rounded-full mb-6 group-hover:scale-110 transition-transform">
+              <div className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 p-5 rounded-full mb-6 group-hover:scale-110 transition-transform">
                 <UploadCloud size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">Upload your Image</h3>
-              <p className="text-slate-500 mb-8 text-center max-w-md">
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Upload your Image</h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-8 text-center max-w-md">
                 Drag and drop your passport photo or signature, or click to browse. We support JPG, PNG, and JPEG.
               </p>
               <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-md transition-all">
                 Browse Files
               </button>
               
-              <div className="mt-8 flex items-center gap-2 text-sm text-slate-400">
+              <div className="mt-8 flex items-center gap-2 text-sm text-slate-400 dark:text-slate-500">
                 <Lock size={14} /> 100% Secure. Images are processed directly in your browser.
               </div>
             </div>
@@ -194,15 +209,15 @@ export default function ImageResizerPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             {/* Left Panel: Preview */}
-            <div className="lg:col-span-7 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center">
+            <div className="lg:col-span-7 bg-white dark:bg-zinc-950 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col items-center">
               <div className="w-full flex justify-between items-center mb-6">
-                <h3 className="font-bold text-slate-800 text-lg">Live Preview</h3>
-                <button onClick={resetTool} className="text-sm font-semibold text-slate-500 hover:text-red-500 flex items-center gap-1.5 transition-colors">
+                <h3 className="font-bold text-slate-800 dark:text-white text-lg">Live Preview</h3>
+                <button onClick={resetTool} className="text-sm font-semibold text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 flex items-center gap-1.5 transition-colors">
                   <RefreshCw size={14} /> Start Over
                 </button>
               </div>
 
-              <div className="flex-1 w-full bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center overflow-hidden min-h-[400px] p-4 relative">
+              <div className="flex-1 w-full bg-slate-100 dark:bg-black rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center overflow-hidden min-h-[400px] p-4 relative">
                 {/* Checkerboard background for transparent PNGs */}
                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' }}></div>
                 
@@ -216,13 +231,13 @@ export default function ImageResizerPage() {
               </div>
 
               <div className="w-full mt-6 grid grid-cols-2 gap-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Original Size</p>
-                  <p className="text-lg font-semibold text-slate-700">{formatBytes(originalSize)}</p>
+                <div className="bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 rounded-xl p-4">
+                  <p className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-1">Original Size</p>
+                  <p className="text-lg font-semibold text-slate-700 dark:text-slate-200">{formatBytes(originalSize)}</p>
                 </div>
-                <div className={`${sizeHasError ? 'bg-rose-50 border-rose-200' : 'bg-blue-50 border-blue-100'} border rounded-xl p-4 transition-colors`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${sizeHasError ? 'text-rose-500' : 'text-blue-500'}`}>New Size</p>
-                  <p className={`text-xl font-bold ${sizeHasError ? 'text-rose-600' : 'text-blue-700'}`}>
+                <div className={`${sizeHasError ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800' : 'bg-blue-50 dark:bg-blue-950/40 border-blue-100 dark:border-blue-800'} border rounded-xl p-4 transition-colors`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${sizeHasError ? 'text-rose-500' : 'text-blue-500 dark:text-blue-400'}`}>New Size</p>
+                  <p className={`text-xl font-bold ${sizeHasError ? 'text-rose-600' : 'text-blue-700 dark:text-blue-300'}`}>
                     {formatBytes(outputSize)}
                   </p>
                   {sizeHasError && (
@@ -239,35 +254,35 @@ export default function ImageResizerPage() {
             <div className="lg:col-span-5 space-y-6">
               
               {/* Quick Presets */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                  <Settings size={18} className="text-blue-600" /> Government Exam Presets
+              <div className="bg-white dark:bg-zinc-950 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-zinc-800">
+                <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                  <Settings size={18} className="text-blue-600 dark:text-blue-400" /> Government Exam Presets
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <button 
                     onClick={() => applyPreset(413, 531, 'ssc-photo')} 
-                    className={`text-left p-3 border rounded-xl transition-all ${selectedPreset === 'ssc-photo' ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-200 hover:border-blue-500 hover:bg-blue-50'}`}
+                    className={`text-left p-3 border rounded-xl transition-all ${selectedPreset === 'ssc-photo' ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:border-blue-500 ring-1 ring-blue-600' : 'border-slate-200 dark:border-zinc-800 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-slate-800'}`}
                   >
-                    <p className="font-bold text-sm text-slate-800">SSC Photo</p>
-                    <p className="text-xs text-slate-500 mt-0.5">3.5cm x 4.5cm</p>
+                    <p className="font-bold text-sm text-slate-800 dark:text-slate-100">SSC Photo</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">3.5cm x 4.5cm</p>
                   </button>
                   <button 
                     onClick={() => applyPreset(708, 236, 'ssc-signature')} 
-                    className={`text-left p-3 border rounded-xl transition-all ${selectedPreset === 'ssc-signature' ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-200 hover:border-blue-500 hover:bg-blue-50'}`}
+                    className={`text-left p-3 border rounded-xl transition-all ${selectedPreset === 'ssc-signature' ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:border-blue-500 ring-1 ring-blue-600' : 'border-slate-200 dark:border-zinc-800 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-slate-800'}`}
                   >
-                    <p className="font-bold text-sm text-slate-800">SSC Signature</p>
-                    <p className="text-xs text-slate-500 mt-0.5">6.0cm x 2.0cm</p>
+                    <p className="font-bold text-sm text-slate-800 dark:text-slate-100">SSC Signature</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">6.0cm x 2.0cm</p>
                   </button>
                 </div>
               </div>
 
               {/* Dimensions Control */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <div className="bg-white dark:bg-zinc-950 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-zinc-800">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-slate-800">Dimensions (Pixels)</h3>
+                  <h3 className="font-bold text-slate-800 dark:text-white">Dimensions (Pixels)</h3>
                   <button 
                     onClick={() => setLockAspectRatio(!lockAspectRatio)}
-                    className={`p-1.5 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors ${lockAspectRatio ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                    className={`p-1.5 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors ${lockAspectRatio ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-slate-100 dark:bg-zinc-900 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
                   >
                     {lockAspectRatio ? <Lock size={14} /> : <Unlock size={14} />} 
                     {lockAspectRatio ? 'Locked' : 'Unlocked'}
@@ -276,41 +291,41 @@ export default function ImageResizerPage() {
                 
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
-                    <label className="text-xs font-semibold text-slate-500 mb-1.5 block">Width</label>
+                    <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 block">Width</label>
                     <input 
                       type="number" 
                       value={width} 
                       onChange={handleWidthChange}
-                      className="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-slate-300 dark:border-zinc-800 dark:bg-black dark:text-white rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   <div className="text-slate-400 font-bold mt-5">X</div>
                   <div className="flex-1">
-                    <label className="text-xs font-semibold text-slate-500 mb-1.5 block">Height</label>
+                    <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 block">Height</label>
                     <input 
                       type="number" 
                       value={height} 
                       onChange={handleHeightChange}
-                      className="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-slate-300 dark:border-zinc-800 dark:bg-black dark:text-white rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Compression & Format Control */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                <h3 className="font-bold text-slate-800 mb-4">Format & File Size</h3>
+              <div className="bg-white dark:bg-zinc-950 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-zinc-800">
+                <h3 className="font-bold text-slate-800 dark:text-white mb-4">Format & File Size</h3>
                 
-                <div className="flex bg-slate-100 p-1 rounded-lg mb-6">
+                <div className="flex bg-slate-100 dark:bg-zinc-900 p-1 rounded-lg mb-6">
                   <button 
                     onClick={() => { setFormat('image/jpeg'); processImage(width, height, quality, 'image/jpeg'); }}
-                    className={`flex-1 py-1.5 text-sm font-semibold rounded-md transition-all ${format === 'image/jpeg' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'}`}
+                    className={`flex-1 py-1.5 text-sm font-semibold rounded-md transition-all ${format === 'image/jpeg' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}
                   >
                     JPG / JPEG
                   </button>
                   <button 
                     onClick={() => { setFormat('image/png'); processImage(width, height, 1, 'image/png'); }}
-                    className={`flex-1 py-1.5 text-sm font-semibold rounded-md transition-all ${format === 'image/png' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'}`}
+                    className={`flex-1 py-1.5 text-sm font-semibold rounded-md transition-all ${format === 'image/png' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}
                   >
                     PNG
                   </button>
@@ -319,8 +334,8 @@ export default function ImageResizerPage() {
                 {format === 'image/jpeg' && (
                   <div className="mb-2">
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-sm font-semibold text-slate-700">Compression Quality</label>
-                      <span className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded">{Math.round(quality * 100)}%</span>
+                      <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Compression Quality</label>
+                      <span className="text-xs font-bold bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-slate-300 px-2 py-1 rounded">{Math.round(quality * 100)}%</span>
                     </div>
                     <input 
                       type="range" 
@@ -333,9 +348,9 @@ export default function ImageResizerPage() {
                         setQuality(val);
                         processImage(width, height, val);
                       }}
-                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                      className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
                     />
-                    <p className="text-[11px] text-slate-500 mt-2">Adjust the slider to strictly meet the {isSignaturePreset ? '10KB - 20KB' : '50KB'} size limit.</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Adjust the slider to strictly meet the {isSignaturePreset ? '10KB - 20KB' : '50KB'} size limit.</p>
                   </div>
                 )}
               </div>
@@ -351,7 +366,7 @@ export default function ImageResizerPage() {
                   link.click();
                   document.body.removeChild(link);
                 }}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-blue-500/30 transition-all"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-blue-500/30 transition-all cursor-pointer"
               >
                 <Download size={20} /> Download Image
               </button>

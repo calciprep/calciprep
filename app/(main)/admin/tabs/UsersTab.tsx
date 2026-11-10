@@ -74,13 +74,13 @@ export default function UsersTab() {
   };
 
   return (
-    <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200 animate-in fade-in duration-300">
+    <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-zinc-800 animate-in fade-in duration-300">
       
       {/* HEADER & SEARCH */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">User management <span className="ml-2 text-sm bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-lg">{usersList.length}</span></h2>
-          <p className="text-sm text-slate-500 font-medium mt-1">Manage your students and their account permissions here.</p>
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white dark:text-white">User management <span className="ml-2 text-sm bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-lg">{usersList.length}</span></h2>
+          <p className="text-sm text-slate-500 dark:text-zinc-400 dark:text-zinc-400 font-medium mt-1">Manage your students and their account permissions here.</p>
         </div>
         
         <div className="relative w-full md:w-72">
@@ -90,13 +90,13 @@ export default function UsersTab() {
             placeholder="Search by name or email..." 
             value={userSearch}
             onChange={(e) => setUserSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           />
         </div>
       </div>
 
       {/* MODERN DATA TABLE */}
-      <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
+      <div className="overflow-x-auto border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm">
         <table className="w-full text-left whitespace-nowrap text-sm">
           <thead className="bg-[#0a738c] border-b border-[#085a6e]">
             <tr>
@@ -109,7 +109,7 @@ export default function UsersTab() {
               <th className="px-6 py-4 text-xs font-bold text-white/90 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800 bg-white dark:bg-zinc-950">
             {usersLoading ? (
               <tr><td colSpan={7} className="text-center py-12 text-slate-400 font-medium"><Loader2 className="animate-spin inline mr-2" size={16}/> Syncing live users...</td></tr>
             ) : filteredUsers.length === 0 ? (
@@ -120,7 +120,7 @@ export default function UsersTab() {
                 const initials = (user.name || user.displayName || user.email || '?')[0].toUpperCase();
                 
                 return (
-                  <tr key={user.id} className="hover:bg-slate-50/80 transition-colors group">
+                  <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-zinc-900/60 transition-colors group">
                     
                     {/* AVATAR & NAME */}
                     <td className="px-6 py-4">
@@ -128,14 +128,14 @@ export default function UsersTab() {
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 border shadow-sm ${isAdmin ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-[#e6f7fa] text-[#0a738c] border-[#bdedf4]'}`}>
                           {initials}
                         </div>
-                        <span className="font-bold text-slate-900">{user.name || user.displayName || 'Unknown User'}</span>
+                        <span className="font-bold text-slate-900 dark:text-white">{user.name || user.displayName || 'Unknown User'}</span>
                       </div>
                     </td>
                     
-                    <td className="px-6 py-4 text-slate-500 font-medium">{user.email}</td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-zinc-400 font-medium">{user.email}</td>
                     
                     <td className="px-6 py-4">
-                      <span className={`font-bold ${isAdmin ? 'text-indigo-600' : 'text-slate-600'}`}>
+                      <span className={`font-bold ${isAdmin ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-600 dark:text-zinc-300'}`}>
                         {isAdmin ? 'Admin' : 'Student'}
                       </span>
                     </td>
@@ -147,8 +147,8 @@ export default function UsersTab() {
                       </span>
                     </td>
                     
-                    <td className="px-6 py-4 text-slate-500 font-medium">{formatDate(user.createdAt)}</td>
-                    <td className="px-6 py-4 text-slate-500 font-medium">{formatDate(user.lastLogin || user.createdAt)}</td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-zinc-400 font-medium">{formatDate(user.createdAt)}</td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-zinc-400 font-medium">{formatDate(user.lastLogin || user.createdAt)}</td>
                     
                     <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
                       <button 

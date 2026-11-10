@@ -349,11 +349,11 @@ export default function CMSTab() {
     <div className="space-y-10 font-sans relative">
       
       {/* ===================== UPLOADER SECTION ===================== */}
-      <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200 animate-in fade-in duration-300">
+      <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-zinc-800 animate-in fade-in duration-300">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 mb-2">Cloud Passage Manager</h2>
-            <p className="text-sm text-slate-500 font-medium">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white dark:text-white mb-2">Cloud Passage Manager</h2>
+            <p className="text-sm text-slate-500 dark:text-zinc-400 font-medium">
               Upload passages to Firestore. Timers are automatically handled by the exam infrastructure.
             </p>
           </div>
@@ -363,7 +363,7 @@ export default function CMSTab() {
             <button 
               onClick={() => fileInputRef.current?.click()}
               disabled={saving}
-              className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50 text-sm"
+              className="bg-indigo-50 dark:bg-zinc-900 hover:bg-indigo-100 dark:hover:bg-zinc-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-zinc-800 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50 text-sm"
             >
               <FileJson size={18} /> Bulk JSON Upload
             </button>
@@ -376,30 +376,30 @@ export default function CMSTab() {
           </div>
         )}
 
-        <form onSubmit={handleSingleSave} className="space-y-6 max-w-4xl bg-slate-50 p-6 rounded-2xl border border-slate-100">
+        <form onSubmit={handleSingleSave} className="space-y-6 max-w-4xl bg-slate-50 dark:bg-black p-6 rounded-2xl border border-slate-100 dark:border-zinc-800">
           <div className="flex items-center gap-2 mb-2">
             <UploadCloud className="text-fuchsia-600" size={20} />
-            <h3 className="text-lg font-bold text-slate-800">Single Passage Upload</h3>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-zinc-200">Single Passage Upload</h3>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2">Target Arena</label>
-              <select value={formData.environment} onChange={(e) => setFormData({...formData, environment: e.target.value})} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-fuchsia-500 text-sm">
+              <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2">Target Arena</label>
+              <select value={formData.environment} onChange={(e) => setFormData({...formData, environment: e.target.value})} className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl font-bold text-slate-800 dark:text-zinc-200 focus:ring-2 focus:ring-fuchsia-500 text-sm">
                 <option value="Normal">Normal Practice Arena</option>
                 <option value="Live">Live Daily Exams</option>
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2">Exam Category</label>
-              <select value={formData.examType} onChange={(e) => setFormData({...formData, examType: e.target.value})} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-fuchsia-500 text-sm">
+              <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2">Exam Category</label>
+              <select value={formData.examType} onChange={(e) => setFormData({...formData, examType: e.target.value})} className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl font-bold text-slate-800 dark:text-zinc-200 focus:ring-2 focus:ring-fuchsia-500 text-sm">
                 <option value="HCM">Delhi Police HCM</option>
                 <option value="CGL">SSC CGL Tier-II</option>
                 <option value="CHSL">SSC CHSL Tier-II</option>
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5"><BarChart2 size={13} className="text-fuchsia-600" /> Difficulty Level</label>
+              <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><BarChart2 size={13} className="text-fuchsia-600" /> Difficulty Level</label>
               <select value={formData.difficulty} onChange={(e) => setFormData({...formData, difficulty: e.target.value})} className="w-full px-4 py-3 bg-fuchsia-50/60 border border-fuchsia-200 text-fuchsia-900 rounded-xl font-black focus:ring-2 focus:ring-fuchsia-500 text-sm">
                 <option value="Easy">Easy</option>
                 <option value="Medium">Medium</option>
@@ -409,16 +409,16 @@ export default function CMSTab() {
           </div>
 
           <div>
-            <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Tag size={13} /> Passage Title</label>
-            <input required type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. Passage 53 or Daily Live Set 1" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-fuchsia-500 text-sm" />
+            <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Tag size={13} /> Passage Title</label>
+            <input required type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. Passage 53 or Daily Live Set 1" className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl font-semibold text-slate-800 dark:text-zinc-200 focus:ring-2 focus:ring-fuchsia-500 text-sm" />
           </div>
 
           <div>
             <div className="flex justify-between items-end mb-2">
-              <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Passage Content</label>
+              <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider">Passage Content</label>
               <span className="text-[11px] font-black uppercase text-fuchsia-700 bg-fuchsia-100 px-2.5 py-1 rounded-md tracking-wider">{formData.text.length} Keystrokes</span>
             </div>
-            <textarea required rows={8} value={formData.text} onChange={(e) => setFormData({...formData, text: e.target.value})} placeholder="Paste the official typing test passage here..." className="w-full p-4 bg-white border border-slate-200 rounded-2xl font-medium text-slate-800 focus:ring-2 focus:ring-fuchsia-500 resize-none leading-relaxed text-sm shadow-inner" />
+            <textarea required rows={8} value={formData.text} onChange={(e) => setFormData({...formData, text: e.target.value})} placeholder="Paste the official typing test passage here..." className="w-full p-4 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl font-medium text-slate-800 dark:text-zinc-200 focus:ring-2 focus:ring-fuchsia-500 resize-none leading-relaxed text-sm shadow-inner" />
           </div>
 
           <button disabled={saving} type="submit" className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-8 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-md shadow-fuchsia-200 disabled:opacity-70 w-full md:w-auto text-sm">
@@ -429,17 +429,17 @@ export default function CMSTab() {
       </div>
 
       {/* ===================== PASSAGE INVENTORY SECTION ===================== */}
-      <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200 animate-in fade-in duration-300">
+      <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-zinc-800 animate-in fade-in duration-300">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-2">
               <BookOpen className="text-[#0a738c]" size={22} />
-              <h2 className="text-2xl font-black text-slate-900">Passage Inventory & History</h2>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white dark:text-white">Passage Inventory & History</h2>
               <span className="ml-2 text-xs font-black bg-teal-100 text-[#0a738c] px-3 py-1 rounded-lg">
                 {passagesList.length} Total
               </span>
             </div>
-            <p className="text-sm text-slate-500 font-medium mt-1">
+            <p className="text-sm text-slate-500 dark:text-zinc-400 font-medium mt-1">
               Browse, filter, preview, edit, and bulk-manage active Firestore passages.
             </p>
           </div>
@@ -451,7 +451,7 @@ export default function CMSTab() {
               placeholder="Search by title or text..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm"
+              className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm"
             />
           </div>
         </div>
@@ -516,7 +516,7 @@ export default function CMSTab() {
           </div>
         )}
 
-        <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
+        <div className="overflow-x-auto border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm">
           <table className="w-full text-left whitespace-nowrap text-sm">
             <thead className="bg-[#0a738c] border-b border-[#085a6e]">
               <tr>
@@ -538,7 +538,7 @@ export default function CMSTab() {
                 <th className="px-6 py-4 text-xs font-bold text-white/90 uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 bg-white">
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800 bg-white dark:bg-zinc-950">
               {loadingHistory ? (
                 <tr>
                   <td colSpan={8} className="text-center py-12 text-slate-400 font-medium">
@@ -559,7 +559,7 @@ export default function CMSTab() {
 
                   return (
                     <React.Fragment key={`${p.collectionName}_${p.docId}`}>
-                      <tr className={`transition-colors group ${isSelected ? 'bg-indigo-50/50' : 'hover:bg-slate-50/80'}`}>
+                      <tr className={`transition-colors group ${isSelected ? 'bg-indigo-50/50' : 'hover:bg-slate-50/80 dark:hover:bg-zinc-900/60'}`}>
                         {/* CHECKBOX CELL */}
                         <td className="px-5 py-4 text-center">
                           <input 
@@ -570,7 +570,7 @@ export default function CMSTab() {
                           />
                         </td>
                         <td className="px-2 py-4">
-                          <span className="font-black text-xs uppercase px-2.5 py-1 rounded-md bg-slate-100 text-slate-800 border border-slate-200">
+                          <span className="font-black text-xs uppercase px-2.5 py-1 rounded-md bg-slate-100 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800">
                             {p.examType}
                           </span>
                         </td>
@@ -583,7 +583,7 @@ export default function CMSTab() {
                             {p.environment === 'Live' ? '● Live Daily' : 'Normal Arena'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-bold text-slate-800 max-w-xs truncate">
+                        <td className="px-6 py-4 font-bold text-slate-800 dark:text-white max-w-xs truncate">
                           {p.title}
                         </td>
                         <td className="px-6 py-4">
@@ -597,10 +597,10 @@ export default function CMSTab() {
                             {p.difficulty}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-mono font-bold text-slate-600">
+                        <td className="px-6 py-4 font-mono font-bold text-slate-600 dark:text-zinc-300">
                           {p.keystrokes} Keys
                         </td>
-                        <td className="px-6 py-4 text-slate-500 font-medium text-xs">
+                        <td className="px-6 py-4 text-slate-500 dark:text-zinc-400 font-medium text-xs">
                           {formatDate(p.createdAt)}
                         </td>
                         <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
@@ -635,12 +635,12 @@ export default function CMSTab() {
                       {isExpanded && (
                         <tr className="bg-slate-50/80">
                           <td colSpan={8} className="px-6 py-4 border-b border-slate-100">
-                            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-inner">
+                            <div className="bg-white dark:bg-black p-5 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-inner">
                               <div className="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
                                 <span>Collection: <code className="text-teal-700">{p.collectionName}</code></span>
                                 <span>ID: <code className="text-slate-600">{p.id}</code></span>
                               </div>
-                              <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-mono bg-slate-50 p-4 rounded-lg border border-slate-100 max-h-60 overflow-y-auto">
+                              <p className="text-slate-700 dark:text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap font-mono bg-slate-50 dark:bg-zinc-950 p-4 rounded-lg border border-slate-100 dark:border-zinc-800 max-h-60 overflow-y-auto">
                                 {p.text}
                               </p>
                             </div>
@@ -659,14 +659,14 @@ export default function CMSTab() {
       {/* ===================== EDIT PASSAGE MODAL ===================== */}
       {editingPassage && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200 dark:border-zinc-800">
             
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center bg-slate-50 dark:bg-zinc-900 shrink-0">
               <div>
-                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <Pencil size={18} className="text-blue-600" /> Edit Passage
                 </h3>
-                <p className="text-xs font-bold text-slate-500 mt-0.5">
+                <p className="text-xs font-bold text-slate-500 dark:text-zinc-400 mt-0.5">
                   Collection: <span className="text-blue-600">{editingPassage.collectionName}</span>
                 </p>
               </div>
@@ -682,22 +682,22 @@ export default function CMSTab() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2">Passage Title</label>
+                  <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2">Passage Title</label>
                   <input 
                     required 
                     type="text" 
                     value={editForm.title} 
                     onChange={(e) => setEditForm({...editForm, title: e.target.value})} 
-                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 text-sm" 
+                    className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl font-bold text-slate-800 dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 text-sm" 
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2">Difficulty Level</label>
+                  <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2">Difficulty Level</label>
                   <select 
                     value={editForm.difficulty} 
                     onChange={(e) => setEditForm({...editForm, difficulty: e.target.value})} 
-                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-4 py-3 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl font-bold text-slate-800 dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 text-sm"
                   >
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
@@ -708,7 +708,7 @@ export default function CMSTab() {
 
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Passage Content</label>
+                  <label className="block text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider">Passage Content</label>
                   <span className="text-[11px] font-black uppercase text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md tracking-wider">
                     {editForm.text.length} Keystrokes
                   </span>
@@ -718,7 +718,7 @@ export default function CMSTab() {
                   rows={10} 
                   value={editForm.text} 
                   onChange={(e) => setEditForm({...editForm, text: e.target.value})} 
-                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-medium text-slate-800 focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed text-sm shadow-inner" 
+                  className="w-full p-4 bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 rounded-2xl font-medium text-slate-800 dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed text-sm shadow-inner" 
                 />
               </div>
 
@@ -726,7 +726,7 @@ export default function CMSTab() {
                 <button 
                   type="button" 
                   onClick={() => setEditingPassage(null)}
-                  className="px-6 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors text-sm"
+                  className="px-6 py-3 rounded-xl font-bold text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors text-sm"
                 >
                   Cancel
                 </button>

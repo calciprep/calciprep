@@ -47,8 +47,8 @@ export default function InboxTab() {
   };
 
   return (
-    <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200 animate-in fade-in duration-300">
-      <h2 className="text-2xl font-black text-slate-900 mb-6">Support Inbox</h2>
+    <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-zinc-800 animate-in fade-in duration-300">
+      <h2 className="text-2xl font-black text-slate-900 dark:text-white dark:text-white mb-6">Support Inbox</h2>
 
       {loading ? (
         <div className="py-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600 w-8 h-8" /></div>
@@ -57,10 +57,10 @@ export default function InboxTab() {
       ) : (
         <div className="space-y-4">
           {tickets.map(ticket => (
-            <div key={ticket.id} className={`p-6 rounded-2xl border ${ticket.status === 'Open' ? 'bg-rose-50 border-rose-100' : 'bg-slate-50 border-slate-200'}`}>
+            <div key={ticket.id} className={`p-6 rounded-2xl border ${ticket.status === 'Open' ? 'bg-rose-50 dark:bg-rose-950/20 border-rose-100 dark:border-rose-900/40' : 'bg-slate-50 dark:bg-zinc-900/40 border-slate-200 dark:border-zinc-800'}`}>
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <h3 className="font-bold text-slate-900">{ticket.name} <span className="font-normal text-slate-500 text-sm ml-2">{ticket.email}</span></h3>
+                  <h3 className="font-bold text-slate-900 dark:text-white">{ticket.name} <span className="font-normal text-slate-500 dark:text-zinc-400 text-sm ml-2">{ticket.email}</span></h3>
                   <span className="text-xs font-black text-indigo-600 uppercase tracking-wider">{ticket.issueType}</span>
                 </div>
                 <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md ${ticket.status === 'Replied' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-200 text-rose-800 animate-pulse'}`}>
@@ -68,14 +68,14 @@ export default function InboxTab() {
                 </span>
               </div>
               
-              <p className="text-sm text-slate-700 mt-3 mb-4 bg-white p-4 rounded-xl border border-slate-200">
+              <p className="text-sm text-slate-700 dark:text-zinc-300 mt-3 mb-4 bg-white dark:bg-black p-4 rounded-xl border border-slate-200 dark:border-zinc-800">
                 "{ticket.message}"
               </p>
 
               {ticket.status === 'Replied' ? (
-                <div className="bg-[#eef8fb] p-4 rounded-xl border border-[#bdedf4] flex gap-2 items-start">
+                <div className="bg-[#eef8fb] dark:bg-teal-950/30 p-4 rounded-xl border border-[#bdedf4] dark:border-teal-900/40 flex gap-2 items-start">
                   <CheckCircle2 size={16} className="text-[#0a738c] mt-0.5" />
-                  <p className="text-sm text-[#0a738c]"><strong>Your Reply:</strong> {ticket.reply}</p>
+                  <p className="text-sm text-[#0a738c] dark:text-teal-300"><strong>Your Reply:</strong> {ticket.reply}</p>
                 </div>
               ) : (
                 <div className="mt-4">
@@ -87,15 +87,15 @@ export default function InboxTab() {
                         value={replyText} 
                         onChange={(e) => setReplyText(e.target.value)} 
                         placeholder="Type your response to the student..." 
-                        className="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm resize-none"
+                        className="w-full p-3 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 outline-none text-sm resize-none"
                       />
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => setActiveTicketId(null)} className="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700">Cancel</button>
+                        <button onClick={() => setActiveTicketId(null)} className="px-4 py-2 text-sm font-bold text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-white">Cancel</button>
                         <button onClick={() => handleReply(ticket.id)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl font-bold text-sm transition-all shadow-sm">Send Reply</button>
                       </div>
                     </div>
                   ) : (
-                    <button onClick={() => { setActiveTicketId(ticket.id); setReplyText(''); }} className="flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-700 bg-white border border-indigo-100 px-4 py-2 rounded-lg transition-colors">
+                    <button onClick={() => { setActiveTicketId(ticket.id); setReplyText(''); }} className="flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 bg-white dark:bg-zinc-900 border border-indigo-100 dark:border-zinc-800 px-4 py-2 rounded-lg transition-colors">
                       <Reply size={16} /> Write a Reply
                     </button>
                   )}

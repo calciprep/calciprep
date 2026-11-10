@@ -67,18 +67,18 @@ export default function LeaderboardsTab() {
   };
 
   return (
-    <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200 animate-in fade-in duration-300">
+    <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-zinc-800 animate-in fade-in duration-300">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">Leaderboard Explorer</h2>
-          <p className="text-sm text-slate-500 font-medium mt-1">Retrieve, review, and export past test results.</p>
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white dark:text-white">Leaderboard Explorer</h2>
+          <p className="text-sm text-slate-500 dark:text-zinc-400 font-medium mt-1">Retrieve, review, and export past test results.</p>
         </div>
         
-        <div className="flex items-center gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+        <div className="flex items-center gap-3 bg-slate-50 dark:bg-black p-2 rounded-2xl border border-slate-100 dark:border-zinc-800">
           <select 
             value={lbExam} 
             onChange={(e) => setLbExam(e.target.value)}
-            className="bg-white border border-slate-200 text-slate-800 font-bold text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white font-bold text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           >
             <option value="hcm">Delhi Police HCM</option>
             <option value="cgl">SSC CGL Tier-II</option>
@@ -89,7 +89,7 @@ export default function LeaderboardsTab() {
             type="date" 
             value={lbDate} 
             onChange={(e) => setLbDate(e.target.value)}
-            className="bg-white border border-slate-200 text-slate-800 font-bold text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white font-bold text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           />
 
           <button 
@@ -101,9 +101,9 @@ export default function LeaderboardsTab() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 mb-6">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-zinc-800 mb-6">
         <table className="w-full text-left whitespace-nowrap text-sm">
-          <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 text-xs uppercase tracking-wider">
+          <thead className="bg-slate-50 dark:bg-zinc-900 text-slate-500 dark:text-zinc-300 font-bold border-b border-slate-200 dark:border-zinc-800 text-xs uppercase tracking-wider">
             <tr>
               <th className="px-6 py-4">Rank</th>
               <th className="px-6 py-4">User</th>
@@ -113,20 +113,20 @@ export default function LeaderboardsTab() {
               <th className="px-6 py-4">Marks</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 font-medium bg-white">
+          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800 font-medium bg-white dark:bg-zinc-950">
             {lbLoading ? (
               <tr><td colSpan={6} className="text-center py-12 text-slate-400"><Loader2 className="animate-spin inline mr-2" size={16}/> Fetching data...</td></tr>
             ) : lbData.length === 0 ? (
               <tr><td colSpan={6} className="text-center py-12 text-slate-400">No data found for this date and exam. Click Fetch to begin.</td></tr>
             ) : (
               lbData.map((entry, index) => (
-                <tr key={entry.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-black text-slate-800">#{index + 1}</td>
-                  <td className="px-6 py-4 font-bold text-slate-700">{entry.userName}</td>
-                  <td className="px-6 py-4 text-slate-500">{Number(entry.wpm).toFixed(1)}</td>
-                  <td className="px-6 py-4 text-indigo-600 font-black">{Number(entry.netWpm).toFixed(1)}</td>
-                  <td className="px-6 py-4 text-slate-500">{Number(entry.accuracy).toFixed(1)}%</td>
-                  <td className="px-6 py-4 text-slate-500">{Number(entry.marks || 0).toFixed(1)}</td>
+                <tr key={entry.id} className="hover:bg-slate-50 dark:hover:bg-zinc-900/60 transition-colors">
+                  <td className="px-6 py-4 font-black text-slate-800 dark:text-white">#{index + 1}</td>
+                  <td className="px-6 py-4 font-bold text-slate-700 dark:text-zinc-200">{entry.userName}</td>
+                  <td className="px-6 py-4 text-slate-500 dark:text-zinc-400">{Number(entry.wpm).toFixed(1)}</td>
+                  <td className="px-6 py-4 text-indigo-600 dark:text-indigo-400 font-black">{Number(entry.netWpm).toFixed(1)}</td>
+                  <td className="px-6 py-4 text-slate-500 dark:text-zinc-400">{Number(entry.accuracy).toFixed(1)}%</td>
+                  <td className="px-6 py-4 text-slate-500 dark:text-zinc-400">{Number(entry.marks || 0).toFixed(1)}</td>
                 </tr>
               ))
             )}
@@ -135,10 +135,10 @@ export default function LeaderboardsTab() {
       </div>
 
       {lbData.length > 0 && (
-        <div className="flex justify-end border-t border-slate-100 pt-6">
+        <div className="flex justify-end border-t border-slate-100 dark:border-zinc-800 pt-6">
           <button 
             onClick={downloadPDF}
-            className="bg-slate-900 hover:bg-black text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-md"
+            className="bg-slate-900 dark:bg-zinc-800 hover:bg-black dark:hover:bg-zinc-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-md"
           >
             <Download size={18} /> Export as PDF
           </button>

@@ -5,13 +5,12 @@ interface CardProps {
   className?: string;
 }
 
-const Card: React.FC<CardProps> = ({ children, className }) => {
+const Card: React.FC<CardProps> = ({ children, className = '' }) => {
   return (
-    <div className={`bg-white rounded-xl shadow-md p-6 ${className}`}>
+    <div className={`bg-white dark:bg-zinc-950 border border-transparent dark:border-zinc-800 text-slate-900 dark:text-zinc-100 rounded-xl shadow-md p-6 transition-colors duration-200 ${className}`}>
       {children}
     </div>
   );
 };
 
-// Changed to a default export to fix the import error.
 export default Card;

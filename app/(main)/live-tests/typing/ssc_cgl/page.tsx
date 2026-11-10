@@ -164,21 +164,21 @@ export default function SSCCGL_LiveTestLanding() {
   const isTestActive = settings.cglActive && !isExamPaused && activePassage;
 
   if (settings.isLoading || fetchingCloud) {
-    return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
+    return <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600 w-10 h-10" /></div>;
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pt-[100px] pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-black font-sans pt-[100px] pb-20 transition-colors duration-200">
       <div className="max-w-4xl mx-auto px-4">
         
-        <button onClick={() => router.push('/live-tests/typing')} className="flex items-center text-slate-500 hover:text-slate-900 font-bold mb-8 transition-colors">
+        <button onClick={() => router.push('/live-tests/typing')} className="flex items-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white font-bold mb-8 transition-colors">
           <ArrowLeft size={18} className="mr-2" /> Back to Typing Exams
         </button>
 
-        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 md:p-12 shadow-xl relative overflow-hidden">
+        <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-8 md:p-12 shadow-xl relative overflow-hidden">
           
           <div className="flex justify-between items-start mb-8">
-            <div className="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider">{TEST_DATE}</div>
+            <div className="bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider">{TEST_DATE}</div>
             
             {isTestActive && (
               <>
@@ -192,13 +192,13 @@ export default function SSCCGL_LiveTestLanding() {
 
           {!isTestActive ? (
             <div className="text-center py-16">
-              <div className="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-slate-100 dark:bg-zinc-900 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CalendarOff size={40} />
               </div>
-              <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-4" style={{fontFamily: 'var(--font-oswald)'}}>
+              <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-4" style={{fontFamily: 'var(--font-oswald)'}}>
                 Scheduled Break
               </h1>
-              <p className="text-lg text-slate-600 font-medium max-w-lg mx-auto mb-8">
+              <p className="text-lg text-slate-600 dark:text-zinc-300 font-medium max-w-lg mx-auto mb-8">
                 {isExamPaused 
                   ? `SSC CGL Tier-II Live tests are paused until ${new Date(settings.cglPauseDate).toLocaleDateString()}. Take a break and review your past analytics!`
                   : "There is no Live Mock scheduled for today. Take a break, review your past analytics, or practice in the normal typing arena!"}
@@ -209,12 +209,12 @@ export default function SSCCGL_LiveTestLanding() {
             </div>
           ) : (
             <>
-              <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-4" style={{fontFamily: 'var(--font-oswald)'}}>
+              <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-4" style={{fontFamily: 'var(--font-oswald)'}}>
                 {activePassage?.title}
               </h1>
               
 
-              <p className="text-lg text-slate-600 font-medium mb-10 max-w-2xl">
+              <p className="text-lg text-slate-600 dark:text-zinc-300 font-medium mb-10 max-w-2xl">
                 This is the official daily live typing test for SSC CGL Tier-II aspirants. Your formatting, spacing, and speed will be evaluated strictly under TCS/NTA rules.
               </p>
 
@@ -235,7 +235,7 @@ export default function SSCCGL_LiveTestLanding() {
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="border-t border-slate-100 dark:border-zinc-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 
                 <div className="flex items-center gap-3 text-slate-600 font-medium">
                   <Clock size={20} className={testStatus === 'live' && !hasTakenTest && currentUser ? 'text-red-500' : 'text-slate-400'} />

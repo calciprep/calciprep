@@ -10,7 +10,7 @@ export default function MainLayout({
 }) {
   return (
     <LenisProvider>
-      <div className="flex min-h-screen bg-slate-50">
+      <div className="flex min-h-screen bg-slate-50 dark:bg-black transition-colors duration-200">
         
         <Navigation />
 

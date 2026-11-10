@@ -122,10 +122,10 @@ export default function OverviewTab({
   };
 
   const BentoToggle = ({ label, isActive, onChange }: { label: string, isActive: boolean, onChange: () => void }) => (
-    <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
+    <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-zinc-800 last:border-0">
       <div className="flex items-center gap-2">
         <Power size={16} className={isActive ? "text-emerald-500" : "text-slate-300"} />
-        <span className="font-bold text-sm text-slate-900">{label}</span>
+        <span className="font-bold text-sm text-slate-900 dark:text-white">{label}</span>
       </div>
       <div className="flex items-center gap-2">
         <span className={`text-[10px] font-black uppercase ${isActive ? 'text-emerald-500' : 'text-slate-400'}`}>{isActive ? 'Active' : 'Offline'}</span>
@@ -149,10 +149,10 @@ export default function OverviewTab({
         {/* PLATFORM STATUS */}
         <div className={`rounded-[1.5rem] p-6 shadow-sm border ${maintenanceMode ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-700' : 'bg-gradient-to-br from-[#7DF2CE] to-[#34D399] border-black/10'} flex flex-col justify-between relative overflow-hidden h-[220px] transition-all`}>
           <div className="absolute top-4 right-4 bg-white/30 p-2 rounded-full">
-            {maintenanceMode ? <AlertTriangle className="text-white" size={18} /> : <Activity className="text-slate-900" size={18} />}
+            {maintenanceMode ? <AlertTriangle className="text-white" size={18} /> : <Activity className="text-slate-900 dark:text-white" size={18} />}
           </div>
           <div>
-            <h2 className="text-3xl font-black text-slate-900 mb-1 mt-2 z-10 leading-tight">
+            <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-1 mt-2 z-10 leading-tight">
               {maintenanceMode ? 'Maintenance' : 'System'}<br/>{maintenanceMode ? 'Mode ON' : 'Online'}
             </h2>
             <p className="text-slate-800 font-bold text-xs z-10 max-w-[80%] opacity-80">
@@ -160,7 +160,7 @@ export default function OverviewTab({
             </p>
           </div>
           <div className="flex items-center justify-between bg-black/10 p-2 rounded-xl backdrop-blur-sm z-10">
-            <span className="font-bold text-xs text-slate-900 ml-2">Master Kill Switch</span>
+            <span className="font-bold text-xs text-slate-900 dark:text-white ml-2">Master Kill Switch</span>
             <button onClick={() => setMaintenanceMode(!maintenanceMode)} className={`w-10 h-5 flex items-center rounded-full p-1 transition-colors duration-300 ${maintenanceMode ? 'bg-red-900' : 'bg-white/50'}`}>
               <div className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform duration-300 ${maintenanceMode ? 'translate-x-5' : 'translate-x-0'}`} />
             </button>
@@ -168,10 +168,10 @@ export default function OverviewTab({
         </div>
 
         {/* TEST CONTROLS */}
-        <div className="bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-200 h-[220px] flex flex-col">
-          <div className="flex items-center justify-between border-b border-slate-900 pb-2 mb-3">
-            <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider">Live Toggles</h2>
-            <Settings size={16} className="text-slate-900" />
+        <div className="bg-white dark:bg-zinc-950 rounded-[1.5rem] p-6 shadow-sm border border-slate-200 dark:border-zinc-800 dark:border-zinc-800 h-[220px] flex flex-col">
+          <div className="flex items-center justify-between border-b border-slate-900 dark:border-zinc-700 pb-2 mb-3">
+            <h2 className="text-sm font-black text-slate-900 dark:text-white dark:text-white uppercase tracking-wider">Live Toggles</h2>
+            <Settings size={16} className="text-slate-900 dark:text-white" />
           </div>
           <div className="flex flex-col flex-1 justify-center">
             <BentoToggle label="Delhi Police HCM" isActive={hcmActive} onChange={() => setHcmActive(!hcmActive)} />
@@ -181,18 +181,18 @@ export default function OverviewTab({
         </div>
 
         {/* TIME AUTOMATION */}
-        <div className="bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-200 h-[220px] flex flex-col">
-          <div className="flex items-center justify-between border-b border-slate-900 pb-2 mb-4">
-            <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider">Time Automation</h2>
-            <CalendarClock size={16} className="text-slate-900" />
+        <div className="bg-white dark:bg-zinc-950 rounded-[1.5rem] p-6 shadow-sm border border-slate-200 dark:border-zinc-800 dark:border-zinc-800 h-[220px] flex flex-col">
+          <div className="flex items-center justify-between border-b border-slate-900 dark:border-zinc-700 pb-2 mb-4">
+            <h2 className="text-sm font-black text-slate-900 dark:text-white dark:text-white uppercase tracking-wider">Time Automation</h2>
+            <CalendarClock size={16} className="text-slate-900 dark:text-white" />
           </div>
           <div className="flex-1 flex flex-col justify-center gap-4">
-            <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <span className="font-bold text-xs text-slate-600">Start Time</span>
+            <div className="flex items-center justify-between bg-slate-50 dark:bg-black p-3 rounded-xl border border-slate-100 dark:border-zinc-800">
+              <span className="font-bold text-xs text-slate-600 dark:text-zinc-300">Start Time</span>
               <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="bg-transparent text-emerald-600 font-bold outline-none text-sm" />
             </div>
-            <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <span className="font-bold text-xs text-slate-600">End Time</span>
+            <div className="flex items-center justify-between bg-slate-50 dark:bg-black p-3 rounded-xl border border-slate-100 dark:border-zinc-800">
+              <span className="font-bold text-xs text-slate-600 dark:text-zinc-300">End Time</span>
               <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="bg-transparent text-emerald-600 font-bold outline-none text-sm" />
             </div>
           </div>
@@ -232,11 +232,11 @@ export default function OverviewTab({
         <div className="flex flex-col gap-5 lg:col-span-1 h-full">
           {/* TICKER */}
           <div className="bg-[#D9F99D] rounded-[1.5rem] p-5 shadow-sm border border-[#bef264] flex-1 flex flex-col min-h-[140px]">
-            <h2 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-2 flex items-center gap-1"><Bell size={12}/> Global Ticker</h2>
-            <textarea value={tickerText} onChange={(e) => setTickerText(e.target.value)} className="w-full flex-1 p-2 bg-black/5 border-none rounded-lg text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-black transition-all outline-none resize-none text-xs leading-relaxed mb-2" placeholder="Enter announcement text..." />
+            <h2 className="text-xs font-black text-slate-900 dark:text-white dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1"><Bell size={12}/> Global Ticker</h2>
+            <textarea value={tickerText} onChange={(e) => setTickerText(e.target.value)} className="w-full flex-1 p-2 bg-black/5 border-none rounded-lg text-slate-900 dark:text-white font-bold focus:bg-white focus:ring-2 focus:ring-black transition-all outline-none resize-none text-xs leading-relaxed mb-2" placeholder="Enter announcement text..." />
             <div className="flex items-center gap-2 bg-white/40 p-2 rounded-lg border border-black/10">
               <LinkIcon size={12} className="text-slate-700" />
-              <select value={tickerLink} onChange={(e) => setTickerLink(e.target.value)} className="bg-transparent w-full outline-none text-xs font-bold text-slate-900 cursor-pointer">
+              <select value={tickerLink} onChange={(e) => setTickerLink(e.target.value)} className="bg-transparent w-full outline-none text-xs font-bold text-slate-900 dark:text-white cursor-pointer">
                 <option value="/live-tests/typing/delhi_police_hcm">Delhi Police HCM</option>
                 <option value="/live-tests/typing/ssc_cgl">SSC CGL Tier-II</option>
                 <option value="/live-tests/typing/ssc_chsl">SSC CHSL Tier-II</option>
@@ -251,15 +251,15 @@ export default function OverviewTab({
             <div className="space-y-2">
               <div className="flex items-center justify-between border-b border-cyan-200/50 pb-1">
                 <span className="text-xs font-bold text-cyan-800">Total Users</span>
-                <span className="text-sm font-black text-slate-900">{totalUsersCount}</span>
+                <span className="text-sm font-black text-slate-900 dark:text-white">{totalUsersCount}</span>
               </div>
               <div className="flex items-center justify-between border-b border-cyan-200/50 pb-1">
                 <span className="text-xs font-bold text-cyan-800">Today's Tests</span>
-                <span className="text-sm font-black text-slate-900">{todaySubmissions}</span>
+                <span className="text-sm font-black text-slate-900 dark:text-white">{todaySubmissions}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-cyan-800">Today's Top Speed</span>
-                <span className="text-sm font-black text-slate-900">{topSpeed ? `${topSpeed} WPM` : '--'}</span>
+                <span className="text-sm font-black text-slate-900 dark:text-white">{topSpeed ? `${topSpeed} WPM` : '--'}</span>
               </div>
             </div>
           </div>

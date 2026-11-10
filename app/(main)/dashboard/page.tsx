@@ -89,22 +89,22 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
-        <Loader2 className="w-10 h-10 animate-spin text-black" />
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7] dark:bg-black transition-colors duration-200">
+        <Loader2 className="w-10 h-10 animate-spin text-black dark:text-white" />
       </div>
     );
   }
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
-        <div className="text-center bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-10 rounded-[2rem]">
-          <h2 className="text-3xl font-black text-black mb-2 font-serif">Please log in</h2>
-          <p className="text-black font-bold mb-6">You need an account to access your dashboard.</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7] dark:bg-black px-4 transition-colors duration-200">
+        <div className="text-center bg-white dark:bg-black border-[3px] border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.7)] dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] p-10 rounded-[2rem] max-w-md w-full">
+          <h2 className="text-3xl font-black text-black dark:text-white mb-2 font-serif">Please log in</h2>
+          <p className="text-slate-700 dark:text-slate-300 font-bold mb-6">You need an account to access your dashboard.</p>
           <button
             type="button"
             onClick={() => openModal(true)}
-            className="bg-[#D4FF2A] border-[3px] border-black hover:-translate-y-1 text-black font-black px-8 py-3 rounded-full text-lg transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="bg-[#D4FF2A] border-[3px] border-black dark:border-zinc-800 hover:-translate-y-1 text-black font-black px-8 py-3 rounded-full text-lg transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)] cursor-pointer"
           >
             Log In
           </button>
@@ -114,37 +114,37 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-slate-900 font-sans pt-[80px] pb-16">
+    <div className="min-h-screen bg-[#FDFBF7] dark:bg-black text-slate-900 dark:text-slate-100 font-sans pt-[80px] pb-16 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
         {/* Page Header */}
-        <div className="mb-8 bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-8 rounded-[2rem]">
-          <h1 className="text-4xl font-black text-black tracking-tight font-serif">Performance Dashboard</h1>
-          <p className="text-slate-800 font-bold mt-2 text-lg">Review your practice performance, test history, and track improvements.</p>
+        <div className="mb-8 bg-white dark:bg-black border-[3px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.7)] p-8 rounded-[2rem]">
+          <h1 className="text-4xl font-black text-black dark:text-white tracking-tight font-serif">Performance Dashboard</h1>
+          <p className="text-slate-800 dark:text-slate-300 font-bold mt-2 text-lg">Review your practice performance, test history, and track improvements.</p>
         </div>
 
         {/* Subject Selector Tabs */}
         <div className="mb-8 flex items-center gap-4 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveSubject('typing')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-              ${activeSubject === 'typing' ? 'bg-[#D4FF2A] text-black' : 'bg-white text-black'}`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.7)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer
+              ${activeSubject === 'typing' ? 'bg-[#D4FF2A] text-black' : 'bg-white dark:bg-black text-black dark:text-white'}`}
           >
             <Keyboard size={20} strokeWidth={2.5} /> Typing
           </button>
           
           <button
             onClick={() => setActiveSubject('maths')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-              ${activeSubject === 'maths' ? 'bg-[#D4FF2A] text-black' : 'bg-white text-black'}`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.7)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer
+              ${activeSubject === 'maths' ? 'bg-[#D4FF2A] text-black' : 'bg-white dark:bg-black text-black dark:text-white'}`}
           >
             <Calculator size={20} strokeWidth={2.5} /> Mathematics
           </button>
           
           <button
             onClick={() => setActiveSubject('english')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-              ${activeSubject === 'english' ? 'bg-[#D4FF2A] text-black' : 'bg-white text-black'}`}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full text-base font-black border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.7)] transition-all duration-200 whitespace-nowrap hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer
+              ${activeSubject === 'english' ? 'bg-[#D4FF2A] text-black' : 'bg-white dark:bg-black text-black dark:text-white'}`}
           >
             <BookOpen size={20} strokeWidth={2.5} /> English
           </button>
@@ -155,7 +155,7 @@ export default function DashboardPage() {
             className={`flex items-center gap-2 px-8 py-3.5 rounded-full text-base font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
               activeSubject === 'mocks'
                 ? 'bg-gradient-to-r from-indigo-600 via-blue-600 to-emerald-500 text-white shadow-lg shadow-indigo-500/25'
-                : 'bg-slate-900 text-slate-100 hover:bg-slate-800'
+                : 'bg-slate-900 dark:bg-slate-800 text-slate-100 hover:bg-slate-800 dark:hover:bg-slate-700 border border-slate-700'
             }`}
           >
             <TrendingUp size={20} strokeWidth={2.5} /> Mock Tracker

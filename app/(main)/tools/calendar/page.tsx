@@ -74,15 +74,15 @@ export default function AutomatedCalendarPage() {
 
   const getBadgeStyle = (type: string) => {
     switch (type) {
-      case 'Admit Card': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'Apply Notification': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'Corrigendum': return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'Reschedule': return 'bg-rose-100 text-rose-700 border-rose-200';
-      case 'Vacancies': return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'City Intimation': return 'bg-indigo-100 text-indigo-700 border-indigo-200';
-      case 'Answer Key': return 'bg-teal-100 text-teal-700 border-teal-200';
-      case 'Result': return 'bg-green-100 text-green-700 border-green-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      case 'Admit Card': return 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+      case 'Apply Notification': return 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+      case 'Corrigendum': return 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+      case 'Reschedule': return 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+      case 'Vacancies': return 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+      case 'City Intimation': return 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+      case 'Answer Key': return 'bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-800';
+      case 'Result': return 'bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800';
+      default: return 'bg-slate-100 dark:bg-zinc-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-zinc-800';
     }
   };
 
@@ -118,20 +118,20 @@ export default function AutomatedCalendarPage() {
   }, [selectedSummary]);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pb-24 pt-20 relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-black font-sans pb-24 pt-20 relative transition-colors duration-200">
       
       {/* Premium Header */}
-      <div className="bg-white border-b border-slate-200 py-12 mb-8">
+      <div className="bg-white dark:bg-black border-b border-slate-200 dark:border-zinc-800 py-12 mb-8 transition-colors duration-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold tracking-wide uppercase mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-transparent dark:border-blue-800 rounded-lg text-sm font-bold tracking-wide uppercase mb-4">
                 <Bell size={16} /> Live Feed
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
                 Exam Updates & Tracker
               </h1>
-              <p className="text-slate-600 text-lg max-w-xl">
+              <p className="text-slate-600 dark:text-slate-300 text-lg max-w-xl">
                 Real-time tracking for official notifications, admit cards, vacancies, and schedule changes.
               </p>
             </div>
@@ -144,7 +144,7 @@ export default function AutomatedCalendarPage() {
                 placeholder="Search exams, titles, or dates..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-inner"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-inner"
               />
             </div>
           </div>
@@ -160,15 +160,15 @@ export default function AutomatedCalendarPage() {
           <div className="w-full lg:w-64 shrink-0 space-y-8">
             
             {/* Board Tabs */}
-            <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex flex-row lg:flex-col overflow-x-auto custom-scrollbar">
+            <div className="bg-white dark:bg-zinc-950 p-2 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-row lg:flex-col overflow-x-auto custom-scrollbar">
               {BOARDS.map((board) => (
                 <button
                   key={board}
                   onClick={() => { setActiveBoard(board); setActiveCategory('All'); }}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap lg:whitespace-normal
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap lg:whitespace-normal cursor-pointer
                     ${activeBoard === board 
                       ? 'bg-blue-600 text-white shadow-md' 
-                      : 'text-slate-600 hover:bg-slate-50'}`}
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                 >
                   {board}
                   {activeBoard === board && <ChevronRight size={16} className="hidden lg:block opacity-70" />}
@@ -177,7 +177,7 @@ export default function AutomatedCalendarPage() {
             </div>
 
             {/* Category Filters */}
-            <div className="hidden sm:block bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div className="hidden sm:block bg-white dark:bg-zinc-950 p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <Filter size={14} /> Filter by Type
               </h3>
@@ -186,10 +186,10 @@ export default function AutomatedCalendarPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border cursor-pointer
                       ${activeCategory === cat 
-                        ? 'bg-slate-800 text-white border-slate-800' 
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
+                        ? 'bg-slate-800 dark:bg-blue-600 text-white border-slate-800 dark:border-blue-600' 
+                        : 'bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-zinc-800 hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                   >
                     {cat}
                   </button>
@@ -203,17 +203,17 @@ export default function AutomatedCalendarPage() {
             
             {/* Header for Active Board */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <CalendarIcon size={20} className="text-blue-600" /> 
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <CalendarIcon size={20} className="text-blue-600 dark:text-blue-400" /> 
                 {activeBoard === 'All Updates' ? 'Latest Government Exam Updates' : `${activeBoard} Notifications`}
               </h2>
-              <span className="text-sm font-semibold text-slate-500">{filteredNotifications.length} updates found</span>
+              <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{filteredNotifications.length} updates found</span>
             </div>
 
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-200">
-                <Loader2 className="animate-spin text-blue-600 mb-4" size={32} />
-                <p className="text-slate-500 font-bold">Syncing live updates...</p>
+              <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-zinc-950 rounded-3xl border border-slate-200 dark:border-zinc-800">
+                <Loader2 className="animate-spin text-blue-600 dark:text-blue-400 mb-4" size={32} />
+                <p className="text-slate-500 dark:text-slate-400 font-bold">Syncing live updates...</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -221,7 +221,7 @@ export default function AutomatedCalendarPage() {
                   filteredNotifications.map((notif) => (
                     <div 
                       key={notif.id} 
-                      className="block bg-white rounded-2xl border border-slate-200 shadow-sm transition-all p-5 lg:p-6 group relative overflow-hidden"
+                      className="block bg-white dark:bg-zinc-950 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm transition-all p-5 lg:p-6 group relative overflow-hidden"
                     >
                       {/* Subtle Hover Highlight */}
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -230,14 +230,14 @@ export default function AutomatedCalendarPage() {
                         
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2 flex-wrap">
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{notif.examName}</span>
-                            <span className="w-1 h-1 rounded-full bg-slate-300 hidden md:block"></span>
+                            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{notif.examName}</span>
+                            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700 hidden md:block"></span>
                             <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wide ${getBadgeStyle(notif.type)}`}>
                               {notif.type}
                             </span>
                           </div>
                           
-                          <h3 className="text-lg font-bold text-slate-900 leading-snug pr-4">
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-snug pr-4">
                             {notif.title}
                           </h3>
 
@@ -245,7 +245,7 @@ export default function AutomatedCalendarPage() {
                           {notif.summary && (
                             <button 
                               onClick={() => setSelectedSummary(notif)}
-                              className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-lg transition-colors border border-amber-200"
+                              className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-lg transition-colors border border-amber-200 dark:border-amber-800 cursor-pointer"
                             >
                               <AlignLeft size={14} /> Read Detailed Summary
                             </button>
@@ -253,8 +253,8 @@ export default function AutomatedCalendarPage() {
 
                         </div>
 
-                        <div className="flex items-center md:flex-col justify-between md:justify-center md:items-end gap-3 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6">
-                          <p className="text-sm font-semibold text-slate-500 flex items-center gap-1.5">
+                        <div className="flex items-center md:flex-col justify-between md:justify-center md:items-end gap-3 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 dark:border-zinc-800 pt-4 md:pt-0 md:pl-6">
+                          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                             <CalendarIcon size={14} /> {notif.date}
                           </p>
                           
@@ -262,7 +262,7 @@ export default function AutomatedCalendarPage() {
                             href={notif.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
                           >
                             View Official Notice <ExternalLink size={14} />
                           </a>
@@ -272,10 +272,10 @@ export default function AutomatedCalendarPage() {
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-20 bg-white border border-slate-200 rounded-2xl border-dashed">
-                    <FileText size={48} className="mx-auto text-slate-300 mb-4" strokeWidth={1.5} />
-                    <h3 className="text-lg font-bold text-slate-800 mb-2">No updates found</h3>
-                    <p className="text-slate-500 text-sm">We couldn't find any notifications matching your filters.</p>
+                  <div className="text-center py-20 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl border-dashed">
+                    <FileText size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" strokeWidth={1.5} />
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">No updates found</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">We couldn't find any notifications matching your filters.</p>
                   </div>
                 )}
               </div>
@@ -291,31 +291,27 @@ export default function AutomatedCalendarPage() {
       {/* ======================================================= */}
       {selectedSummary && (
         <div 
-          className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200 overscroll-none"
+          className="fixed inset-0 z-[100] bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200 overscroll-none"
           onClick={() => setSelectedSummary(null)} // Clicking background closes modal
         >
-          {/* 
-            FIX: "max-h-full sm:max-h-[90vh]" prevents it from growing taller than the screen.
-            "flex flex-col" paired with "flex-1 overflow-y-auto" ensures ONLY the body scrolls. 
-          */}
           <div 
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-full sm:max-h-[90vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200"
+            className="bg-white dark:bg-zinc-950 border border-transparent dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-full sm:max-h-[90vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()} // Clicking inside modal prevents it from closing
           >
             
             {/* Modal Header (Fixed at Top) */}
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center bg-slate-50 dark:bg-zinc-900/60 shrink-0">
               <div>
-                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                  <AlignLeft size={18} className="text-blue-600" /> Notification Summary
+                <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <AlignLeft size={18} className="text-blue-600 dark:text-blue-400" /> Notification Summary
                 </h3>
-                <p className="text-xs font-bold text-slate-500 mt-0.5">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                   {selectedSummary.examName} • {selectedSummary.date}
                 </p>
               </div>
               <button 
                 onClick={() => setSelectedSummary(null)}
-                className="p-2 bg-slate-200 hover:bg-slate-300 rounded-full text-slate-600 transition-colors"
+                className="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-200 transition-colors cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -323,11 +319,11 @@ export default function AutomatedCalendarPage() {
 
             {/* Modal Body (Scrollable area) */}
             <div className="p-6 overflow-y-auto flex-1 overscroll-contain">
-              <h4 className="text-xl font-bold text-slate-800 mb-5 leading-snug">
+              <h4 className="text-xl font-bold text-slate-800 dark:text-white mb-5 leading-snug">
                 {selectedSummary.title}
               </h4>
               
-              <div className="text-slate-700 font-medium leading-relaxed whitespace-pre-wrap bg-amber-50/50 p-5 rounded-xl border border-amber-100">
+              <div className="text-slate-700 dark:text-slate-200 font-medium leading-relaxed whitespace-pre-wrap bg-amber-50/50 dark:bg-zinc-900/80 p-5 rounded-xl border border-amber-100 dark:border-zinc-800">
                 {selectedSummary.summary}
               </div>
 

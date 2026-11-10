@@ -60,7 +60,7 @@ export default function LiveTypingHubPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pt-[80px] pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-black font-sans pt-[80px] pb-20 transition-colors duration-200">
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes seamless-ticker {
           0% { transform: translateX(0); }
@@ -97,7 +97,7 @@ export default function LiveTypingHubPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <button onClick={() => router.push('/live-tests')} className="flex items-center text-slate-500 hover:text-slate-900 font-bold mb-8 transition-colors">
+        <button onClick={() => router.push('/live-tests')} className="flex items-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white font-bold mb-8 transition-colors">
           <ArrowLeft size={18} className="mr-2" /> Back to Subject Selection
         </button>
 
@@ -105,11 +105,11 @@ export default function LiveTypingHubPage() {
           <div className="bg-amber-100 text-amber-600 p-2.5 rounded-xl">
             <Keyboard size={28} strokeWidth={2.5} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tight" style={{fontFamily: 'var(--font-oswald)'}}>
+          <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight" style={{fontFamily: 'var(--font-oswald)'}}>
             Live Typing Arena
           </h1>
         </div>
-        <p className="text-slate-600 text-lg font-medium mb-12 ml-[58px] max-w-2xl">
+        <p className="text-slate-600 dark:text-zinc-400 text-lg font-medium mb-12 ml-[58px] max-w-2xl">
           Select your target exam. Only exams with active live tests scheduled for today are shown below. Daily live tests are strictly formatted according to official notification guidelines.
         </p>
 
@@ -119,18 +119,18 @@ export default function LiveTypingHubPage() {
             <p className="text-slate-500 font-bold">Checking Live Test schedules...</p>
           </div>
         ) : !anyTestActive ? (
-           <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm max-w-2xl mx-auto">
-             <div className="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
+           <div className="bg-white dark:bg-zinc-950 rounded-3xl p-12 text-center border border-slate-200 dark:border-zinc-800 shadow-sm max-w-2xl mx-auto">
+             <div className="w-20 h-20 bg-slate-100 dark:bg-zinc-900 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CalendarOff size={40} />
              </div>
-             <h3 className="text-2xl font-black text-slate-900 mb-2">No Live Tests Today</h3>
-             <p className="text-slate-500 font-medium">All live tests are currently on a scheduled break. Keep an eye on the notification ticker above for upcoming dates!</p>
+             <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">No Live Tests Today</h3>
+             <p className="text-slate-500 dark:text-zinc-400 font-medium">All live tests are currently on a scheduled break. Keep an eye on the notification ticker above for upcoming dates!</p>
            </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {settings.hcmActive && (
-              <Link href="/live-tests/typing/delhi_police_hcm" className="group bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
+              <Link href="/live-tests/typing/delhi_police_hcm" className="group bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
                 <div className="flex items-start justify-between mb-6">
                   <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center p-2">
                     <Image src={dpLogo} alt="Delhi Police Logo" className="w-full h-full object-contain drop-shadow-sm" />
@@ -140,17 +140,17 @@ export default function LiveTypingHubPage() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-black text-slate-900 mb-2">Delhi Police HCM</h3>
-                  <p className="text-slate-500 font-medium text-sm mb-6">400 Words • 10 Minutes • Formatting Evaluation</p>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Delhi Police HCM</h3>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium text-sm mb-6">400 Words • 10 Minutes • Formatting Evaluation</p>
                 </div>
-                <div className="text-emerald-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm border-t border-slate-100 pt-4 mt-auto">
+                <div className="text-emerald-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm border-t border-slate-100 dark:border-zinc-800 pt-4 mt-auto">
                   Join Exam Room &rarr;
                 </div>
               </Link>
             )}
 
             {settings.cglActive && (
-              <Link href="/live-tests/typing/ssc_cgl" className="group bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
+              <Link href="/live-tests/typing/ssc_cgl" className="group bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
                 <div className="flex items-start justify-between mb-6">
                   <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center p-2">
                     <Image src={sscLogo} alt="SSC Logo" className="w-full h-full object-contain drop-shadow-sm" />
@@ -160,17 +160,17 @@ export default function LiveTypingHubPage() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-black text-slate-900 mb-2">SSC CGL Tier-II</h3>
-                  <p className="text-slate-500 font-medium text-sm mb-6">2000 Keys • 15 Mins • TCS/NTA Interfaces</p>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">SSC CGL Tier-II</h3>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium text-sm mb-6">2000 Keys • 15 Mins • TCS/NTA Interfaces</p>
                 </div>
-                <div className="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm border-t border-slate-100 pt-4 mt-auto">
+                <div className="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm border-t border-slate-100 dark:border-zinc-800 pt-4 mt-auto">
                   Join Exam Room &rarr;
                 </div>
               </Link>
             )}
 
             {settings.chslActive && (
-              <Link href="/live-tests/typing/ssc_chsl" className="group bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
+              <Link href="/live-tests/typing/ssc_chsl" className="group bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
                 <div className="flex items-start justify-between mb-6">
                   <div className="w-14 h-14 bg-cyan-50 rounded-2xl flex items-center justify-center p-2">
                     <Image src={sscLogo} alt="SSC Logo" className="w-full h-full object-contain drop-shadow-sm" />
@@ -180,17 +180,17 @@ export default function LiveTypingHubPage() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-black text-slate-900 mb-2">SSC CHSL Tier-II</h3>
-                  <p className="text-slate-500 font-medium text-sm mb-6">1750 Keys • 10 Mins • TCS/NTA Interfaces</p>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">SSC CHSL Tier-II</h3>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium text-sm mb-6">1750 Keys • 10 Mins • TCS/NTA Interfaces</p>
                 </div>
-                <div className="text-cyan-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm border-t border-slate-100 pt-4 mt-auto">
+                <div className="text-cyan-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm border-t border-slate-100 dark:border-zinc-800 pt-4 mt-auto">
                   Join Exam Room &rarr;
                 </div>
               </Link>
             )}
 
-            <div className="border-2 border-dashed border-slate-200 rounded-[2rem] p-6 flex flex-col items-center justify-center text-center opacity-50 h-full min-h-[220px]">
-               <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-3">
+            <div className="border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-[2rem] p-6 flex flex-col items-center justify-center text-center opacity-50 h-full min-h-[220px]">
+               <div className="w-12 h-12 bg-slate-100 dark:bg-zinc-900 text-slate-400 rounded-full flex items-center justify-center mb-3">
                  <Bell size={20} />
                </div>
                <p className="text-slate-500 font-bold text-sm">More Exams<br/>Coming Soon</p>

@@ -13,8 +13,8 @@ const Input: React.FC<InputProps> = ({
   ...props 
 }) => {
   const baseStyle =
-    'w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 transition-colors';
-  const disabledStyle = 'bg-gray-100 cursor-not-allowed';
+    'w-full p-3 border border-gray-300 dark:border-zinc-800 bg-white dark:bg-black text-slate-900 dark:text-white rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 transition-colors';
+  const disabledStyle = 'bg-gray-100 dark:bg-zinc-900 text-slate-500 dark:text-slate-500 cursor-not-allowed';
 
   return (
     <input

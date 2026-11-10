@@ -49,14 +49,11 @@ export default function ProfileTab() {
           const data = await UserService.getUserProfile(user.uid);
           if (data) {
             setProfileData({
-              ...data,
+              displayName: data.displayName || user.displayName || "",
+              bio: data.bio || "",
               photoURL: user.photoURL || "",
             });
           } else {
-            await UserService.createUserProfile(user.uid, {
-              email: user.email,
-              displayName: user.displayName || "",
-            });
             setProfileData({
               displayName: user.displayName || "",
               bio: "",
@@ -64,29 +61,36 @@ export default function ProfileTab() {
             });
           }
         } catch (error) {
-          console.error("Failed to load profile:", error);
-          setMessage("Could not load your profile data.");
+          console.error("Error loading profile:", error);
         } finally {
           setLoading(false);
         }
       }
     }
-
-    if (user) {
-      loadProfile();
-    }
+    loadProfile();
   }, [user]);
 
-  // Handle form changes
+  // Handle text inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Prevent Image Upload and show notification
+  // Google Provider Warning Notification
   const handleImageClick = () => {
-    if (showNotification) {
-      showNotification("Profile pictures are synced with your Google account and cannot be changed manually.", "error");
+    const isGoogleAccount = user?.providerData.some(
+      (provider) => provider.providerId === "google.com"
+    );
+
+    if (isGoogleAccount) {
+      if (showNotification) {
+        showNotification(
+          "Your profile picture is automatically synced from your connected Google Account.",
+          "error"
+        );
+      } else {
+        alert("Your profile picture is automatically synced from your connected Google Account.");
+      }
     } else {
       setMessage("Profile pictures are synced with your Google account and cannot be changed manually.");
     }
@@ -130,7 +134,7 @@ export default function ProfileTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400" />
       </div>
     );
   }
@@ -140,12 +144,12 @@ export default function ProfileTab() {
   }
 
   return (
-    <div className="space-y-8 max-w-2xl bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+    <div className="space-y-8 max-w-2xl bg-white dark:bg-zinc-950 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 transition-colors duration-200">
       
       {/* Header & Avatar Display */}
       <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
         <div className="relative group">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center text-3xl font-extrabold text-slate-500 shadow-sm">
+          <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-3xl font-extrabold text-slate-500 dark:text-slate-300 shadow-sm">
             {profileData.photoURL ? (
               <img src={profileData.photoURL} alt="Profile" className="w-full h-full object-cover" />
             ) : (
@@ -155,7 +159,7 @@ export default function ProfileTab() {
           <button
             type="button"
             onClick={handleImageClick}
-            className="absolute bottom-0 right-0 p-2 bg-slate-800 text-white rounded-full hover:bg-slate-700 transition-colors shadow-md"
+            className="absolute bottom-0 right-0 p-2 bg-slate-800 dark:bg-slate-700 text-white rounded-full hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors shadow-md cursor-pointer"
             title="Change picture"
           >
             <Camera size={16} />
@@ -163,20 +167,20 @@ export default function ProfileTab() {
         </div>
         
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
             {profileData.displayName || "User Profile"}
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
             Update your personal details and how they appear to others.
           </p>
         </div>
       </div>
 
-      <div className="h-px w-full bg-slate-100"></div>
+      <div className="h-px w-full bg-slate-100 dark:bg-zinc-900"></div>
 
       <form onSubmit={handleSave} className="space-y-5">
         <div className="space-y-2">
-          <label htmlFor="displayName" className="text-sm font-semibold text-gray-700">
+          <label htmlFor="displayName" className="text-sm font-semibold text-gray-700 dark:text-slate-300">
             Display Name
           </label>
           <Input
@@ -190,7 +194,7 @@ export default function ProfileTab() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="bio" className="text-sm font-semibold text-gray-700">
+          <label htmlFor="bio" className="text-sm font-semibold text-gray-700 dark:text-slate-300">
             Bio
           </label>
           <Input
@@ -204,25 +208,25 @@ export default function ProfileTab() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700">
+          <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">
             Email Address
           </label>
           <Input
             value={user.email || ""}
             disabled
-            className="bg-slate-50 text-slate-500 cursor-not-allowed"
+            className="bg-slate-50 dark:bg-black text-slate-500 dark:text-slate-400 cursor-not-allowed"
           />
-          <p className="text-xs text-slate-400">Email address cannot be changed directly.</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">Email address cannot be changed directly.</p>
         </div>
 
         {message && (
-          <div className={`p-4 rounded-lg text-sm font-medium ${message.includes("success") ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
+          <div className={`p-4 rounded-lg text-sm font-medium ${message.includes("success") ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800" : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"}`}>
             {message}
           </div>
         )}
 
         <div className="pt-4">
-          <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-6 py-2.5 shadow-sm">
+          <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-6 py-2.5 shadow-sm cursor-pointer">
             {saving ? "Saving..." : "Save Changes"}
           </Button>
         </div>

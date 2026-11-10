@@ -8,14 +8,14 @@ export default function FreeToolsSection() {
   return (
     <section className="px-4 py-16 max-w-6xl mx-auto text-center">
       {/* Brutalist Badge */}
-      <span className="bg-black text-white text-xs font-black tracking-widest uppercase px-4 py-1.5 rounded-md mb-4 inline-block shadow-[2px_2px_0px_0px_rgba(226,94,62,1)]">
+      <span className="bg-black dark:bg-black text-white text-xs font-black tracking-widest uppercase px-4 py-1.5 rounded-md mb-4 inline-block shadow-[2px_2px_0px_0px_rgba(226,94,62,1)] border border-transparent dark:border-zinc-800">
         ESSENTIAL TOOLS
       </span>
       
-      <h2 className="text-4xl md:text-5xl font-black mb-4 font-serif text-black">
+      <h2 className="text-4xl md:text-5xl font-black mb-4 font-serif text-black dark:text-white">
         Free Tools For Aspirants
       </h2>
-      <p className="text-slate-800 font-bold mb-12 text-lg">
+      <p className="text-slate-800 dark:text-slate-300 font-bold mb-12 text-lg">
         Useful utilities to help you prepare better and faster
       </p>
       
@@ -23,8 +23,8 @@ export default function FreeToolsSection() {
         
         {/* Yellow Card - Image Resizer */}
         <Link href="/tools/image-resizer" className="block group">
-          <div className="bg-[#FDFD96] border-[3px] border-black rounded-[2rem] p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all h-full">
-            <div className="bg-white border-[3px] border-black rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+          <div className="bg-[#FDFD96] border-[3px] border-black dark:border-zinc-800 rounded-[2rem] p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all h-full">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
               <ImageIcon size={28} className="text-black" strokeWidth={3} />
             </div>
             <h3 className="text-2xl font-black font-serif text-black mb-3">Image Resizer</h3>
@@ -34,8 +34,8 @@ export default function FreeToolsSection() {
 
         {/* Blue Card - Exam Calendar */}
         <Link href="/tools/calendar" className="block group">
-          <div className="bg-[#ADD8E6] border-[3px] border-black rounded-[2rem] p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all h-full">
-            <div className="bg-white border-[3px] border-black rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+          <div className="bg-[#ADD8E6] border-[3px] border-black dark:border-zinc-800 rounded-[2rem] p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all h-full">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
               <Calendar size={28} className="text-black" strokeWidth={3} />
             </div>
             <h3 className="text-2xl font-black font-serif text-black mb-3">Exam Calendar</h3>
@@ -45,8 +45,8 @@ export default function FreeToolsSection() {
 
         {/* Neon Lime Card - Mock Test Tracker */}
         <Link href="/tools/mock-tracker" className="block group">
-          <div className="bg-[#D4FF2A] border-[3px] border-black rounded-[2rem] p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all h-full">
-            <div className="bg-white border-[3px] border-black rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+          <div className="bg-[#D4FF2A] border-[3px] border-black dark:border-zinc-800 rounded-[2rem] p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all h-full">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
               <TrendingUp size={28} className="text-black" strokeWidth={3} />
             </div>
             <h3 className="text-2xl font-black font-serif text-black mb-3">Mock Tracker</h3>

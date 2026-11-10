@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Oswald, EB_Garamond, Roboto_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import Notification from "@/components/common/Notification";
 import AuthModal from "@/components/common/AuthModal";
 import LenisProvider from "@/components/common/LenisProvider"; 
@@ -63,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Next.js manages Metadata automatically here. Leave this empty to prevent hydration errors. */}
       </head>
@@ -71,6 +72,22 @@ export default function RootLayout({
         className={`${oswald.variable} ${ebGaramond.variable} ${robotoMono.variable}`}
         suppressHydrationWarning
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var saved = localStorage.getItem('calciprep_theme') || localStorage.getItem('calciprep_mock_theme');
+                if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                  document.body && document.body.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                  document.body && document.body.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
         {/* --- FIXED: SCRIPTS MOVED TO BODY --- */}
         <script
           async
@@ -97,11 +114,13 @@ export default function RootLayout({
         {/* --- END SCRIPTS --- */}
 
         <AuthProvider>
-          <LenisProvider>
-            {children}
-          </LenisProvider>
-          <Notification />
-          <AuthModal />
+          <ThemeProvider>
+            <LenisProvider>
+              {children}
+            </LenisProvider>
+            <Notification />
+            <AuthModal />
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

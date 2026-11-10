@@ -3,7 +3,7 @@ import React from 'react';
 export default function WhoWeAreSection() {
   return (
     <section className="px-4 py-16 max-w-6xl mx-auto">
-      <div className="bg-[#ADD8E6] border-[3px] border-black rounded-[2rem] p-10 md:p-16 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <div className="bg-[#ADD8E6] border-[3px] border-black dark:border-zinc-800 rounded-[2rem] p-10 md:p-16 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         <h2 className="text-4xl md:text-5xl font-extrabold mb-8 font-serif text-slate-900">
           Who We Are
         </h2>

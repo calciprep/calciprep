@@ -8,10 +8,10 @@ export default function FeaturesSection() {
       <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 font-serif">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 font-serif">
             Data-Driven Excellence
           </h2>
-          <p className="text-lg text-slate-600 font-medium">
+          <p className="text-lg text-slate-600 dark:text-slate-400 font-medium">
             Stop guessing. Our premium analytics engine provides deep insights into your typing speed, mathematical accuracy, and overall exam readiness through intuitive graphs and detailed tables.
           </p>
         </div>
@@ -19,8 +19,8 @@ export default function FeaturesSection() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           
           {/* Card 1: Yellow */}
-          <div className="bg-[#FDFD96] border-[3px] border-black rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <div className="bg-white border-[3px] border-black rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-[#FDFD96] border-[3px] border-black dark:border-zinc-800 rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <Target size={26} className="text-slate-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-2xl font-extrabold text-slate-900 mb-3 font-serif">Targeted Weakness Training</h3>
@@ -30,8 +30,8 @@ export default function FeaturesSection() {
           </div>
 
           {/* Card 2: Blue */}
-          <div className="bg-[#ADD8E6] border-[3px] border-black rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <div className="bg-white border-[3px] border-black rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-[#ADD8E6] border-[3px] border-black dark:border-zinc-800 rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <LineChart size={26} className="text-slate-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-2xl font-extrabold text-slate-900 mb-3 font-serif">WPM Progress Graphs</h3>
@@ -41,8 +41,8 @@ export default function FeaturesSection() {
           </div>
 
           {/* Card 3: Green */}
-          <div className="bg-[#C1E1C1] border-[3px] border-black rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <div className="bg-white border-[3px] border-black rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-[#C1E1C1] border-[3px] border-black dark:border-zinc-800 rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <TableProperties size={26} className="text-slate-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-2xl font-extrabold text-slate-900 mb-3 font-serif">Detailed Error Tables</h3>
@@ -52,8 +52,8 @@ export default function FeaturesSection() {
           </div>
 
           {/* Card 4: Pink */}
-          <div className="bg-[#F9C5D1] border-[3px] border-black rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <div className="bg-white border-[3px] border-black rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-[#F9C5D1] border-[3px] border-black dark:border-zinc-800 rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <BarChart3 size={26} className="text-slate-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-2xl font-extrabold text-slate-900 mb-3 font-serif">Accuracy Bar Charts</h3>
@@ -63,8 +63,8 @@ export default function FeaturesSection() {
           </div>
 
           {/* Card 5: Purple */}
-          <div className="bg-[#E6E6FA] border-[3px] border-black rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <div className="bg-white border-[3px] border-black rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-[#E6E6FA] border-[3px] border-black dark:border-zinc-800 rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <Activity size={26} className="text-slate-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-2xl font-extrabold text-slate-900 mb-3 font-serif">Real-Time Subject Stats</h3>
@@ -74,8 +74,8 @@ export default function FeaturesSection() {
           </div>
 
           {/* Card 6: Peach */}
-          <div className="bg-[#FFDAB9] border-[3px] border-black rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <div className="bg-white border-[3px] border-black rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-[#FFDAB9] border-[3px] border-black dark:border-zinc-800 rounded-2xl p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <div className="bg-white border-[3px] border-black dark:border-zinc-800 rounded-full w-14 h-14 flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <Zap size={26} className="text-slate-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-2xl font-extrabold text-slate-900 mb-3 font-serif">Live Tests Leaderboards</h3>

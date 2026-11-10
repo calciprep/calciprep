@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
-import AnimatedButton from '@/components/ui/AnimatedButton'; // Use AnimatedButton
+import AnimatedButton from '@/components/ui/AnimatedButton';
 
 type PasswordInputs = {
   currentPassword: string;
@@ -33,10 +33,8 @@ const SecurityTab: React.FC = () => {
       await updateUserPassword(data.currentPassword, data.newPassword);
       showNotification('Password updated successfully!', 'success');
       reset(); // Clear form on success
-    // FIX: Catch error as 'unknown' and then check its type
     } catch (error: unknown) {
       console.error("Password Update Error:", error);
-      // Assuming error has a 'message' property, common for Error objects
       const errorMessage = (error instanceof Error) ? error.message : 'Failed to update password. Check your current password.';
       showNotification(errorMessage, 'error');
     } finally {
@@ -50,27 +48,27 @@ const SecurityTab: React.FC = () => {
   const hasNumberOrSymbol = newPasswordValue && /[0-9!@#$%^&*]/.test(newPasswordValue);
 
   const StrengthIndicator = ({ met, text }: { met: boolean; text: string }) => (
-    <div className={`text-xs ${met ? 'text-green-600' : 'text-gray-400'}`}>{text}</div>
+    <div className={`text-xs ${met ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-slate-500'}`}>{text}</div>
   );
 
   return (
-    <div className="space-y-6 p-1"> {/* Add slight padding */}
-      <h3 className="text-lg font-semibold text-gray-800 pb-4 border-b border-gray-200">Change Password</h3>
+    <div className="space-y-6 p-1">
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-white pb-4 border-b border-gray-200 dark:border-slate-800">Change Password</h3>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Current Password */}
         <div>
-          <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+          <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Current Password</label>
           <div className="relative">
             <input
               type={showCurrentPassword ? 'text' : 'password'}
               id="currentPassword"
               {...register('currentPassword', { required: 'Current password is required' })}
-              className={`w-full pr-10 py-2 border ${errors.currentPassword ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500`}
+              className={`w-full pr-10 py-2 border ${errors.currentPassword ? 'border-red-500' : 'border-gray-300 dark:border-zinc-800'} dark:bg-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3`}
             />
             <button
               type="button"
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-slate-400 cursor-pointer"
             >
               {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -80,8 +78,8 @@ const SecurityTab: React.FC = () => {
 
         {/* New Password */}
         <div>
-          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-           <div className="relative">
+          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">New Password</label>
+          <div className="relative">
             <input
               type={showNewPassword ? 'text' : 'password'}
               id="newPassword"
@@ -89,12 +87,12 @@ const SecurityTab: React.FC = () => {
                 required: 'New password is required',
                 minLength: { value: 8, message: 'Password must be at least 8 characters' }
               })}
-              className={`w-full pr-10 py-2 border ${errors.newPassword ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500`}
+              className={`w-full pr-10 py-2 border ${errors.newPassword ? 'border-red-500' : 'border-gray-300 dark:border-zinc-800'} dark:bg-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3`}
             />
              <button
               type="button"
               onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-slate-400 cursor-pointer"
             >
               {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -110,7 +108,7 @@ const SecurityTab: React.FC = () => {
 
         {/* Confirm New Password */}
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Confirm New Password</label>
            <div className="relative">
             <input
               type={showConfirmPassword ? 'text' : 'password'}
@@ -119,12 +117,12 @@ const SecurityTab: React.FC = () => {
                 required: 'Please confirm your new password',
                 validate: value => value === newPasswordValue || 'Passwords do not match'
               })}
-              className={`w-full pr-10 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500`}
+              className={`w-full pr-10 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-zinc-800'} dark:bg-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3`}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-slate-400 cursor-pointer"
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -137,8 +135,8 @@ const SecurityTab: React.FC = () => {
           <AnimatedButton
             type="submit"
             disabled={isLoading}
-            color="primary" // Changed to primary for consistency
-            className="px-5 py-2 text-sm rounded-lg min-w-[120px]" // Added min-width
+            color="primary"
+            className="px-5 py-2 text-sm rounded-lg min-w-[120px]"
           >
             {isLoading ? <Loader2 className="animate-spin h-4 w-4 mx-auto" /> : 'Update Password'}
           </AnimatedButton>

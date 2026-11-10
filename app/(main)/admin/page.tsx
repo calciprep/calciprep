@@ -36,32 +36,32 @@ export default function AdminDashboard() {
 
   if (loading || currentUser?.email !== 'calciprep@gmail.com') {
     return (
-      <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F3F4F6] dark:bg-black flex items-center justify-center">
         <Loader2 className="animate-spin text-indigo-600 w-10 h-10" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] pt-[100px] pb-20 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-[#F3F4F6] dark:bg-black pt-[100px] pb-20 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-200">
       
       {/* HEADER AREA */}
       <div className="max-w-7xl mx-auto mb-6">
         <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-600">
           Admin Command Center
         </h1>
-        <p className="text-sm text-slate-500 font-medium mt-1">Manage your platform, users, support, content, and calendar.</p>
+        <p className="text-sm text-slate-500 dark:text-zinc-400 font-medium mt-1">Manage your platform, users, support, content, and calendar.</p>
       </div>
 
       {/* ACTION BAR: Tabs & Publish Button on the SAME LINE */}
       <div className="max-w-7xl mx-auto mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         
         {/* VIBRANT YELLOW TAB SWITCHER */}
-        <div className="flex items-center gap-2 bg-amber-100 p-2 rounded-2xl shadow-sm border border-amber-200 inline-flex w-full xl:w-auto overflow-x-auto">
+        <div className="flex items-center gap-2 bg-amber-100 dark:bg-zinc-900 p-2 rounded-2xl shadow-sm border border-amber-200 dark:border-zinc-800 inline-flex w-full xl:w-auto overflow-x-auto">
           <button 
             onClick={() => setActiveTab('overview')} 
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
-              activeTab === 'overview' ? 'bg-emerald-500 text-white shadow-md' : 'text-amber-800 hover:bg-amber-200/60'
+              activeTab === 'overview' ? 'bg-emerald-500 text-white shadow-md' : 'text-amber-800 dark:text-zinc-300 hover:bg-amber-200/60 dark:hover:bg-zinc-800'
             }`}
           >
             <Settings size={16} /> Overview
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
           <button 
             onClick={() => setActiveTab('users')} 
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
-              activeTab === 'users' ? 'bg-indigo-500 text-white shadow-md' : 'text-amber-800 hover:bg-amber-200/60'
+              activeTab === 'users' ? 'bg-indigo-500 text-white shadow-md' : 'text-amber-800 dark:text-zinc-300 hover:bg-amber-200/60 dark:hover:bg-zinc-800'
             }`}
           >
             <Users size={16} /> User Management
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
           <button 
             onClick={() => setActiveTab('leaderboards')} 
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
-              activeTab === 'leaderboards' ? 'bg-cyan-500 text-white shadow-md' : 'text-amber-800 hover:bg-amber-200/60'
+              activeTab === 'leaderboards' ? 'bg-cyan-500 text-white shadow-md' : 'text-amber-800 dark:text-zinc-300 hover:bg-amber-200/60 dark:hover:bg-zinc-800'
             }`}
           >
             <Trophy size={16} /> Leaderboards
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
           <button 
             onClick={() => setActiveTab('inbox')} 
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
-              activeTab === 'inbox' ? 'bg-rose-500 text-white shadow-md' : 'text-amber-800 hover:bg-amber-200/60'
+              activeTab === 'inbox' ? 'bg-rose-500 text-white shadow-md' : 'text-amber-800 dark:text-zinc-300 hover:bg-amber-200/60 dark:hover:bg-zinc-800'
             }`}
           >
             <Inbox size={16} /> Support Inbox
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
           <button 
             onClick={() => setActiveTab('cms')} 
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
-              activeTab === 'cms' ? 'bg-fuchsia-600 text-white shadow-md' : 'text-amber-800 hover:bg-amber-200/60'
+              activeTab === 'cms' ? 'bg-fuchsia-600 text-white shadow-md' : 'text-amber-800 dark:text-zinc-300 hover:bg-amber-200/60 dark:hover:bg-zinc-800'
             }`}
           >
             <FileText size={16} /> Passage Manager
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
           <button 
             onClick={() => setActiveTab('calendar')} 
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
-              activeTab === 'calendar' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-amber-800 hover:bg-amber-200/60'
+              activeTab === 'calendar' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-amber-800 dark:text-zinc-300 hover:bg-amber-200/60 dark:hover:bg-zinc-800'
             }`}
           >
             <Calendar size={16} /> Exam Calendar

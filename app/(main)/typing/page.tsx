@@ -17,7 +17,7 @@ export default function TypingExamSelectionPage() {
 
   /* STREAMING_CHUNK: Rendering the Exam Selection UI... */
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-6 py-16">
         {/* Header Section */}
         <div className="text-center mb-10">
@@ -25,7 +25,7 @@ export default function TypingExamSelectionPage() {
             All Typing Exams
           </h1>
 
-          <p className="text-black-500 text-lg">
+          <p className="text-slate-600 dark:text-slate-300 text-lg max-w-4xl mx-auto leading-relaxed">
             Step into the ultimate typing simulation and prepare for the real exam. Select your target exam below to access official TCS-pattern environments. Master the exact formats required for SSC CGL, CHSL, and Delhi Police. Get instant net-speed calculations and strict error breakdowns. Pinpoint your specific weaknesses with our intelligent lookahead aligner. Build the muscle memory and flawless accuracy required to qualify. Start your practice drill now and crush those cutoffs!
           </p>
 
@@ -40,7 +40,7 @@ export default function TypingExamSelectionPage() {
 
           <input
             type="text"
-            className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1a73e8]/20 focus:border-[#1a73e8] shadow-sm transition-all"
+            className="w-full pl-12 pr-4 py-3.5 border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-full text-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1a73e8]/20 focus:border-[#1a73e8] shadow-sm transition-all"
             placeholder="Search exams (e.g. SSC, NTPC, JSA...)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -52,7 +52,7 @@ export default function TypingExamSelectionPage() {
           {filteredExams.map((exam) => (
             <div
               key={exam.rules.id}
-              className="bg-white rounded-2xl border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-lg transition-shadow duration-300 p-8 flex flex-col items-center text-center h-full"
+              className="bg-white dark:bg-zinc-950 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-lg transition-all duration-300 p-8 flex flex-col items-center text-center h-full"
             >
               <div className="h-20 w-20 relative mb-6 flex items-center justify-center">
                 {exam.rules.logo ? (
@@ -64,19 +64,19 @@ export default function TypingExamSelectionPage() {
                     className="object-contain"
                   />
                 ) : (
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl">
+                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-xl">
                     {exam.rules.name.charAt(0)}
                   </div>
                 )}
               </div>
 
-              <h3 className="font-bold text-gray-800 text-lg mb-6 flex-1">
+              <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-6 flex-1">
                 {exam.rules.name}
               </h3>
 
               <Link
                 href={`/typing/${exam.rules.id}`}
-                className="w-full bg-[#1a73e8] hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-full inline-flex items-center justify-center gap-2 transition-colors"
+                className="w-full bg-[#1a73e8] hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-full inline-flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <Keyboard size={18} />
                 Practice Now
@@ -85,7 +85,7 @@ export default function TypingExamSelectionPage() {
           ))}
 
           {filteredExams.length === 0 && (
-            <div className="col-span-full text-center py-12 text-gray-500">
+            <div className="col-span-full text-center py-12 text-gray-500 dark:text-slate-400">
               No exams found matching your search.
             </div>
           )}
