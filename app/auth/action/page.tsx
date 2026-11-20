@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { applyActionCode, checkActionCode } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function AuthActionPage() {
+function AuthActionContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -57,16 +57,14 @@ export default function AuthActionPage() {
                         setStatus('error');
                 }
            // Use Error or unknown type for caught errors
-            } catch (error: unknown) { // Changed 'any' to 'unknown'
+            } catch (error: unknown) {
                 console.error("Firebase Auth Action Error:", error);
                 // Check if error is an object with a 'code' property before accessing it
                 if (typeof error === 'object' && error !== null && 'code' in error) {
-                    const firebaseError = error as { code: string }; // Type assertion
+                    const firebaseError = error as { code: string };
                     if (firebaseError.code === 'auth/expired-action-code') {
-                        // Fix: Escape apostrophe
                         setMessage('This verification link has expired. Please request a new one.');
                     } else if (firebaseError.code === 'auth/invalid-action-code') {
-                         // Fix: Escape apostrophe
                         setMessage('This verification link is invalid. It may have already been used.');
                     } else {
                         setMessage('An unexpected error occurred. Please try again.');
@@ -110,5 +108,13 @@ export default function AuthActionPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function AuthActionPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <AuthActionContent />
+        </Suspense>
     );
 }
