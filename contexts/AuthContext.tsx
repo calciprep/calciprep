@@ -76,6 +76,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoginMode, setLoginMode] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '', visible: false });
   const notificationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastUserUidRef = useRef<string | null | undefined>(undefined);
+  const currentUserRef = useRef<User | null>(null);
+  currentUserRef.current = currentUser;
 
   const openModal = useCallback((loginMode = false) => {
     setLoginMode(loginMode);
@@ -116,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // FIXED: Now accepts the fresh user from the Auth Listener
   const fetchUserData = useCallback(async (userToFetch?: User | null) => {
-    const activeUser = userToFetch !== undefined ? userToFetch : currentUser;
+    const activeUser = userToFetch !== undefined ? userToFetch : currentUserRef.current;
 
     if (!activeUser) {
         setUserData(null);
@@ -161,25 +164,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
         setUserDataLoading(false); 
     }
-  }, [currentUser, firebaseReady, showNotification]);
+  }, [firebaseReady, showNotification]);
 
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
 
     if (firebaseReady) {
-        unsubscribe = subscribeToAuthChanges(async (user) => {
-            const userChanged = currentUser?.uid !== user?.uid;
+        unsubscribe = subscribeToAuthChanges((user) => {
+            const userChanged = lastUserUidRef.current !== user?.uid;
+            lastUserUidRef.current = user ? user.uid : null;
+            currentUserRef.current = user;
             setCurrentUser(user);
+            setAuthLoading(false);
 
             if (user && userChanged) {
-                 // FIXED: Pass the fresh user immediately to prevent stale state drops
-                 await fetchUserData(user); 
-            } else if (!user && currentUser) { 
+                 // Trigger fetchUserData in background without awaiting
+                 fetchUserData(user); 
+            } else if (!user) { 
                 setUserData(null); 
             }
-            setAuthLoading(false);
         });
     } else {
+        lastUserUidRef.current = null;
+        currentUserRef.current = null;
         setCurrentUser(null);
         setUserData(null);
         setAuthLoading(false); 
@@ -188,7 +195,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, [firebaseReady, fetchUserData, currentUser]); 
+  }, [firebaseReady, fetchUserData]); 
 
 
   useEffect(() => {
@@ -259,7 +266,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!authLoading ? children : null}
+      {children}
     </AuthContext.Provider>
   );
 };

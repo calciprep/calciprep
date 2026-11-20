@@ -1,14 +1,42 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Keyboard, Calculator, BookOpen, TrendingUp, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HistoryCollection, HistoryEntry, UserService } from '@/services/userService';
 
-import TypingDashboard from '@/components/features/dashboard/TypingDashboard';
-import MathsDashboard from '@/components/features/dashboard/MathsDashboard';
-import EnglishDashboard from '@/components/features/dashboard/EnglishDashboard';
-import MockTrackerDashboard from '@/components/features/dashboard/MockTrackerDashboard';
+const TypingDashboard = dynamic(() => import('@/components/features/dashboard/TypingDashboard'), {
+  loading: () => (
+    <div className="flex items-center justify-center py-20">
+      <Loader2 className="w-8 h-8 animate-spin text-black dark:text-white" />
+    </div>
+  ),
+});
+
+const MathsDashboard = dynamic(() => import('@/components/features/dashboard/MathsDashboard'), {
+  loading: () => (
+    <div className="flex items-center justify-center py-20">
+      <Loader2 className="w-8 h-8 animate-spin text-black dark:text-white" />
+    </div>
+  ),
+});
+
+const EnglishDashboard = dynamic(() => import('@/components/features/dashboard/EnglishDashboard'), {
+  loading: () => (
+    <div className="flex items-center justify-center py-20">
+      <Loader2 className="w-8 h-8 animate-spin text-black dark:text-white" />
+    </div>
+  ),
+});
+
+const MockTrackerDashboard = dynamic(() => import('@/components/features/dashboard/MockTrackerDashboard'), {
+  loading: () => (
+    <div className="flex items-center justify-center py-20">
+      <Loader2 className="w-8 h-8 animate-spin text-black dark:text-white" />
+    </div>
+  ),
+});
 
 export default function DashboardPage() {
   const { currentUser, authLoading, openModal } = useAuth();

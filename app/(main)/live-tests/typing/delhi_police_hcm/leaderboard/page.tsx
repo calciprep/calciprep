@@ -8,9 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase'; 
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
-// PDF Libraries
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+
 
 type LeaderboardEntry = {
   id: string;
@@ -93,7 +91,9 @@ export default function DPHCM_LiveLeaderboard() {
     });
   };
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF('landscape'); 
     const pageWidth = doc.internal.pageSize.width;
     

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Oswald, EB_Garamond, Roboto_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -89,11 +90,11 @@ export default function RootLayout({
           }}
         />
         {/* --- FIXED: SCRIPTS MOVED TO BODY --- */}
-        <script
-          async
+        <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2382040431534049"
+          strategy="lazyOnload"
           crossOrigin="anonymous"
-        ></script>
+        />
         
         <script
           type="application/ld+json"

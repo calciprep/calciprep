@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { Loader2, Download } from 'lucide-react';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+
 
 export default function LeaderboardsTab() {
   const [lbExam, setLbExam] = useState("hcm");
@@ -39,7 +38,9 @@ export default function LeaderboardsTab() {
     }
   };
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const pdfDoc = new jsPDF('landscape');
     pdfDoc.setFontSize(16);
     pdfDoc.text(`CalciPrep Live Leaderboard Archive`, 14, 15);

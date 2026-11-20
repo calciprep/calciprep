@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion', '@radix-ui/react-tabs'],
+  },
 };
 
 export default nextConfig;
